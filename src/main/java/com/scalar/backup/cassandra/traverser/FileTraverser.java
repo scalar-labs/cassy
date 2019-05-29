@@ -19,9 +19,9 @@ public abstract class FileTraverser {
     this.dataDir = dataDir;
   }
 
-  abstract List<Path> traverse(String keyspace);
+  public abstract List<Path> traverse(String keyspace);
 
-  abstract List<Path> traverse(String keyspace, @Nullable String table);
+  public abstract List<Path> traverse(String keyspace, @Nullable String table);
 
   protected List<Path> traverse(
       String keyspace, @Nullable String table, Function<Stream<Path>, List<Path>> traverser) {
