@@ -79,7 +79,7 @@ public class AwsS3FileUploaderTest {
     props.setProperty(BackupConfig.BACKUP_TYPE, Integer.toString(type.get()));
     props.setProperty(BackupConfig.TARGET_IP, ANY_TARGET_IP);
     props.setProperty(BackupConfig.DATA_DIR, dataDir);
-    props.setProperty(BackupConfig.DEST_BASE_URI, ANY_S3_URI);
+    props.setProperty(BackupConfig.STORE_BASE_URI, ANY_S3_URI);
     props.setProperty(BackupConfig.KEYSPACE, KEYSPACE_DIR);
     return props;
   }

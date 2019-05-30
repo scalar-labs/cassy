@@ -24,7 +24,7 @@ public class UploadDownloadTest {
     props.setProperty(BackupConfig.CLUSTER_ID, ANY_CLUSTER_ID);
     props.setProperty(BackupConfig.BACKUP_ID, ANY_BACKUP_ID);
     props.setProperty(BackupConfig.TARGET_IP, ANY_TARGET_IP);
-    props.setProperty(BackupConfig.DEST_BASE_URI, "s3://scalar-tmp");
+    props.setProperty(BackupConfig.STORE_BASE_URI, "s3://scalar-tmp");
     props.setProperty(BackupConfig.KEYSPACE, keyspace);
 
     props.setProperty(BackupConfig.DATA_DIR, dataDir);

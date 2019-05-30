@@ -35,7 +35,7 @@ public class AwsS3FileUploader implements FileUploader {
 
   @Override
   public void upload(BackupConfig config) {
-    AmazonS3URI s3Uri = new AmazonS3URI(config.getDestBaseUri());
+    AmazonS3URI s3Uri = new AmazonS3URI(config.getStoreBaseUri());
     List<Path> files = traverser.traverse(config.getKeyspace());
 
     List<Upload> uploads = new ArrayList<>();

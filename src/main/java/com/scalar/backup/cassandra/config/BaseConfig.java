@@ -17,14 +17,13 @@ public class BaseConfig {
   public static final String BACKUP_ID = PREFIX + "backup_id";
   public static final String TARGET_IP = PREFIX + "target_ip";
   public static final String DATA_DIR = PREFIX + "data_dir";
-  public static final String DEST_BASE_URI = PREFIX + "dest_base_uri";
+  public static final String STORE_BASE_URI = PREFIX + "store_base_uri";
   public static final String KEYSPACE = PREFIX + "keyspace";
   private String clusterId;
   private String backupId;
-  private BackupType backupType;
   private String targetIp;
   private String dataDir;
-  private String destBaseUri;
+  private String storeBaseUri;
   private String keyspace;
 
   public BaseConfig(File propertiesFile) throws IOException {
@@ -62,8 +61,8 @@ public class BaseConfig {
     return dataDir;
   }
 
-  public String getDestBaseUri() {
-    return destBaseUri;
+  public String getStoreBaseUri() {
+    return storeBaseUri;
   }
 
   public String getKeyspace() {
@@ -79,8 +78,8 @@ public class BaseConfig {
     targetIp = props.getProperty(TARGET_IP);
     checkArgument(props.getProperty(DATA_DIR) != null);
     dataDir = props.getProperty(DATA_DIR);
-    checkArgument(props.getProperty(DEST_BASE_URI) != null);
-    destBaseUri = props.getProperty(DEST_BASE_URI);
+    checkArgument(props.getProperty(STORE_BASE_URI) != null);
+    storeBaseUri = props.getProperty(STORE_BASE_URI);
     checkArgument(props.getProperty(KEYSPACE) != null);
     keyspace = props.getProperty(KEYSPACE);
   }

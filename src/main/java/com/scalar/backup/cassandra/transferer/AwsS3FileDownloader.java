@@ -22,7 +22,7 @@ public class AwsS3FileDownloader implements FileDownloader {
   @Override
   public void download(RestoreConfig config) {
     String key = BackupPath.create(config, config.getKeyspace());
-    AmazonS3URI s3Uri = new AmazonS3URI(config.getDestBaseUri());
+    AmazonS3URI s3Uri = new AmazonS3URI(config.getStoreBaseUri());
 
     try {
       MultipleFileDownload download =

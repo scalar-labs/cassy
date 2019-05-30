@@ -48,7 +48,7 @@ public class AwsS3FileDownloaderTest {
     props.setProperty(RestoreConfig.RESTORE_TYPE, Integer.toString(type.get()));
     props.setProperty(RestoreConfig.TARGET_IP, ANY_TARGET_IP);
     props.setProperty(RestoreConfig.DATA_DIR, dataDir);
-    props.setProperty(RestoreConfig.DEST_BASE_URI, ANY_S3_URI);
+    props.setProperty(RestoreConfig.STORE_BASE_URI, ANY_S3_URI);
     props.setProperty(RestoreConfig.KEYSPACE, KEYSPACE_DIR);
     return props;
   }
