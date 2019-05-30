@@ -17,7 +17,6 @@ import com.amazonaws.services.s3.transfer.Upload;
 import com.google.common.base.Joiner;
 import com.scalar.backup.cassandra.config.BackupConfig;
 import com.scalar.backup.cassandra.config.BackupType;
-import com.scalar.backup.cassandra.config.BaseConfig;
 import com.scalar.backup.cassandra.exception.FileTransferException;
 import com.scalar.backup.cassandra.traverser.FileTraverser;
 import java.io.File;
@@ -75,13 +74,13 @@ public class AwsS3FileUploaderTest {
 
   public Properties getProperties(BackupType type, String dataDir) {
     Properties props = new Properties();
-    props.setProperty(BaseConfig.CLUSTER_ID, ANY_CLUSTER_ID);
-    props.setProperty(BaseConfig.BACKUP_ID, ANY_BACKUP_ID);
-    props.setProperty(BaseConfig.BACKUP_TYPE, Integer.toString(type.get()));
-    props.setProperty(BaseConfig.TARGET_IP, ANY_TARGET_IP);
-    props.setProperty(BaseConfig.DATA_DIR, dataDir);
-    props.setProperty(BaseConfig.DEST_BASE_URI, ANY_S3_URI);
-    props.setProperty(BaseConfig.KEYSPACE, KEYSPACE_DIR);
+    props.setProperty(BackupConfig.CLUSTER_ID, ANY_CLUSTER_ID);
+    props.setProperty(BackupConfig.BACKUP_ID, ANY_BACKUP_ID);
+    props.setProperty(BackupConfig.BACKUP_TYPE, Integer.toString(type.get()));
+    props.setProperty(BackupConfig.TARGET_IP, ANY_TARGET_IP);
+    props.setProperty(BackupConfig.DATA_DIR, dataDir);
+    props.setProperty(BackupConfig.DEST_BASE_URI, ANY_S3_URI);
+    props.setProperty(BackupConfig.KEYSPACE, KEYSPACE_DIR);
     return props;
   }
 

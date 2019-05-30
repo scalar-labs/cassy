@@ -11,7 +11,6 @@ import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.transfer.MultipleFileDownload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.scalar.backup.cassandra.config.BackupType;
-import com.scalar.backup.cassandra.config.BaseConfig;
 import com.scalar.backup.cassandra.config.RestoreConfig;
 import com.scalar.backup.cassandra.exception.FileTransferException;
 import java.io.File;
@@ -44,13 +43,13 @@ public class AwsS3FileDownloaderTest {
 
   public Properties getProperties(BackupType type, String dataDir) {
     Properties props = new Properties();
-    props.setProperty(BaseConfig.CLUSTER_ID, ANY_CLUSTER_ID);
-    props.setProperty(BaseConfig.BACKUP_ID, ANY_BACKUP_ID);
-    props.setProperty(BaseConfig.BACKUP_TYPE, Integer.toString(type.get()));
-    props.setProperty(BaseConfig.TARGET_IP, ANY_TARGET_IP);
-    props.setProperty(BaseConfig.DATA_DIR, dataDir);
-    props.setProperty(BaseConfig.DEST_BASE_URI, ANY_S3_URI);
-    props.setProperty(BaseConfig.KEYSPACE, KEYSPACE_DIR);
+    props.setProperty(RestoreConfig.CLUSTER_ID, ANY_CLUSTER_ID);
+    props.setProperty(RestoreConfig.BACKUP_ID, ANY_BACKUP_ID);
+    props.setProperty(RestoreConfig.RESTORE_TYPE, Integer.toString(type.get()));
+    props.setProperty(RestoreConfig.TARGET_IP, ANY_TARGET_IP);
+    props.setProperty(RestoreConfig.DATA_DIR, dataDir);
+    props.setProperty(RestoreConfig.DEST_BASE_URI, ANY_S3_URI);
+    props.setProperty(RestoreConfig.KEYSPACE, KEYSPACE_DIR);
     return props;
   }
 
