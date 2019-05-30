@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AwsS3FileUploader implements FileUploader {
-  private static final Logger logger = LoggerFactory.getLogger(AwsS3FileSyncer.class);
+  private static final Logger logger = LoggerFactory.getLogger(AwsS3FileUploader.class);
   private final FileTraverser traverser;
   private final TransferManager manager;
   private final AmazonS3 s3;
