@@ -89,7 +89,7 @@ public class AwsS3FileUploaderTest {
     // Arrange
     BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_DATA_DIR));
     when(manager.upload(anyString(), anyString(), any(File.class))).thenReturn(upload);
-    doReturn(true).when(uploader).isUpdated(anyString(), anyString(), any(Path.class));
+    doReturn(true).when(uploader).requiresUpload(anyString(), anyString(), any(Path.class));
     List<Path> paths = getListOfSnapshotFiles();
     when(traverser.traverse(KEYSPACE_DIR)).thenReturn(paths);
 
@@ -117,7 +117,7 @@ public class AwsS3FileUploaderTest {
     BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_DATA_DIR));
     AmazonServiceException toThrow = Mockito.mock(AmazonServiceException.class);
     when(manager.upload(anyString(), anyString(), any(File.class))).thenThrow(toThrow);
-    doReturn(true).when(uploader).isUpdated(anyString(), anyString(), any(Path.class));
+    doReturn(true).when(uploader).requiresUpload(anyString(), anyString(), any(Path.class));
     List<Path> paths = getListOfSnapshotFiles();
     when(traverser.traverse(KEYSPACE_DIR)).thenReturn(paths);
 

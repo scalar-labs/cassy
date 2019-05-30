@@ -43,8 +43,8 @@ public class AwsS3FileUploader implements FileUploader {
         p -> {
           String key = BackupPath.create(config, p.toString());
           Path file = Paths.get(config.getDataDir(), p.toString());
-          if (isUpdated(s3Uri.getBucket(), key, file)) {
-            logger.warn(file + " is updated. Uploading it ...");
+          if (requiresUpload(s3Uri.getBucket(), key, file)) {
+            logger.info("Uploading " + file);
             try {
               uploads.add(manager.upload(s3Uri.getBucket(), key, file.toFile()));
             } catch (RuntimeException e) {
@@ -66,7 +66,7 @@ public class AwsS3FileUploader implements FileUploader {
   }
 
   @VisibleForTesting
-  boolean isUpdated(String bucket, String key, Path file) {
+  boolean requiresUpload(String bucket, String key, Path file) {
     try {
       if (s3.getObjectMetadata(bucket, key).getContentLength() == Files.size(file)) {
         return false;
