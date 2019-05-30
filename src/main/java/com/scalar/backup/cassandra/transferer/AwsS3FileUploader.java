@@ -43,13 +43,15 @@ public class AwsS3FileUploader implements FileUploader {
         p -> {
           String key = BackupPath.create(config, p.toString());
           Path file = Paths.get(config.getDataDir(), p.toString());
-          if (isUpdated(s3Uri.getBucket(), p.toString(), file)) {
-            logger.warn(file + " is updated. Updating it ...");
+          if (isUpdated(s3Uri.getBucket(), key, file)) {
+            logger.warn(file + " is updated. Uploading it ...");
             try {
               uploads.add(manager.upload(s3Uri.getBucket(), key, file.toFile()));
             } catch (RuntimeException e) {
               throw new FileTransferException(e);
             }
+          } else {
+            logger.info(file + " has been already uploaded.");
           }
         });
 
