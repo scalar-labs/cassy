@@ -1,19 +1,16 @@
-package com.scalar.backup.cassandra.syncer;
+package com.scalar.backup.cassandra.transferer;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3URI;
-import com.amazonaws.services.s3.transfer.MultipleFileDownload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.scalar.backup.cassandra.config.BackupConfig;
-import com.scalar.backup.cassandra.config.BackupType;
-import com.scalar.backup.cassandra.config.ConfigBase;
-import com.scalar.backup.cassandra.config.RestoreConfig;
 import com.scalar.backup.cassandra.exception.FileIOException;
 import com.scalar.backup.cassandra.exception.FileTransferException;
+import com.scalar.backup.cassandra.traverser.FileTraverser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,28 +20,28 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AwsS3FileSyncer implements FileSyncer {
+public class AwsS3FileUploader implements FileUploader {
   private static final Logger logger = LoggerFactory.getLogger(AwsS3FileSyncer.class);
-  private static final String CLUSTER_BACKUP_KEY = "cluster-backup";
-  private static final String NODE_BACKUP_KEY = "node-backup";
+  private final FileTraverser traverser;
   private final TransferManager manager;
   private final AmazonS3 s3;
 
   @Inject
-  public AwsS3FileSyncer(TransferManager manager, AmazonS3 s3) {
+  public AwsS3FileUploader(FileTraverser traverser, TransferManager manager, AmazonS3 s3) {
+    this.traverser = traverser;
     this.manager = manager;
     this.s3 = s3;
   }
 
   @Override
-  public void upload(List<Path> paths, BackupConfig config) {
+  public void upload(BackupConfig config) {
     AmazonS3URI s3Uri = new AmazonS3URI(config.getDestBaseUri());
-    System.out.println(s3Uri.getBucket());
+    List<Path> files = traverser.traverse(config.getKeyspace());
 
     List<Upload> uploads = new ArrayList<>();
-    paths.forEach(
+    files.forEach(
         p -> {
-          String key = getKey(p.toString(), config);
+          String key = BackupPath.create(config, p.toString());
           Path file = Paths.get(config.getDataDir(), p.toString());
           if (isUpdated(s3Uri.getBucket(), p.toString(), file)) {
             logger.warn(file + " is updated. Updating it ...");
@@ -64,31 +61,6 @@ public class AwsS3FileSyncer implements FileSyncer {
             throw new FileTransferException(e);
           }
         });
-  }
-
-  @Override
-  public void download(RestoreConfig config) {
-    String key = getKey(config.getKeyspace(), config);
-    AmazonS3URI s3Uri = new AmazonS3URI(config.getDestBaseUri());
-
-    try {
-      MultipleFileDownload download =
-          manager.downloadDirectory(
-              s3Uri.getBucket(), key, Paths.get(config.getDataDir()).toFile());
-      download.waitForCompletion();
-    } catch (InterruptedException | RuntimeException e) {
-      throw new FileTransferException(e);
-    }
-  }
-
-  @VisibleForTesting
-  String getKey(String path, ConfigBase config) {
-    String type = NODE_BACKUP_KEY;
-    if (config.getBackupType().equals(BackupType.CLUSTER_SNAPSHOT)) {
-      type = CLUSTER_BACKUP_KEY;
-    }
-    return Paths.get(type, config.getClusterId(), config.getBackupId(), config.getTargetIp(), path)
-        .toString();
   }
 
   @VisibleForTesting

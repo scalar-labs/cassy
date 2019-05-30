@@ -1,7 +1,6 @@
 package com.scalar.backup.cassandra.config;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +10,7 @@ import java.util.Properties;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class ConfigBase {
+public class BaseConfig {
   private final Properties props;
   private static final String PREFIX = "scalar.backup.cassandra.";
   public static final String CLUSTER_ID = PREFIX + "cluster_id";
@@ -29,17 +28,17 @@ public class ConfigBase {
   private String destBaseUri;
   private String keyspace;
 
-  public ConfigBase(File propertiesFile) throws IOException {
+  public BaseConfig(File propertiesFile) throws IOException {
     this(new FileInputStream(propertiesFile));
   }
 
-  public ConfigBase(InputStream stream) throws IOException {
+  public BaseConfig(InputStream stream) throws IOException {
     props = new Properties();
     props.load(stream);
     load();
   }
 
-  public ConfigBase(Properties properties) {
+  public BaseConfig(Properties properties) {
     props = new Properties(properties);
     load();
   }
@@ -78,19 +77,18 @@ public class ConfigBase {
 
   private void load() {
     checkArgument(props.getProperty(CLUSTER_ID) != null);
-    clusterId = checkNotNull(props.getProperty(CLUSTER_ID));
+    clusterId = props.getProperty(CLUSTER_ID);
     checkArgument(props.getProperty(BACKUP_ID) != null);
-    backupId = checkNotNull(props.getProperty(BACKUP_ID));
+    backupId = props.getProperty(BACKUP_ID);
     checkArgument(props.getProperty(BACKUP_TYPE) != null);
-    backupType =
-        checkNotNull(BackupType.getByType(Integer.parseInt(props.getProperty(BACKUP_TYPE))));
+    backupType = BackupType.getByType(Integer.parseInt(props.getProperty(BACKUP_TYPE)));
     checkArgument(props.getProperty(TARGET_IP) != null);
-    targetIp = checkNotNull(props.getProperty(TARGET_IP));
+    targetIp = props.getProperty(TARGET_IP);
     checkArgument(props.getProperty(DATA_DIR) != null);
-    dataDir = checkNotNull(props.getProperty(DATA_DIR));
+    dataDir = props.getProperty(DATA_DIR);
     checkArgument(props.getProperty(DEST_BASE_URI) != null);
-    destBaseUri = checkNotNull(props.getProperty(DEST_BASE_URI));
+    destBaseUri = props.getProperty(DEST_BASE_URI);
     checkArgument(props.getProperty(KEYSPACE) != null);
-    keyspace = checkNotNull(props.getProperty(KEYSPACE));
+    keyspace = props.getProperty(KEYSPACE);
   }
 }

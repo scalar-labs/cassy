@@ -7,7 +7,7 @@ import java.util.Properties;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class BackupConfig extends ConfigBase {
+public class BackupConfig extends BaseConfig {
 
   public BackupConfig(File propertiesFile) throws IOException {
     super(propertiesFile);
