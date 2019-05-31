@@ -3,6 +3,8 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'jacoco'
 apply plugin: 'java-library-distribution'
+apply plugin:'application'
+startScripts.enabled = false
 
 repositories {
     mavenCentral()
@@ -29,6 +31,7 @@ dependencies {
     compile group: 'com.google.inject', name: 'guice', version: '4.2.2'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.560'
+    compile group: 'info.picocli', name: 'picocli', version: '3.9.6'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.1'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.16.0'
@@ -67,8 +70,29 @@ task integrationTest(type: Test) {
     shouldRunAfter test
 }
 
+task BackupCommand(type: CreateStartScripts) {
+    mainClassName = 'com.scalar.backup.cassandra.command.BackupCommand'
+    applicationName = 'cassandra-backup'
+    outputDir = new File(project.buildDir, 'tmp')
+    classpath = jar.outputs.files + project.configurations.runtime
+}
+
+task RestoreCommand(type: CreateStartScripts) {
+    mainClassName = 'com.scalar.backup.cassandra.command.RestoreCommand'
+    applicationName = 'cassandra-restore'
+    outputDir = new File(project.buildDir, 'tmp')
+    classpath = jar.outputs.files + project.configurations.runtime
+}
+
+applicationDistribution.into('bin') {
+    from(BackupCommand)
+    from(RestoreCommand)
+    fileMode = 0755
+}
+
 // build should not depend on the integration tests
 check.dependsOn -= integrationTest
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+

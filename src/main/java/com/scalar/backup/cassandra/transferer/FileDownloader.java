@@ -2,7 +2,7 @@ package com.scalar.backup.cassandra.transferer;
 
 import com.scalar.backup.cassandra.config.RestoreConfig;
 
-public interface FileDownloader {
+public interface FileDownloader extends AutoCloseable {
 
   void download(RestoreConfig config);
 }
