@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3URI;
+import com.amazonaws.services.s3.transfer.Transfer;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.google.common.base.Joiner;
@@ -88,6 +89,8 @@ public class AwsS3FileUploaderTest {
   public void upload_LocalPathsAndConfigGiven_ShouldUploadProperly() throws InterruptedException {
     // Arrange
     BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_DATA_DIR));
+    when(upload.getDescription()).thenReturn("anything");
+    when(upload.getState()).thenReturn(Transfer.TransferState.Completed);
     when(manager.upload(anyString(), anyString(), any(File.class))).thenReturn(upload);
     doReturn(true).when(uploader).requiresUpload(anyString(), anyString(), any(Path.class));
     List<Path> paths = getListOfSnapshotFiles();
