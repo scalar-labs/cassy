@@ -73,7 +73,7 @@ public class AwsS3FileDownloaderTest {
   }
 
   @Test
-  public void download_RuntimeExceptionThrown_ShouldThrowFileTransferExceptio()
+  public void download_RuntimeExceptionThrown_ShouldThrowFileTransferException()
       throws InterruptedException {
     // Arrange
     RestoreConfig config =
