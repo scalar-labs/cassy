@@ -16,7 +16,7 @@ public class BackupCommand extends AbstractCommand {
       names = {"--backup-type"},
       required = true,
       paramLabel = "BACKUP_TYPE",
-      description = "A type of backup to take")
+      description = "The type of backup to take")
   private int backupType;
 
   public static void main(String[] args) {
