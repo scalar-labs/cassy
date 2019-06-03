@@ -44,7 +44,7 @@ public abstract class AbstractCommand implements Callable<Void> {
       names = {"--keyspaces"},
       required = true,
       paramLabel = "KEYSPACES",
-      description = "A comma-separated keyspaces to operate")
+      description = "A comma-separated list of keyspaces to operate")
   protected String keyspaces;
 
   @CommandLine.Option(
