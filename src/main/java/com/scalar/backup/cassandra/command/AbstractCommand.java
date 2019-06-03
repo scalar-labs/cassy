@@ -6,35 +6,35 @@ import picocli.CommandLine;
 public abstract class AbstractCommand implements Callable<Void> {
 
   @CommandLine.Option(
-      names = {"--cluster_id"},
+      names = {"--cluster-id"},
       required = true,
       paramLabel = "CLUSTER_ID",
       description = "A cluster name of a Cassandra cluster")
   protected String clusterId;
 
   @CommandLine.Option(
-      names = {"--backup_id"},
+      names = {"--backup-id"},
       required = true,
       paramLabel = "BACKUP_ID",
       description = "An ID of a backup to use")
   protected String backupId;
 
   @CommandLine.Option(
-      names = {"--target_ip"},
+      names = {"--target-ip"},
       required = true,
       paramLabel = "TARGET_IP",
       description = "An ip of a node to operate")
   protected String targetIp;
 
   @CommandLine.Option(
-      names = {"--data_dir"},
+      names = {"--data-dir"},
       required = true,
       paramLabel = "DATA_DIR",
       description = "A data directory to take backups from or restore backup to")
   protected String dataDir;
 
   @CommandLine.Option(
-      names = {"--store_base_uri"},
+      names = {"--store-base-uri"},
       required = true,
       paramLabel = "STORE_BASE_URI",
       description = "A URI of a store to save backup files")

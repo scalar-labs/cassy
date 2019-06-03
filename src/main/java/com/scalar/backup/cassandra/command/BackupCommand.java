@@ -13,7 +13,7 @@ import picocli.CommandLine;
 public class BackupCommand extends AbstractCommand {
 
   @CommandLine.Option(
-      names = {"--backup_type"},
+      names = {"--backup-type"},
       required = true,
       paramLabel = "BACKUP_TYPE",
       description = "A type of backup to take")
