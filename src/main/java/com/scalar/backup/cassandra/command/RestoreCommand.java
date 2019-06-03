@@ -15,7 +15,7 @@ public class RestoreCommand extends AbstractCommand {
       names = {"--restore_type"},
       required = true,
       paramLabel = "RESTORE_TYPE",
-      description = "A type of restore to take")
+      description = "The type of restore to perform")
   private int restoreType;
 
   public static void main(String[] args) {
