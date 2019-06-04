@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.transfer.MultipleFileDownload;
+import com.amazonaws.services.s3.transfer.Transfer;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.scalar.backup.cassandra.config.BackupType;
 import com.scalar.backup.cassandra.config.RestoreConfig;
@@ -58,6 +59,8 @@ public class AwsS3FileDownloaderTest {
     // Arrange
     RestoreConfig config =
         new RestoreConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_TMP_DATA_DIR));
+    when(download.getDescription()).thenReturn("anything");
+    when(download.getState()).thenReturn(Transfer.TransferState.Completed);
     when(manager.downloadDirectory(anyString(), anyString(), any(File.class))).thenReturn(download);
 
     // Act

@@ -25,12 +25,19 @@ public class AwsS3FileDownloader implements FileDownloader {
     AmazonS3URI s3Uri = new AmazonS3URI(config.getStoreBaseUri());
 
     try {
+      logger.info("Downloading " + s3Uri.getBucket() + "/" + key);
       MultipleFileDownload download =
           manager.downloadDirectory(
               s3Uri.getBucket(), key, Paths.get(config.getDataDir()).toFile());
       download.waitForCompletion();
+      logger.info(download.getDescription() + " - " + download.getState().name());
     } catch (InterruptedException | RuntimeException e) {
       throw new FileTransferException(e);
     }
+  }
+
+  @Override
+  public void close() {
+    manager.shutdownNow();
   }
 }

@@ -59,10 +59,16 @@ public class AwsS3FileUploader implements FileUploader {
         u -> {
           try {
             u.waitForCompletion();
+            logger.info(u.getDescription() + " - " + u.getState().name());
           } catch (InterruptedException e) {
             throw new FileTransferException(e);
           }
         });
+  }
+
+  @Override
+  public void close() {
+    manager.shutdownNow();
   }
 
   @VisibleForTesting
