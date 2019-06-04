@@ -9,7 +9,7 @@ public abstract class AbstractCommand implements Callable<Void> {
       names = {"--cluster-id"},
       required = true,
       paramLabel = "CLUSTER_ID",
-      description = "A cluster name of a Cassandra cluster")
+      description = "A cluster id of a Cassandra cluster")
   protected String clusterId;
 
   @CommandLine.Option(
