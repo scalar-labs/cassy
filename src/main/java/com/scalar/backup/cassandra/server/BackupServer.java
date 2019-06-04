@@ -1,6 +1,5 @@
 package com.scalar.backup.cassandra.server;
 
-import com.google.inject.Inject;
 import com.scalar.backup.cassandra.rpc.CassandraBackupGrpc;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
@@ -9,14 +8,15 @@ import java.util.logging.Logger;
 
 public class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
   private static final Logger logger = Logger.getLogger(BackupServer.class.getName());
+  private static final int DEFAULT_PORT = 20051;
   private io.grpc.Server server;
-  private int port = 20051;
+  private final int port;
 
-  @Inject
-  public BackupServer() {}
+  public BackupServer(int port) {
+    this.port = port;
+  }
 
   private void start() throws IOException {
-
     ServerBuilder builder =
         ServerBuilder.forPort(port)
             .addService(new BackupServerService())
@@ -50,8 +50,22 @@ public class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
   }
 
   public static void main(String[] args) throws IOException, InterruptedException {
-    final BackupServer server = new BackupServer();
+    int port = DEFAULT_PORT;
+    for (int i = 0; i < args.length; ++i) {
+      if ("--port".equals(args[i])) {
+        port = Integer.parseInt(args[++i]);
+      } else if ("-help".equals(args[i])) {
+        printUsageAndExit();
+      }
+    }
+
+    final BackupServer server = new BackupServer(port);
     server.start();
     server.blockUntilShutdown();
+  }
+
+  private static void printUsageAndExit() {
+    System.err.println("BackupServer --port number");
+    System.exit(1);
   }
 }

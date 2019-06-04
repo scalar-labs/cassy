@@ -91,20 +91,12 @@ private static final long serialVersionUID = 0L;
   public static final int STATUS_FIELD_NUMBER = 1;
   private int status_;
   /**
-   * <pre>
-   * a status of the operation
-   * </pre>
-   *
    * <code>.rpc.OperationStatus status = 1;</code>
    */
   public int getStatusValue() {
     return status_;
   }
   /**
-   * <pre>
-   * a status of the operation
-   * </pre>
-   *
    * <code>.rpc.OperationStatus status = 1;</code>
    */
   public com.scalar.backup.cassandra.rpc.OperationStatus getStatus() {
@@ -116,10 +108,6 @@ private static final long serialVersionUID = 0L;
   public static final int MESSAGE_FIELD_NUMBER = 2;
   private volatile java.lang.Object message_;
   /**
-   * <pre>
-   * human-readable messages from the interaction
-   * </pre>
-   *
    * <code>string message = 2;</code>
    */
   public java.lang.String getMessage() {
@@ -135,10 +123,6 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <pre>
-   * human-readable messages from the interaction
-   * </pre>
-   *
    * <code>string message = 2;</code>
    */
   public com.google.protobuf.ByteString
@@ -476,20 +460,12 @@ private static final long serialVersionUID = 0L;
 
     private int status_ = 0;
     /**
-     * <pre>
-     * a status of the operation
-     * </pre>
-     *
      * <code>.rpc.OperationStatus status = 1;</code>
      */
     public int getStatusValue() {
       return status_;
     }
     /**
-     * <pre>
-     * a status of the operation
-     * </pre>
-     *
      * <code>.rpc.OperationStatus status = 1;</code>
      */
     public Builder setStatusValue(int value) {
@@ -498,10 +474,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * a status of the operation
-     * </pre>
-     *
      * <code>.rpc.OperationStatus status = 1;</code>
      */
     public com.scalar.backup.cassandra.rpc.OperationStatus getStatus() {
@@ -510,10 +482,6 @@ private static final long serialVersionUID = 0L;
       return result == null ? com.scalar.backup.cassandra.rpc.OperationStatus.UNRECOGNIZED : result;
     }
     /**
-     * <pre>
-     * a status of the operation
-     * </pre>
-     *
      * <code>.rpc.OperationStatus status = 1;</code>
      */
     public Builder setStatus(com.scalar.backup.cassandra.rpc.OperationStatus value) {
@@ -526,10 +494,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * a status of the operation
-     * </pre>
-     *
      * <code>.rpc.OperationStatus status = 1;</code>
      */
     public Builder clearStatus() {
@@ -541,10 +505,6 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object message_ = "";
     /**
-     * <pre>
-     * human-readable messages from the interaction
-     * </pre>
-     *
      * <code>string message = 2;</code>
      */
     public java.lang.String getMessage() {
@@ -560,10 +520,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * human-readable messages from the interaction
-     * </pre>
-     *
      * <code>string message = 2;</code>
      */
     public com.google.protobuf.ByteString
@@ -580,10 +536,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * human-readable messages from the interaction
-     * </pre>
-     *
      * <code>string message = 2;</code>
      */
     public Builder setMessage(
@@ -597,10 +549,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * human-readable messages from the interaction
-     * </pre>
-     *
      * <code>string message = 2;</code>
      */
     public Builder clearMessage() {
@@ -610,10 +558,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * human-readable messages from the interaction
-     * </pre>
-     *
      * <code>string message = 2;</code>
      */
     public Builder setMessageBytes(

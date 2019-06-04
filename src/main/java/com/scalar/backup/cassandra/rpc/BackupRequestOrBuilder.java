@@ -23,18 +23,10 @@ public interface BackupRequestOrBuilder extends
   int getBackupType();
 
   /**
-   * <pre>
-   * optional
-   * </pre>
-   *
    * <code>string target_ip = 3;</code>
    */
   java.lang.String getTargetIp();
   /**
-   * <pre>
-   * optional
-   * </pre>
-   *
    * <code>string target_ip = 3;</code>
    */
   com.google.protobuf.ByteString

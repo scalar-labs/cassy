@@ -140,10 +140,6 @@ private static final long serialVersionUID = 0L;
   public static final int TARGET_IP_FIELD_NUMBER = 3;
   private volatile java.lang.Object targetIp_;
   /**
-   * <pre>
-   * optional
-   * </pre>
-   *
    * <code>string target_ip = 3;</code>
    */
   public java.lang.String getTargetIp() {
@@ -159,10 +155,6 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <pre>
-   * optional
-   * </pre>
-   *
    * <code>string target_ip = 3;</code>
    */
   public com.google.protobuf.ByteString
@@ -613,10 +605,6 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object targetIp_ = "";
     /**
-     * <pre>
-     * optional
-     * </pre>
-     *
      * <code>string target_ip = 3;</code>
      */
     public java.lang.String getTargetIp() {
@@ -632,10 +620,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * optional
-     * </pre>
-     *
      * <code>string target_ip = 3;</code>
      */
     public com.google.protobuf.ByteString
@@ -652,10 +636,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * optional
-     * </pre>
-     *
      * <code>string target_ip = 3;</code>
      */
     public Builder setTargetIp(
@@ -669,10 +649,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * optional
-     * </pre>
-     *
      * <code>string target_ip = 3;</code>
      */
     public Builder clearTargetIp() {
@@ -682,10 +658,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * optional
-     * </pre>
-     *
      * <code>string target_ip = 3;</code>
      */
     public Builder setTargetIpBytes(
