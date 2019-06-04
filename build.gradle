@@ -1,9 +1,19 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'jacoco'
 apply plugin: 'java-library-distribution'
-apply plugin:'application'
+apply plugin: 'application'
+apply plugin: 'com.google.protobuf'
 startScripts.enabled = false
 
 repositories {
@@ -26,15 +36,31 @@ configurations {
     integrationTestRuntime.extendsFrom testRuntime
 }
 
+def grpcVersion = '1.13.2'
+def protobufVersion = '3.6.0'
+def protocVersion = '3.6.0'
+def nettyTcNativeVersion = '2.0.7.Final'
+
 dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '27.1-jre'
     compile group: 'com.google.inject', name: 'guice', version: '4.2.2'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.560'
     compile group: 'info.picocli', name: 'picocli', version: '3.9.6'
+    compile group: 'com.google.api.grpc', name: 'proto-google-common-protos', version: '1.0.0'
+    compile group: 'com.google.api.grpc', name: 'googleapis-common-protos', version: '0.0.3'
+    compile group: 'io.grpc', name: 'grpc-alts', version: "${grpcVersion}"
+    compile group: 'io.grpc', name: 'grpc-netty', version: "${grpcVersion}"
+    compile group: 'io.grpc', name: 'grpc-protobuf', version: "${grpcVersion}"
+    compile group: 'io.grpc', name: 'grpc-stub', version: "${grpcVersion}"
+    compile group: 'com.google.protobuf', name: 'protobuf-java-util', version: "${protobufVersion}"
+    compileOnly group: 'javax.annotation', name: 'javax.annotation-api', version: '1.2'
+    compile group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: "${nettyTcNativeVersion}"
+    compile group: 'io.grpc', name: 'grpc-services', version: "${grpcVersion}"
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.1'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.16.0'
+    testCompile group: 'io.grpc', name: 'grpc-testing', version: "${grpcVersion}"
 }
 
 test {
@@ -92,6 +118,17 @@ applicationDistribution.into('bin') {
 
 // build should not depend on the integration tests
 check.dependsOn -= integrationTest
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
+    plugins {
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
+    }
+    generateProtoTasks {
+        all()*.plugins { grpc {} }
+    }
+    generatedFilesBaseDir = "$projectDir/src"
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

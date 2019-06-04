@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "com.scalar.backup.cassandra.rpc";
+option java_outer_classname = "CassandraBackupProto";
+
+package rpc;
+
+service CassandraBackup {
+    rpc ShowClusters (google.protobuf.Empty) returns (ClusterListingResponse) {
+        option (google.api.http) = {
+            get: "/v1/clusters"
+        };
+    }
+    rpc ListNodes (NodeListingRequest) returns (NodeListingResponse) {
+        option (google.api.http) = {
+            get: "/v1/clusters/{cluster_id}"
+        };
+    }
+    rpc ListBackups (BackupListingRequest) returns (BackupListingResponse) {
+        option (google.api.http) = {
+            get: "/v1/clusters/{cluster_id}/backups"
+        };
+    }
+    rpc TakeBackup (BackupRequest) returns (BackupResponse) {
+        option (google.api.http) = {
+            post: "/v1/clusters/{cluster_id}/backups"
+            body: "*"
+        };
+    }
+    rpc TakeRestore (RestoreRequest) returns (RestoreResponse) {
+        option (google.api.http) = {
+            post: "/v1/clusters/{cluster_id}/backups/{backup_id}"
+            body: "*"
+        };
+    }
+    rpc UpdateStatus (StatusUpdateRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            put: "/v1/clusters/{cluster_id}/backups/{backup_id}/status"
+            body: "*"
+        };
+    }
+}
+
+message ClusterListingResponse {
+    repeated string cluster_id = 1;
+}
+
+message NodeListingRequest {
+    string cluster_id = 1;
+}
+
+message NodeListingResponse {
+    message Entry {
+        string ip = 1;
+        enum NodeStatus {
+            LIVE = 0;
+            LEAVING = 1;
+            MOVING = 2;
+            JOINING = 3;
+            UNREACHABLE = 4;
+        }
+        NodeStatus status = 2;
+    }
+    repeated Entry entries = 1;
+}
+
+message BackupListingRequest {
+    string cluster_id = 1;
+    string target_ip = 2;
+    uint32 n = 3;
+}
+
+message BackupListingResponse {
+    message Entry {
+        string cluster_id = 1;
+        string target_ip = 2;
+        uint32 backup_type = 3;
+        string backup_id = 4;
+        OperationStatus status = 5;
+        google.protobuf.Timestamp timestamp = 6;
+    }
+    repeated Entry entries = 1;
+}
+
+enum OperationStatus {
+    UNKNOWN = 0;
+    STARTED = 1;
+    SUCCEEDED = 2;
+    FAILED = 3;
+}
+
+message BackupRequest {
+    string cluster_id = 1;
+    uint32 backup_type = 2;
+    string target_ip = 3;
+}
+
+message BackupResponse {
+    OperationStatus status = 1;
+    string message = 2;
+    string backup_id = 3;
+}
+
+message RestoreRequest {
+    string cluster_id = 1;
+    string backup_id = 2;
+    uint32 restore_type = 3;
+    repeated string target_ips = 4;
+}
+
+message RestoreResponse {
+    OperationStatus status = 1;
+    string message = 2;
+}
+
+message StatusUpdateRequest {
+    string cluster_id = 1;
+    string target_ip = 2;
+    string backup_id = 3;
+    OperationStatus status = 4;
+}
