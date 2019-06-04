@@ -12,10 +12,10 @@ import picocli.CommandLine;
 public class RestoreCommand extends AbstractCommand {
 
   @CommandLine.Option(
-      names = {"--restore_type"},
+      names = {"--restore-type"},
       required = true,
       paramLabel = "RESTORE_TYPE",
-      description = "A type of restore to take")
+      description = "The type of restore to perform")
   private int restoreType;
 
   public static void main(String[] args) {
