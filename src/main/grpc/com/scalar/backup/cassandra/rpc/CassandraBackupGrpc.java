@@ -136,30 +136,30 @@ public final class CassandraBackupGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.RestoreRequest,
-      com.scalar.backup.cassandra.rpc.RestoreResponse> getTakeRestoreMethod;
+      com.scalar.backup.cassandra.rpc.RestoreResponse> getRestoreBackupMethod;
 
   public static io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.RestoreRequest,
-      com.scalar.backup.cassandra.rpc.RestoreResponse> getTakeRestoreMethod() {
-    io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.RestoreRequest, com.scalar.backup.cassandra.rpc.RestoreResponse> getTakeRestoreMethod;
-    if ((getTakeRestoreMethod = CassandraBackupGrpc.getTakeRestoreMethod) == null) {
+      com.scalar.backup.cassandra.rpc.RestoreResponse> getRestoreBackupMethod() {
+    io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.RestoreRequest, com.scalar.backup.cassandra.rpc.RestoreResponse> getRestoreBackupMethod;
+    if ((getRestoreBackupMethod = CassandraBackupGrpc.getRestoreBackupMethod) == null) {
       synchronized (CassandraBackupGrpc.class) {
-        if ((getTakeRestoreMethod = CassandraBackupGrpc.getTakeRestoreMethod) == null) {
-          CassandraBackupGrpc.getTakeRestoreMethod = getTakeRestoreMethod = 
+        if ((getRestoreBackupMethod = CassandraBackupGrpc.getRestoreBackupMethod) == null) {
+          CassandraBackupGrpc.getRestoreBackupMethod = getRestoreBackupMethod = 
               io.grpc.MethodDescriptor.<com.scalar.backup.cassandra.rpc.RestoreRequest, com.scalar.backup.cassandra.rpc.RestoreResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(
-                  "rpc.CassandraBackup", "TakeRestore"))
+                  "rpc.CassandraBackup", "RestoreBackup"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.scalar.backup.cassandra.rpc.RestoreRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.scalar.backup.cassandra.rpc.RestoreResponse.getDefaultInstance()))
-                  .setSchemaDescriptor(new CassandraBackupMethodDescriptorSupplier("TakeRestore"))
+                  .setSchemaDescriptor(new CassandraBackupMethodDescriptorSupplier("RestoreBackup"))
                   .build();
           }
         }
      }
-     return getTakeRestoreMethod;
+     return getRestoreBackupMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.StatusUpdateRequest,
@@ -246,9 +246,9 @@ public final class CassandraBackupGrpc {
 
     /**
      */
-    public void takeRestore(com.scalar.backup.cassandra.rpc.RestoreRequest request,
+    public void restoreBackup(com.scalar.backup.cassandra.rpc.RestoreRequest request,
         io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.RestoreResponse> responseObserver) {
-      asyncUnimplementedUnaryCall(getTakeRestoreMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getRestoreBackupMethod(), responseObserver);
     }
 
     /**
@@ -289,12 +289,12 @@ public final class CassandraBackupGrpc {
                 com.scalar.backup.cassandra.rpc.BackupResponse>(
                   this, METHODID_TAKE_BACKUP)))
           .addMethod(
-            getTakeRestoreMethod(),
+            getRestoreBackupMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 com.scalar.backup.cassandra.rpc.RestoreRequest,
                 com.scalar.backup.cassandra.rpc.RestoreResponse>(
-                  this, METHODID_TAKE_RESTORE)))
+                  this, METHODID_RESTORE_BACKUP)))
           .addMethod(
             getUpdateStatusMethod(),
             asyncUnaryCall(
@@ -358,10 +358,10 @@ public final class CassandraBackupGrpc {
 
     /**
      */
-    public void takeRestore(com.scalar.backup.cassandra.rpc.RestoreRequest request,
+    public void restoreBackup(com.scalar.backup.cassandra.rpc.RestoreRequest request,
         io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.RestoreResponse> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getTakeRestoreMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getRestoreBackupMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -421,9 +421,9 @@ public final class CassandraBackupGrpc {
 
     /**
      */
-    public com.scalar.backup.cassandra.rpc.RestoreResponse takeRestore(com.scalar.backup.cassandra.rpc.RestoreRequest request) {
+    public com.scalar.backup.cassandra.rpc.RestoreResponse restoreBackup(com.scalar.backup.cassandra.rpc.RestoreRequest request) {
       return blockingUnaryCall(
-          getChannel(), getTakeRestoreMethod(), getCallOptions(), request);
+          getChannel(), getRestoreBackupMethod(), getCallOptions(), request);
     }
 
     /**
@@ -486,10 +486,10 @@ public final class CassandraBackupGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.scalar.backup.cassandra.rpc.RestoreResponse> takeRestore(
+    public com.google.common.util.concurrent.ListenableFuture<com.scalar.backup.cassandra.rpc.RestoreResponse> restoreBackup(
         com.scalar.backup.cassandra.rpc.RestoreRequest request) {
       return futureUnaryCall(
-          getChannel().newCall(getTakeRestoreMethod(), getCallOptions()), request);
+          getChannel().newCall(getRestoreBackupMethod(), getCallOptions()), request);
     }
 
     /**
@@ -505,7 +505,7 @@ public final class CassandraBackupGrpc {
   private static final int METHODID_LIST_NODES = 1;
   private static final int METHODID_LIST_BACKUPS = 2;
   private static final int METHODID_TAKE_BACKUP = 3;
-  private static final int METHODID_TAKE_RESTORE = 4;
+  private static final int METHODID_RESTORE_BACKUP = 4;
   private static final int METHODID_UPDATE_STATUS = 5;
 
   private static final class MethodHandlers<Req, Resp> implements
@@ -541,8 +541,8 @@ public final class CassandraBackupGrpc {
           serviceImpl.takeBackup((com.scalar.backup.cassandra.rpc.BackupRequest) request,
               (io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.BackupResponse>) responseObserver);
           break;
-        case METHODID_TAKE_RESTORE:
-          serviceImpl.takeRestore((com.scalar.backup.cassandra.rpc.RestoreRequest) request,
+        case METHODID_RESTORE_BACKUP:
+          serviceImpl.restoreBackup((com.scalar.backup.cassandra.rpc.RestoreRequest) request,
               (io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.RestoreResponse>) responseObserver);
           break;
         case METHODID_UPDATE_STATUS:
@@ -614,7 +614,7 @@ public final class CassandraBackupGrpc {
               .addMethod(getListNodesMethod())
               .addMethod(getListBackupsMethod())
               .addMethod(getTakeBackupMethod())
-              .addMethod(getTakeRestoreMethod())
+              .addMethod(getRestoreBackupMethod())
               .addMethod(getUpdateStatusMethod())
               .build();
         }

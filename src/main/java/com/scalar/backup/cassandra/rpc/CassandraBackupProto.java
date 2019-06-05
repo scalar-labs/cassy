@@ -115,7 +115,7 @@ public final class CassandraBackupProto {
       "et_ip\030\002 \001(\t\022\021\n\tbackup_id\030\003 \001(\t\022$\n\006status" +
       "\030\004 \001(\0162\024.rpc.OperationStatus*F\n\017Operatio" +
       "nStatus\022\013\n\007UNKNOWN\020\000\022\013\n\007STARTED\020\001\022\r\n\tSUC" +
-      "CEEDED\020\002\022\n\n\006FAILED\020\0032\235\005\n\017CassandraBackup" +
+      "CEEDED\020\002\022\n\n\006FAILED\020\0032\234\005\n\017CassandraBackup" +
       "\022Y\n\014ShowClusters\022\026.google.protobuf.Empty" +
       "\032\033.rpc.ClusterListingResponse\"\024\202\323\344\223\002\016\022\014/" +
       "v1/clusters\022a\n\tListNodes\022\027.rpc.NodeListi" +
@@ -126,14 +126,14 @@ public final class CassandraBackupProto {
       "rs/{cluster_id}/backups\022c\n\nTakeBackup\022\022." +
       "rpc.BackupRequest\032\023.rpc.BackupResponse\"," +
       "\202\323\344\223\002&\"!/v1/clusters/{cluster_id}/backup" +
-      "s:\001*\022r\n\013TakeRestore\022\023.rpc.RestoreRequest" +
-      "\032\024.rpc.RestoreResponse\"8\202\323\344\223\0022\"-/v1/clus" +
-      "ters/{cluster_id}/backups/{backup_id}:\001*" +
-      "\022\201\001\n\014UpdateStatus\022\030.rpc.StatusUpdateRequ" +
-      "est\032\026.google.protobuf.Empty\"?\202\323\344\223\0029\0324/v1" +
-      "/clusters/{cluster_id}/backups/{backup_i" +
-      "d}/status:\001*B9\n\037com.scalar.backup.cassan" +
-      "dra.rpcB\024CassandraBackupProtoP\001b\006proto3"
+      "s:\001*\022q\n\rRestoreBackup\022\023.rpc.RestoreReque" +
+      "st\032\024.rpc.RestoreResponse\"5\202\323\344\223\002/\032*/v1/cl" +
+      "usters/{cluster_id}/data/{backup_id}:\001*\022" +
+      "\201\001\n\014UpdateStatus\022\030.rpc.StatusUpdateReque" +
+      "st\032\026.google.protobuf.Empty\"?\202\323\344\223\0029\0324/v1/" +
+      "clusters/{cluster_id}/backups/{backup_id" +
+      "}/status:\001*B9\n\037com.scalar.backup.cassand" +
+      "ra.rpcB\024CassandraBackupProtoP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

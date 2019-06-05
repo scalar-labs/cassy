@@ -138,7 +138,7 @@ func request_CassandraBackup_TakeBackup_0(ctx context.Context, marshaler runtime
 
 }
 
-func request_CassandraBackup_TakeRestore_0(ctx context.Context, marshaler runtime.Marshaler, client CassandraBackupClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_CassandraBackup_RestoreBackup_0(ctx context.Context, marshaler runtime.Marshaler, client CassandraBackupClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq RestoreRequest
 	var metadata runtime.ServerMetadata
 
@@ -179,7 +179,7 @@ func request_CassandraBackup_TakeRestore_0(ctx context.Context, marshaler runtim
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "backup_id", err)
 	}
 
-	msg, err := client.TakeRestore(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.RestoreBackup(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -348,7 +348,7 @@ func RegisterCassandraBackupHandlerClient(ctx context.Context, mux *runtime.Serv
 
 	})
 
-	mux.Handle("POST", pattern_CassandraBackup_TakeRestore_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_CassandraBackup_RestoreBackup_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -357,14 +357,14 @@ func RegisterCassandraBackupHandlerClient(ctx context.Context, mux *runtime.Serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_CassandraBackup_TakeRestore_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_CassandraBackup_RestoreBackup_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_CassandraBackup_TakeRestore_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_CassandraBackup_RestoreBackup_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -400,7 +400,7 @@ var (
 
 	pattern_CassandraBackup_TakeBackup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "clusters", "cluster_id", "backups"}, ""))
 
-	pattern_CassandraBackup_TakeRestore_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "clusters", "cluster_id", "backups", "backup_id"}, ""))
+	pattern_CassandraBackup_RestoreBackup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "clusters", "cluster_id", "data", "backup_id"}, ""))
 
 	pattern_CassandraBackup_UpdateStatus_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"v1", "clusters", "cluster_id", "backups", "backup_id", "status"}, ""))
 )
@@ -414,7 +414,7 @@ var (
 
 	forward_CassandraBackup_TakeBackup_0 = runtime.ForwardResponseMessage
 
-	forward_CassandraBackup_TakeRestore_0 = runtime.ForwardResponseMessage
+	forward_CassandraBackup_RestoreBackup_0 = runtime.ForwardResponseMessage
 
 	forward_CassandraBackup_UpdateStatus_0 = runtime.ForwardResponseMessage
 )

@@ -79,10 +79,10 @@ public class BackupServerService extends CassandraBackupGrpc.CassandraBackupImpl
   }
 
   @Override
-  public void takeRestore(
+  public void restoreBackup(
       RestoreRequest request, StreamObserver<RestoreResponse> responseObserver) {
     logger.info(
-        "takeRestore called with "
+        "restoreBackup called with "
             + request.getClusterId()
             + " "
             + request.getBackupId()

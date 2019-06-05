@@ -32,9 +32,9 @@ service CassandraBackup {
             body: "*"
         };
     }
-    rpc TakeRestore (RestoreRequest) returns (RestoreResponse) {
+    rpc RestoreBackup (RestoreRequest) returns (RestoreResponse) {
         option (google.api.http) = {
-            post: "/v1/clusters/{cluster_id}/backups/{backup_id}"
+            put: "/v1/clusters/{cluster_id}/data/{backup_id}"
             body: "*"
         };
     }
