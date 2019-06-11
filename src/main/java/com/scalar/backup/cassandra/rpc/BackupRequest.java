@@ -19,6 +19,7 @@ private static final long serialVersionUID = 0L;
     clusterId_ = "";
     backupType_ = 0;
     targetIp_ = "";
+    keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
   }
 
   @java.lang.Override
@@ -62,6 +63,15 @@ private static final long serialVersionUID = 0L;
             targetIp_ = s;
             break;
           }
+          case 34: {
+            java.lang.String s = input.readStringRequireUtf8();
+            if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+              keyspaces_ = new com.google.protobuf.LazyStringArrayList();
+              mutable_bitField0_ |= 0x00000008;
+            }
+            keyspaces_.add(s);
+            break;
+          }
           default: {
             if (!parseUnknownFieldProto3(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -77,6 +87,9 @@ private static final long serialVersionUID = 0L;
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
+      if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+        keyspaces_ = keyspaces_.getUnmodifiableView();
+      }
       this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
@@ -94,6 +107,7 @@ private static final long serialVersionUID = 0L;
             com.scalar.backup.cassandra.rpc.BackupRequest.class, com.scalar.backup.cassandra.rpc.BackupRequest.Builder.class);
   }
 
+  private int bitField0_;
   public static final int CLUSTER_ID_FIELD_NUMBER = 1;
   private volatile java.lang.Object clusterId_;
   /**
@@ -171,6 +185,35 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int KEYSPACES_FIELD_NUMBER = 4;
+  private com.google.protobuf.LazyStringList keyspaces_;
+  /**
+   * <code>repeated string keyspaces = 4;</code>
+   */
+  public com.google.protobuf.ProtocolStringList
+      getKeyspacesList() {
+    return keyspaces_;
+  }
+  /**
+   * <code>repeated string keyspaces = 4;</code>
+   */
+  public int getKeyspacesCount() {
+    return keyspaces_.size();
+  }
+  /**
+   * <code>repeated string keyspaces = 4;</code>
+   */
+  public java.lang.String getKeyspaces(int index) {
+    return keyspaces_.get(index);
+  }
+  /**
+   * <code>repeated string keyspaces = 4;</code>
+   */
+  public com.google.protobuf.ByteString
+      getKeyspacesBytes(int index) {
+    return keyspaces_.getByteString(index);
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -194,6 +237,9 @@ private static final long serialVersionUID = 0L;
     if (!getTargetIpBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, targetIp_);
     }
+    for (int i = 0; i < keyspaces_.size(); i++) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, keyspaces_.getRaw(i));
+    }
     unknownFields.writeTo(output);
   }
 
@@ -212,6 +258,14 @@ private static final long serialVersionUID = 0L;
     }
     if (!getTargetIpBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, targetIp_);
+    }
+    {
+      int dataSize = 0;
+      for (int i = 0; i < keyspaces_.size(); i++) {
+        dataSize += computeStringSizeNoTag(keyspaces_.getRaw(i));
+      }
+      size += dataSize;
+      size += 1 * getKeyspacesList().size();
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -235,6 +289,8 @@ private static final long serialVersionUID = 0L;
         == other.getBackupType());
     result = result && getTargetIp()
         .equals(other.getTargetIp());
+    result = result && getKeyspacesList()
+        .equals(other.getKeyspacesList());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -252,6 +308,10 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getBackupType();
     hash = (37 * hash) + TARGET_IP_FIELD_NUMBER;
     hash = (53 * hash) + getTargetIp().hashCode();
+    if (getKeyspacesCount() > 0) {
+      hash = (37 * hash) + KEYSPACES_FIELD_NUMBER;
+      hash = (53 * hash) + getKeyspacesList().hashCode();
+    }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -391,6 +451,8 @@ private static final long serialVersionUID = 0L;
 
       targetIp_ = "";
 
+      keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000008);
       return this;
     }
 
@@ -417,9 +479,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.scalar.backup.cassandra.rpc.BackupRequest buildPartial() {
       com.scalar.backup.cassandra.rpc.BackupRequest result = new com.scalar.backup.cassandra.rpc.BackupRequest(this);
+      int from_bitField0_ = bitField0_;
+      int to_bitField0_ = 0;
       result.clusterId_ = clusterId_;
       result.backupType_ = backupType_;
       result.targetIp_ = targetIp_;
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        keyspaces_ = keyspaces_.getUnmodifiableView();
+        bitField0_ = (bitField0_ & ~0x00000008);
+      }
+      result.keyspaces_ = keyspaces_;
+      result.bitField0_ = to_bitField0_;
       onBuilt();
       return result;
     }
@@ -479,6 +549,16 @@ private static final long serialVersionUID = 0L;
         targetIp_ = other.targetIp_;
         onChanged();
       }
+      if (!other.keyspaces_.isEmpty()) {
+        if (keyspaces_.isEmpty()) {
+          keyspaces_ = other.keyspaces_;
+          bitField0_ = (bitField0_ & ~0x00000008);
+        } else {
+          ensureKeyspacesIsMutable();
+          keyspaces_.addAll(other.keyspaces_);
+        }
+        onChanged();
+      }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
       return this;
@@ -507,6 +587,7 @@ private static final long serialVersionUID = 0L;
       }
       return this;
     }
+    private int bitField0_;
 
     private java.lang.Object clusterId_ = "";
     /**
@@ -668,6 +749,100 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       targetIp_ = value;
+      onChanged();
+      return this;
+    }
+
+    private com.google.protobuf.LazyStringList keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    private void ensureKeyspacesIsMutable() {
+      if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+        keyspaces_ = new com.google.protobuf.LazyStringArrayList(keyspaces_);
+        bitField0_ |= 0x00000008;
+       }
+    }
+    /**
+     * <code>repeated string keyspaces = 4;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getKeyspacesList() {
+      return keyspaces_.getUnmodifiableView();
+    }
+    /**
+     * <code>repeated string keyspaces = 4;</code>
+     */
+    public int getKeyspacesCount() {
+      return keyspaces_.size();
+    }
+    /**
+     * <code>repeated string keyspaces = 4;</code>
+     */
+    public java.lang.String getKeyspaces(int index) {
+      return keyspaces_.get(index);
+    }
+    /**
+     * <code>repeated string keyspaces = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getKeyspacesBytes(int index) {
+      return keyspaces_.getByteString(index);
+    }
+    /**
+     * <code>repeated string keyspaces = 4;</code>
+     */
+    public Builder setKeyspaces(
+        int index, java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureKeyspacesIsMutable();
+      keyspaces_.set(index, value);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string keyspaces = 4;</code>
+     */
+    public Builder addKeyspaces(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureKeyspacesIsMutable();
+      keyspaces_.add(value);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string keyspaces = 4;</code>
+     */
+    public Builder addAllKeyspaces(
+        java.lang.Iterable<java.lang.String> values) {
+      ensureKeyspacesIsMutable();
+      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+          values, keyspaces_);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string keyspaces = 4;</code>
+     */
+    public Builder clearKeyspaces() {
+      keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000008);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string keyspaces = 4;</code>
+     */
+    public Builder addKeyspacesBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      ensureKeyspacesIsMutable();
+      keyspaces_.add(value);
       onChanged();
       return this;
     }

@@ -1,6 +1,9 @@
 package com.scalar.backup.cassandra.server;
 
 import com.google.protobuf.Empty;
+import com.palantir.giraffe.ssh.SshCredential;
+import com.scalar.backup.cassandra.config.BackupServerConfig;
+import com.scalar.backup.cassandra.jmx.JmxManager;
 import com.scalar.backup.cassandra.rpc.BackupListingRequest;
 import com.scalar.backup.cassandra.rpc.BackupListingResponse;
 import com.scalar.backup.cassandra.rpc.BackupRequest;
@@ -13,18 +16,30 @@ import com.scalar.backup.cassandra.rpc.OperationStatus;
 import com.scalar.backup.cassandra.rpc.RestoreRequest;
 import com.scalar.backup.cassandra.rpc.RestoreResponse;
 import com.scalar.backup.cassandra.rpc.StatusUpdateRequest;
+import com.scalar.backup.cassandra.service.BackupServiceMaster;
 import io.grpc.stub.StreamObserver;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
-public class BackupServerService extends CassandraBackupGrpc.CassandraBackupImplBase {
-  private static final Logger logger = Logger.getLogger(BackupServerService.class.getName());
+public class BackupServerController extends CassandraBackupGrpc.CassandraBackupImplBase {
+  private static final Logger logger = Logger.getLogger(BackupServerController.class.getName());
+  private final BackupServerConfig config;
+  private final JmxManager jmx;
+  private final SshCredential credential;
+
+  public BackupServerController(
+      BackupServerConfig config, JmxManager jmx, SshCredential credential) {
+    this.config = config;
+    this.jmx = jmx;
+    this.credential = credential;
+  }
 
   @Override
   public void showClusters(
       com.google.protobuf.Empty request, StreamObserver<ClusterListingResponse> responseObserver) {
-    logger.info("showCluster called");
     ClusterListingResponse response =
-        ClusterListingResponse.newBuilder().addClusterId("Test Cluster").build();
+        ClusterListingResponse.newBuilder().addClusterId(jmx.getClusterName()).build();
 
     responseObserver.onNext(response);
     responseObserver.onCompleted();
@@ -33,13 +48,15 @@ public class BackupServerService extends CassandraBackupGrpc.CassandraBackupImpl
   @Override
   public void listNodes(
       NodeListingRequest request, StreamObserver<NodeListingResponse> responseObserver) {
-    logger.info("listNodes called with " + request.getClusterId());
-    NodeListingResponse response =
-        NodeListingResponse.newBuilder()
-            .addEntries(NodeListingResponse.Entry.newBuilder().setIp("192.168.1.1").build())
-            .build();
+    NodeListingResponse.Builder builder = NodeListingResponse.newBuilder();
 
-    responseObserver.onNext(response);
+    addNodes(builder, jmx.getLiveNodes(), NodeListingResponse.Entry.NodeStatus.LIVE);
+    addNodes(builder, jmx.getJoiningNodes(), NodeListingResponse.Entry.NodeStatus.JOINING);
+    addNodes(builder, jmx.getLeavingNodes(), NodeListingResponse.Entry.NodeStatus.LEAVING);
+    addNodes(builder, jmx.getMovingNodes(), NodeListingResponse.Entry.NodeStatus.MOVING);
+    addNodes(builder, jmx.getUnreachableNodes(), NodeListingResponse.Entry.NodeStatus.UNREACHABLE);
+
+    responseObserver.onNext(builder.build());
     responseObserver.onCompleted();
   }
 
@@ -53,9 +70,16 @@ public class BackupServerService extends CassandraBackupGrpc.CassandraBackupImpl
             + request.getTargetIp()
             + " "
             + request.getN());
+
+    // TODO: implementation is coming in a later PR
     BackupListingResponse response =
         BackupListingResponse.newBuilder()
-            .addEntries(BackupListingResponse.Entry.newBuilder().setBackupId("xxx").build())
+            .addEntries(
+                BackupListingResponse.Entry.newBuilder()
+                    .setBackupId("xxx")
+                    .setClusterId(request.getClusterId())
+                    .setTargetIp(request.getTargetIp())
+                    .build())
             .build();
 
     responseObserver.onNext(response);
@@ -64,17 +88,19 @@ public class BackupServerService extends CassandraBackupGrpc.CassandraBackupImpl
 
   @Override
   public void takeBackup(BackupRequest request, StreamObserver<BackupResponse> responseObserver) {
-    logger.info(
-        "takeBackup called with "
-            + request.getClusterId()
-            + " "
-            + request.getTargetIp()
-            + " "
-            + request.getBackupType());
-    BackupResponse response =
-        BackupResponse.newBuilder().setBackupId("xxx").setStatus(OperationStatus.STARTED).build();
+    String backupId = Long.toString(System.currentTimeMillis()) + "-" + UUID.randomUUID();
 
-    responseObserver.onNext(response);
+    BackupResponse.Builder builder =
+        BackupResponse.newBuilder().setBackupId(backupId).setStatus(OperationStatus.SUCCEEDED);
+
+    try {
+      new BackupServiceMaster(config, jmx, credential).take(backupId, request);
+    } catch (Exception e) {
+      builder.setStatus(OperationStatus.FAILED);
+      builder.setMessage(e.getMessage());
+    }
+
+    responseObserver.onNext(builder.build());
     responseObserver.onCompleted();
   }
 
@@ -93,6 +119,7 @@ public class BackupServerService extends CassandraBackupGrpc.CassandraBackupImpl
     RestoreResponse response =
         RestoreResponse.newBuilder().setStatus(OperationStatus.STARTED).build();
 
+    // TODO: implementation is coming in a later PR
     responseObserver.onNext(response);
     responseObserver.onCompleted();
   }
@@ -109,7 +136,18 @@ public class BackupServerService extends CassandraBackupGrpc.CassandraBackupImpl
             + " "
             + request.getStatus());
 
+    // TODO: implementation is coming in a later PR
     responseObserver.onNext(Empty.newBuilder().build());
     responseObserver.onCompleted();
+  }
+
+  private void addNodes(
+      NodeListingResponse.Builder builder,
+      List<String> nodes,
+      NodeListingResponse.Entry.NodeStatus status) {
+    nodes.forEach(
+        ip ->
+            builder.addEntries(
+                NodeListingResponse.Entry.newBuilder().setIp(ip).setStatus(status).build()));
   }
 }

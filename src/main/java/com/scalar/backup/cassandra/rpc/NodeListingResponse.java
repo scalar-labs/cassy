@@ -201,48 +201,56 @@ private static final long serialVersionUID = 0L;
     public enum NodeStatus
         implements com.google.protobuf.ProtocolMessageEnum {
       /**
-       * <code>LIVE = 0;</code>
+       * <code>UNKNOWN = 0;</code>
        */
-      LIVE(0),
+      UNKNOWN(0),
       /**
-       * <code>LEAVING = 1;</code>
+       * <code>LIVE = 1;</code>
        */
-      LEAVING(1),
+      LIVE(1),
       /**
-       * <code>MOVING = 2;</code>
+       * <code>LEAVING = 2;</code>
        */
-      MOVING(2),
+      LEAVING(2),
       /**
-       * <code>JOINING = 3;</code>
+       * <code>MOVING = 3;</code>
        */
-      JOINING(3),
+      MOVING(3),
       /**
-       * <code>UNREACHABLE = 4;</code>
+       * <code>JOINING = 4;</code>
        */
-      UNREACHABLE(4),
+      JOINING(4),
+      /**
+       * <code>UNREACHABLE = 5;</code>
+       */
+      UNREACHABLE(5),
       UNRECOGNIZED(-1),
       ;
 
       /**
-       * <code>LIVE = 0;</code>
+       * <code>UNKNOWN = 0;</code>
        */
-      public static final int LIVE_VALUE = 0;
+      public static final int UNKNOWN_VALUE = 0;
       /**
-       * <code>LEAVING = 1;</code>
+       * <code>LIVE = 1;</code>
        */
-      public static final int LEAVING_VALUE = 1;
+      public static final int LIVE_VALUE = 1;
       /**
-       * <code>MOVING = 2;</code>
+       * <code>LEAVING = 2;</code>
        */
-      public static final int MOVING_VALUE = 2;
+      public static final int LEAVING_VALUE = 2;
       /**
-       * <code>JOINING = 3;</code>
+       * <code>MOVING = 3;</code>
        */
-      public static final int JOINING_VALUE = 3;
+      public static final int MOVING_VALUE = 3;
       /**
-       * <code>UNREACHABLE = 4;</code>
+       * <code>JOINING = 4;</code>
        */
-      public static final int UNREACHABLE_VALUE = 4;
+      public static final int JOINING_VALUE = 4;
+      /**
+       * <code>UNREACHABLE = 5;</code>
+       */
+      public static final int UNREACHABLE_VALUE = 5;
 
 
       public final int getNumber() {
@@ -263,11 +271,12 @@ private static final long serialVersionUID = 0L;
 
       public static NodeStatus forNumber(int value) {
         switch (value) {
-          case 0: return LIVE;
-          case 1: return LEAVING;
-          case 2: return MOVING;
-          case 3: return JOINING;
-          case 4: return UNREACHABLE;
+          case 0: return UNKNOWN;
+          case 1: return LIVE;
+          case 2: return LEAVING;
+          case 3: return MOVING;
+          case 4: return JOINING;
+          case 5: return UNREACHABLE;
           default: return null;
         }
       }
@@ -388,7 +397,7 @@ private static final long serialVersionUID = 0L;
       if (!getIpBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, ip_);
       }
-      if (status_ != com.scalar.backup.cassandra.rpc.NodeListingResponse.Entry.NodeStatus.LIVE.getNumber()) {
+      if (status_ != com.scalar.backup.cassandra.rpc.NodeListingResponse.Entry.NodeStatus.UNKNOWN.getNumber()) {
         output.writeEnum(2, status_);
       }
       unknownFields.writeTo(output);
@@ -403,7 +412,7 @@ private static final long serialVersionUID = 0L;
       if (!getIpBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, ip_);
       }
-      if (status_ != com.scalar.backup.cassandra.rpc.NodeListingResponse.Entry.NodeStatus.LIVE.getNumber()) {
+      if (status_ != com.scalar.backup.cassandra.rpc.NodeListingResponse.Entry.NodeStatus.UNKNOWN.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(2, status_);
       }
