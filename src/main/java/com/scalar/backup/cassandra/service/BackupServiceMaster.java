@@ -106,7 +106,7 @@ public class BackupServiceMaster {
   }
 
   private void takeNodesSnapshots(String backupId, List<String> targets, BackupRequest request) {
-    List<String> keyspaces = getTargetKeyspaces(request);
+    String[] keyspaces = getTargetKeyspaces(request).toArray(new String[0]);
 
     ExecutorService executor = Executors.newCachedThreadPool();
     targets.forEach(
@@ -114,8 +114,8 @@ public class BackupServiceMaster {
             executor.submit(
                 () -> {
                   JmxManager eachJmx = getJmx(ip, config.getJmxPort());
-                  eachJmx.clearSnapshot(backupId, keyspaces.toArray(new String[0]));
-                  eachJmx.takeSnapshot(backupId, keyspaces.toArray(new String[0]));
+                  eachJmx.clearSnapshot(backupId, keyspaces);
+                  eachJmx.takeSnapshot(backupId, keyspaces);
                 }));
     awaitTermination(executor, "takeNodesSnapshots");
   }
