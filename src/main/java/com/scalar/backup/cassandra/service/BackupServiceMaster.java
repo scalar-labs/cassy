@@ -1,5 +1,6 @@
 package com.scalar.backup.cassandra.service;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.protobuf.ByteString;
 import com.palantir.giraffe.command.Command;
@@ -112,7 +113,7 @@ public class BackupServiceMaster {
         ip ->
             executor.submit(
                 () -> {
-                  JmxManager eachJmx = new JmxManager(ip, config.getJmxPort());
+                  JmxManager eachJmx = getJmx(ip, config.getJmxPort());
                   eachJmx.clearSnapshot(backupId, keyspaces.toArray(new String[0]));
                   eachJmx.takeSnapshot(backupId, keyspaces.toArray(new String[0]));
                 }));
@@ -190,5 +191,10 @@ public class BackupServiceMaster {
               .collect(Collectors.toList());
     }
     return keyspaces;
+  }
+
+  @VisibleForTesting
+  JmxManager getJmx(String ip, int port) {
+    return new JmxManager(ip, port);
   }
 }

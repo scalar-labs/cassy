@@ -29,7 +29,7 @@ public class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
 
     ServerBuilder builder =
         ServerBuilder.forPort(config.getPort())
-            .addService(new BackupServerController(config, jmx, credential))
+            .addService(new BackupServerController(config, credential))
             .addService(ProtoReflectionService.newInstance());
 
     server = builder.build().start();

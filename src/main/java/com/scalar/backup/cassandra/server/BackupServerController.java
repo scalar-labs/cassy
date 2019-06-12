@@ -1,5 +1,6 @@
 package com.scalar.backup.cassandra.server;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.Empty;
 import com.palantir.giraffe.ssh.SshCredential;
 import com.scalar.backup.cassandra.config.BackupServerConfig;
@@ -25,19 +26,17 @@ import java.util.logging.Logger;
 public class BackupServerController extends CassandraBackupGrpc.CassandraBackupImplBase {
   private static final Logger logger = Logger.getLogger(BackupServerController.class.getName());
   private final BackupServerConfig config;
-  private final JmxManager jmx;
   private final SshCredential credential;
 
-  public BackupServerController(
-      BackupServerConfig config, JmxManager jmx, SshCredential credential) {
+  public BackupServerController(BackupServerConfig config, SshCredential credential) {
     this.config = config;
-    this.jmx = jmx;
     this.credential = credential;
   }
 
   @Override
   public void showClusters(
       com.google.protobuf.Empty request, StreamObserver<ClusterListingResponse> responseObserver) {
+    JmxManager jmx = getJmx(config.getCassandraHost(), config.getJmxPort());
     ClusterListingResponse response =
         ClusterListingResponse.newBuilder().addClusterId(jmx.getClusterName()).build();
 
@@ -49,6 +48,7 @@ public class BackupServerController extends CassandraBackupGrpc.CassandraBackupI
   public void listNodes(
       NodeListingRequest request, StreamObserver<NodeListingResponse> responseObserver) {
     NodeListingResponse.Builder builder = NodeListingResponse.newBuilder();
+    JmxManager jmx = getJmx(config.getCassandraHost(), config.getJmxPort());
 
     addNodes(builder, jmx.getLiveNodes(), NodeListingResponse.Entry.NodeStatus.LIVE);
     addNodes(builder, jmx.getJoiningNodes(), NodeListingResponse.Entry.NodeStatus.JOINING);
@@ -89,9 +89,9 @@ public class BackupServerController extends CassandraBackupGrpc.CassandraBackupI
   @Override
   public void takeBackup(BackupRequest request, StreamObserver<BackupResponse> responseObserver) {
     String backupId = Long.toString(System.currentTimeMillis()) + "-" + UUID.randomUUID();
-
     BackupResponse.Builder builder =
         BackupResponse.newBuilder().setBackupId(backupId).setStatus(OperationStatus.SUCCEEDED);
+    JmxManager jmx = getJmx(config.getCassandraHost(), config.getJmxPort());
 
     try {
       new BackupServiceMaster(config, jmx, credential).take(backupId, request);
@@ -149,5 +149,10 @@ public class BackupServerController extends CassandraBackupGrpc.CassandraBackupI
         ip ->
             builder.addEntries(
                 NodeListingResponse.Entry.newBuilder().setIp(ip).setStatus(status).build()));
+  }
+
+  @VisibleForTesting
+  JmxManager getJmx(String ip, int port) {
+    return new JmxManager(ip, port);
   }
 }
