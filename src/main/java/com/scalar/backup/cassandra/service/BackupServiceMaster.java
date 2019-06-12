@@ -120,7 +120,6 @@ public class BackupServiceMaster {
   }
 
   private void copyNodesBackups(String backupId, List<String> targets, BackupRequest request) {
-    System.out.println("HELLO copy nodes backups");
     // Parallel upload for now. It will be adjusted based on workload
     ExecutorService executor = Executors.newCachedThreadPool();
     targets.forEach(ip -> executor.submit(() -> copyNodeBackups(backupId, ip, request)));
@@ -132,7 +131,7 @@ public class BackupServiceMaster {
     try {
       boolean terminated = executor.awaitTermination(Long.MAX_VALUE, TimeUnit.HOURS);
       if (!terminated) {
-        throw new TimeoutException("timeout occured in " + tag);
+        throw new TimeoutException("timeout occurred in " + tag);
       }
     } catch (InterruptedException e) {
       throw new BackupException(e);
