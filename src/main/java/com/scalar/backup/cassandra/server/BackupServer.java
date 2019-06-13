@@ -1,15 +1,11 @@
 package com.scalar.backup.cassandra.server;
 
-import com.palantir.giraffe.ssh.PublicKeySshCredential;
-import com.palantir.giraffe.ssh.SshCredential;
 import com.scalar.backup.cassandra.config.BackupServerConfig;
-import com.scalar.backup.cassandra.jmx.JmxManager;
 import com.scalar.backup.cassandra.rpc.CassandraBackupGrpc;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.logging.Logger;
 
 public class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
@@ -22,14 +18,9 @@ public class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
   }
 
   private void start() throws IOException {
-    JmxManager jmx = new JmxManager(config.getCassandraHost(), config.getJmxPort());
-    SshCredential credential =
-        PublicKeySshCredential.fromFile(
-            config.getUserName(), Paths.get(config.getPrivateKeyPath()));
-
     ServerBuilder builder =
         ServerBuilder.forPort(config.getPort())
-            .addService(new BackupServerController(config, credential))
+            .addService(new BackupServerController(config))
             .addService(ProtoReflectionService.newInstance());
 
     server = builder.build().start();

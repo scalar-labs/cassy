@@ -2,7 +2,6 @@ package com.scalar.backup.cassandra.server;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.Empty;
-import com.palantir.giraffe.ssh.SshCredential;
 import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.jmx.JmxManager;
 import com.scalar.backup.cassandra.rpc.BackupListingRequest;
@@ -18,6 +17,8 @@ import com.scalar.backup.cassandra.rpc.RestoreRequest;
 import com.scalar.backup.cassandra.rpc.RestoreResponse;
 import com.scalar.backup.cassandra.rpc.StatusUpdateRequest;
 import com.scalar.backup.cassandra.service.BackupServiceMaster;
+import com.scalar.backup.cassandra.service.RemoteCommandExecutor;
+import com.scalar.backup.cassandra.service.RestoreServiceMaster;
 import io.grpc.stub.StreamObserver;
 import java.util.List;
 import java.util.UUID;
@@ -26,11 +27,9 @@ import java.util.logging.Logger;
 public class BackupServerController extends CassandraBackupGrpc.CassandraBackupImplBase {
   private static final Logger logger = Logger.getLogger(BackupServerController.class.getName());
   private final BackupServerConfig config;
-  private final SshCredential credential;
 
-  public BackupServerController(BackupServerConfig config, SshCredential credential) {
+  public BackupServerController(BackupServerConfig config) {
     this.config = config;
-    this.credential = credential;
   }
 
   @Override
@@ -92,9 +91,10 @@ public class BackupServerController extends CassandraBackupGrpc.CassandraBackupI
     BackupResponse.Builder builder =
         BackupResponse.newBuilder().setBackupId(backupId).setStatus(OperationStatus.SUCCEEDED);
     JmxManager jmx = getJmx(config.getCassandraHost(), config.getJmxPort());
+    RemoteCommandExecutor executor = new RemoteCommandExecutor();
 
     try {
-      new BackupServiceMaster(config, jmx, credential).take(backupId, request);
+      new BackupServiceMaster(config, jmx, executor).takeBackup(backupId, request);
     } catch (Exception e) {
       builder.setStatus(OperationStatus.FAILED);
       builder.setMessage(e.getMessage());
@@ -107,20 +107,19 @@ public class BackupServerController extends CassandraBackupGrpc.CassandraBackupI
   @Override
   public void restoreBackup(
       RestoreRequest request, StreamObserver<RestoreResponse> responseObserver) {
-    logger.info(
-        "restoreBackup called with "
-            + request.getClusterId()
-            + " "
-            + request.getBackupId()
-            + " "
-            + request.getTargetIpsList()
-            + " "
-            + request.getRestoreType());
-    RestoreResponse response =
-        RestoreResponse.newBuilder().setStatus(OperationStatus.STARTED).build();
+    RestoreResponse.Builder builder =
+        RestoreResponse.newBuilder().setStatus(OperationStatus.SUCCEEDED);
+    JmxManager jmx = getJmx(config.getCassandraHost(), config.getJmxPort());
+    RemoteCommandExecutor executor = new RemoteCommandExecutor();
 
-    // TODO: implementation is coming in a later PR
-    responseObserver.onNext(response);
+    try {
+      new RestoreServiceMaster(config, jmx, executor).restoreBackup(request);
+    } catch (Exception e) {
+      builder.setStatus(OperationStatus.FAILED);
+      builder.setMessage(e.getMessage());
+    }
+
+    responseObserver.onNext(builder.build());
     responseObserver.onCompleted();
   }
 
