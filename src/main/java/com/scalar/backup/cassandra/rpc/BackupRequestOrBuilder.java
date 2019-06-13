@@ -31,4 +31,23 @@ public interface BackupRequestOrBuilder extends
    */
   com.google.protobuf.ByteString
       getTargetIpBytes();
+
+  /**
+   * <code>repeated string keyspaces = 4;</code>
+   */
+  java.util.List<java.lang.String>
+      getKeyspacesList();
+  /**
+   * <code>repeated string keyspaces = 4;</code>
+   */
+  int getKeyspacesCount();
+  /**
+   * <code>repeated string keyspaces = 4;</code>
+   */
+  java.lang.String getKeyspaces(int index);
+  /**
+   * <code>repeated string keyspaces = 4;</code>
+   */
+  com.google.protobuf.ByteString
+      getKeyspacesBytes(int index);
 }

@@ -1,29 +1,39 @@
 package com.scalar.backup.cassandra.server;
 
+import com.palantir.giraffe.ssh.PublicKeySshCredential;
+import com.palantir.giraffe.ssh.SshCredential;
+import com.scalar.backup.cassandra.config.BackupServerConfig;
+import com.scalar.backup.cassandra.jmx.JmxManager;
 import com.scalar.backup.cassandra.rpc.CassandraBackupGrpc;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.logging.Logger;
 
 public class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
   private static final Logger logger = Logger.getLogger(BackupServer.class.getName());
-  private static final int DEFAULT_PORT = 20051;
   private io.grpc.Server server;
-  private final int port;
+  private final BackupServerConfig config;
 
-  public BackupServer(int port) {
-    this.port = port;
+  public BackupServer(BackupServerConfig config) {
+    this.config = config;
   }
 
   private void start() throws IOException {
+    JmxManager jmx = new JmxManager(config.getCassandraHost(), config.getJmxPort());
+    SshCredential credential =
+        PublicKeySshCredential.fromFile(
+            config.getUserName(), Paths.get(config.getPrivateKeyPath()));
+
     ServerBuilder builder =
-        ServerBuilder.forPort(port)
-            .addService(new BackupServerService())
+        ServerBuilder.forPort(config.getPort())
+            .addService(new BackupServerController(config, credential))
             .addService(ProtoReflectionService.newInstance());
 
     server = builder.build().start();
-    logger.info("Server started, listening on " + port);
+    logger.info("Server started, listening on " + config.getPort());
 
     Runtime.getRuntime()
         .addShutdownHook(
@@ -50,22 +60,25 @@ public class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
   }
 
   public static void main(String[] args) throws IOException, InterruptedException {
-    int port = DEFAULT_PORT;
+    BackupServerConfig config = null;
     for (int i = 0; i < args.length; ++i) {
-      if ("--port".equals(args[i])) {
-        port = Integer.parseInt(args[++i]);
+      if ("--config".equals(args[i])) {
+        config = new BackupServerConfig(new File(args[++i]));
       } else if ("-help".equals(args[i])) {
         printUsageAndExit();
       }
     }
+    if (config == null) {
+      printUsageAndExit();
+    }
 
-    final BackupServer server = new BackupServer(port);
+    final BackupServer server = new BackupServer(config);
     server.start();
     server.blockUntilShutdown();
   }
 
   private static void printUsageAndExit() {
-    System.err.println("BackupServer --port number");
+    System.err.println("BackupServer --config backup-server.properties");
     System.exit(1);
   }
 }

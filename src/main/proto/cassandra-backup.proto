@@ -58,11 +58,12 @@ message NodeListingResponse {
     message Entry {
         string ip = 1;
         enum NodeStatus {
-            LIVE = 0;
-            LEAVING = 1;
-            MOVING = 2;
-            JOINING = 3;
-            UNREACHABLE = 4;
+            UNKNOWN = 0;
+            LIVE = 1;
+            LEAVING = 2;
+            MOVING = 3;
+            JOINING = 4;
+            UNREACHABLE = 5;
         }
         NodeStatus status = 2;
     }
@@ -98,6 +99,7 @@ message BackupRequest {
     string cluster_id = 1;
     uint32 backup_type = 2;
     string target_ip = 3;
+    repeated string keyspaces = 4;
 }
 
 message BackupResponse {
