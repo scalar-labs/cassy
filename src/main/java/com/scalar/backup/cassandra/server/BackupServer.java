@@ -78,7 +78,7 @@ public class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
   }
 
   private static void printUsageAndExit() {
-    System.err.println("BackupServer --config properties.prop");
+    System.err.println("BackupServer --config backup-server.properties");
     System.exit(1);
   }
 }

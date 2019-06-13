@@ -48,7 +48,7 @@ public class BackupServiceMaster {
   }
 
   public void take(String backupId, BackupRequest request) {
-    if (!isAllNodesAlive()) {
+    if (!areAllNodesAlive()) {
       throw new BackupException(
           "This operation is allowed only when all the nodes are alive at the moment.");
     }
@@ -67,7 +67,7 @@ public class BackupServiceMaster {
     }
   }
 
-  private boolean isAllNodesAlive() {
+  private boolean areAllNodesAlive() {
     if (jmx.getJoiningNodes().isEmpty()
         && jmx.getMovingNodes().isEmpty()
         && jmx.getLeavingNodes().isEmpty()
