@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 public class SnapshotTraverser extends FileTraverser {
   static final String SNAPSHOT_DIRNAME = "snapshots";
-  private static final int DIR_TO_FILE_DISTANCE = 2;
+  public static final int DIR_TO_FILE_DISTANCE = 2;
 
   public SnapshotTraverser(Path dataDir) {
     super(dataDir);
