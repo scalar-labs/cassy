@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 public class IncrementalBackupTraverser extends FileTraverser {
   static final String BACKUP_DIRNAME = "backups";
-  private static final int DIR_TO_FILE_DISTANCE = 1;
+  public static final int DIR_TO_FILE_DISTANCE = 1;
 
   public IncrementalBackupTraverser(Path dataDir) {
     super(dataDir);
