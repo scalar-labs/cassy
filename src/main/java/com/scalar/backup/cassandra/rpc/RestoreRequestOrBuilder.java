@@ -18,14 +18,9 @@ public interface RestoreRequestOrBuilder extends
       getClusterIdBytes();
 
   /**
-   * <code>string backup_id = 2;</code>
+   * <code>uint64 backup_id = 2;</code>
    */
-  java.lang.String getBackupId();
-  /**
-   * <code>string backup_id = 2;</code>
-   */
-  com.google.protobuf.ByteString
-      getBackupIdBytes();
+  long getBackupId();
 
   /**
    * <code>uint32 restore_type = 3;</code>

@@ -162,33 +162,6 @@ public final class CassandraBackupGrpc {
      return getRestoreBackupMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.StatusUpdateRequest,
-      com.google.protobuf.Empty> getUpdateStatusMethod;
-
-  public static io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.StatusUpdateRequest,
-      com.google.protobuf.Empty> getUpdateStatusMethod() {
-    io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.StatusUpdateRequest, com.google.protobuf.Empty> getUpdateStatusMethod;
-    if ((getUpdateStatusMethod = CassandraBackupGrpc.getUpdateStatusMethod) == null) {
-      synchronized (CassandraBackupGrpc.class) {
-        if ((getUpdateStatusMethod = CassandraBackupGrpc.getUpdateStatusMethod) == null) {
-          CassandraBackupGrpc.getUpdateStatusMethod = getUpdateStatusMethod = 
-              io.grpc.MethodDescriptor.<com.scalar.backup.cassandra.rpc.StatusUpdateRequest, com.google.protobuf.Empty>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(
-                  "rpc.CassandraBackup", "UpdateStatus"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.scalar.backup.cassandra.rpc.StatusUpdateRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.Empty.getDefaultInstance()))
-                  .setSchemaDescriptor(new CassandraBackupMethodDescriptorSupplier("UpdateStatus"))
-                  .build();
-          }
-        }
-     }
-     return getUpdateStatusMethod;
-  }
-
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -251,13 +224,6 @@ public final class CassandraBackupGrpc {
       asyncUnimplementedUnaryCall(getRestoreBackupMethod(), responseObserver);
     }
 
-    /**
-     */
-    public void updateStatus(com.scalar.backup.cassandra.rpc.StatusUpdateRequest request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-      asyncUnimplementedUnaryCall(getUpdateStatusMethod(), responseObserver);
-    }
-
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -295,13 +261,6 @@ public final class CassandraBackupGrpc {
                 com.scalar.backup.cassandra.rpc.RestoreRequest,
                 com.scalar.backup.cassandra.rpc.RestoreResponse>(
                   this, METHODID_RESTORE_BACKUP)))
-          .addMethod(
-            getUpdateStatusMethod(),
-            asyncUnaryCall(
-              new MethodHandlers<
-                com.scalar.backup.cassandra.rpc.StatusUpdateRequest,
-                com.google.protobuf.Empty>(
-                  this, METHODID_UPDATE_STATUS)))
           .build();
     }
   }
@@ -363,14 +322,6 @@ public final class CassandraBackupGrpc {
       asyncUnaryCall(
           getChannel().newCall(getRestoreBackupMethod(), getCallOptions()), request, responseObserver);
     }
-
-    /**
-     */
-    public void updateStatus(com.scalar.backup.cassandra.rpc.StatusUpdateRequest request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getUpdateStatusMethod(), getCallOptions()), request, responseObserver);
-    }
   }
 
   /**
@@ -424,13 +375,6 @@ public final class CassandraBackupGrpc {
     public com.scalar.backup.cassandra.rpc.RestoreResponse restoreBackup(com.scalar.backup.cassandra.rpc.RestoreRequest request) {
       return blockingUnaryCall(
           getChannel(), getRestoreBackupMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public com.google.protobuf.Empty updateStatus(com.scalar.backup.cassandra.rpc.StatusUpdateRequest request) {
-      return blockingUnaryCall(
-          getChannel(), getUpdateStatusMethod(), getCallOptions(), request);
     }
   }
 
@@ -491,14 +435,6 @@ public final class CassandraBackupGrpc {
       return futureUnaryCall(
           getChannel().newCall(getRestoreBackupMethod(), getCallOptions()), request);
     }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> updateStatus(
-        com.scalar.backup.cassandra.rpc.StatusUpdateRequest request) {
-      return futureUnaryCall(
-          getChannel().newCall(getUpdateStatusMethod(), getCallOptions()), request);
-    }
   }
 
   private static final int METHODID_SHOW_CLUSTERS = 0;
@@ -506,7 +442,6 @@ public final class CassandraBackupGrpc {
   private static final int METHODID_LIST_BACKUPS = 2;
   private static final int METHODID_TAKE_BACKUP = 3;
   private static final int METHODID_RESTORE_BACKUP = 4;
-  private static final int METHODID_UPDATE_STATUS = 5;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -544,10 +479,6 @@ public final class CassandraBackupGrpc {
         case METHODID_RESTORE_BACKUP:
           serviceImpl.restoreBackup((com.scalar.backup.cassandra.rpc.RestoreRequest) request,
               (io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.RestoreResponse>) responseObserver);
-          break;
-        case METHODID_UPDATE_STATUS:
-          serviceImpl.updateStatus((com.scalar.backup.cassandra.rpc.StatusUpdateRequest) request,
-              (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -615,7 +546,6 @@ public final class CassandraBackupGrpc {
               .addMethod(getListBackupsMethod())
               .addMethod(getTakeBackupMethod())
               .addMethod(getRestoreBackupMethod())
-              .addMethod(getUpdateStatusMethod())
               .build();
         }
       }

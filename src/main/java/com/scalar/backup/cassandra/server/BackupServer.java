@@ -1,26 +1,35 @@
 package com.scalar.backup.cassandra.server;
 
 import com.scalar.backup.cassandra.config.BackupServerConfig;
+import com.scalar.backup.cassandra.db.BackupHistory;
 import com.scalar.backup.cassandra.rpc.CassandraBackupGrpc;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
+
+import javax.annotation.concurrent.Immutable;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
-public class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
+@Immutable
+public final class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
   private static final Logger logger = Logger.getLogger(BackupServer.class.getName());
   private io.grpc.Server server;
+  private Connection connection;
   private final BackupServerConfig config;
 
   public BackupServer(BackupServerConfig config) {
     this.config = config;
   }
 
-  private void start() throws IOException {
+  private void start() throws IOException, SQLException {
+    connection = DriverManager.getConnection(config.getHistoryDbUrl());
     ServerBuilder builder =
         ServerBuilder.forPort(config.getPort())
-            .addService(new BackupServerController(config))
+            .addService(new BackupServerController(config, new BackupHistory(connection)))
             .addService(ProtoReflectionService.newInstance());
 
     server = builder.build().start();
@@ -40,6 +49,11 @@ public class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
   private void stop() {
     if (server != null) {
       server.shutdown();
+      try {
+        connection.close();
+      } catch (SQLException e) {
+        // ignore
+      }
     }
   }
 
@@ -50,7 +64,7 @@ public class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
     }
   }
 
-  public static void main(String[] args) throws IOException, InterruptedException {
+  public static void main(String[] args) throws IOException, InterruptedException, SQLException {
     BackupServerConfig config = null;
     for (int i = 0; i < args.length; ++i) {
       if ("--config".equals(args[i])) {

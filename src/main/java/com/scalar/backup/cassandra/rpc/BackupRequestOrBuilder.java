@@ -50,4 +50,14 @@ public interface BackupRequestOrBuilder extends
    */
   com.google.protobuf.ByteString
       getKeyspacesBytes(int index);
+
+  /**
+   * <code>string snapshot_id = 5;</code>
+   */
+  java.lang.String getSnapshotId();
+  /**
+   * <code>string snapshot_id = 5;</code>
+   */
+  com.google.protobuf.ByteString
+      getSnapshotIdBytes();
 }

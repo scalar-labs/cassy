@@ -2,7 +2,6 @@ syntax = "proto3";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
-import "google/protobuf/timestamp.proto";
 
 option java_multiple_files = true;
 option java_package = "com.scalar.backup.cassandra.rpc";
@@ -35,12 +34,6 @@ service CassandraBackup {
     rpc RestoreBackup (RestoreRequest) returns (RestoreResponse) {
         option (google.api.http) = {
             put: "/v1/clusters/{cluster_id}/data/{backup_id}"
-            body: "*"
-        };
-    }
-    rpc UpdateStatus (StatusUpdateRequest) returns (google.protobuf.Empty) {
-        option (google.api.http) = {
-            put: "/v1/clusters/{cluster_id}/backups/{backup_id}/status"
             body: "*"
         };
     }
@@ -78,20 +71,21 @@ message BackupListingRequest {
 
 message BackupListingResponse {
     message Entry {
-        string cluster_id = 1;
-        string target_ip = 2;
-        uint32 backup_type = 3;
-        string backup_id = 4;
-        OperationStatus status = 5;
-        google.protobuf.Timestamp timestamp = 6;
+        string snapshot_id = 1;
+        uint64 backup_id = 2;
+        string cluster_id = 3;
+        string target_ip = 4;
+        uint32 backup_type = 5;
+        BackupStatus status = 6;
+        uint64 timestamp = 7;
     }
     repeated Entry entries = 1;
 }
 
-enum OperationStatus {
+enum BackupStatus {
     UNKNOWN = 0;
     STARTED = 1;
-    SUCCEEDED = 2;
+    COMPLETED = 2;
     FAILED = 3;
 }
 
@@ -100,29 +94,21 @@ message BackupRequest {
     uint32 backup_type = 2;
     string target_ip = 3;
     repeated string keyspaces = 4;
+    string snapshot_id = 5;
 }
 
 message BackupResponse {
-    OperationStatus status = 1;
-    string message = 2;
-    string backup_id = 3;
+    string message = 1;
+    uint64 backup_id = 2;
 }
 
 message RestoreRequest {
     string cluster_id = 1;
-    string backup_id = 2;
+    uint64 backup_id = 2;
     uint32 restore_type = 3;
     repeated string target_ips = 4;
 }
 
 message RestoreResponse {
-    OperationStatus status = 1;
-    string message = 2;
-}
-
-message StatusUpdateRequest {
-    string cluster_id = 1;
-    string target_ip = 2;
-    string backup_id = 3;
-    OperationStatus status = 4;
+    string message = 1;
 }

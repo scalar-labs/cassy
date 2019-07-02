@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS backup_history (
+    snapshot_id VARCHAR(255) NOT NULL,
+    backup_id BIGINT NOT NULL,
+    cluster_id VARCHAR(255) NOT NULL,
+    target_ip VARCHAR(255) NOT NULL,
+    backup_type TINYINT NOT NULL,
+    created_at BIGINT NOT NULL,
+    updated_at BIGINT, 
+    status TINYINT NOT NULL,
+    PRIMARY KEY (snapshot_id, backup_id, cluster_id, target_ip)
+);
+

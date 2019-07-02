@@ -4,9 +4,9 @@
 package com.scalar.backup.cassandra.rpc;
 
 /**
- * Protobuf enum {@code rpc.OperationStatus}
+ * Protobuf enum {@code rpc.BackupStatus}
  */
-public enum OperationStatus
+public enum BackupStatus
     implements com.google.protobuf.ProtocolMessageEnum {
   /**
    * <code>UNKNOWN = 0;</code>
@@ -17,9 +17,9 @@ public enum OperationStatus
    */
   STARTED(1),
   /**
-   * <code>SUCCEEDED = 2;</code>
+   * <code>COMPLETED = 2;</code>
    */
-  SUCCEEDED(2),
+  COMPLETED(2),
   /**
    * <code>FAILED = 3;</code>
    */
@@ -36,9 +36,9 @@ public enum OperationStatus
    */
   public static final int STARTED_VALUE = 1;
   /**
-   * <code>SUCCEEDED = 2;</code>
+   * <code>COMPLETED = 2;</code>
    */
-  public static final int SUCCEEDED_VALUE = 2;
+  public static final int COMPLETED_VALUE = 2;
   /**
    * <code>FAILED = 3;</code>
    */
@@ -57,29 +57,29 @@ public enum OperationStatus
    * @deprecated Use {@link #forNumber(int)} instead.
    */
   @java.lang.Deprecated
-  public static OperationStatus valueOf(int value) {
+  public static BackupStatus valueOf(int value) {
     return forNumber(value);
   }
 
-  public static OperationStatus forNumber(int value) {
+  public static BackupStatus forNumber(int value) {
     switch (value) {
       case 0: return UNKNOWN;
       case 1: return STARTED;
-      case 2: return SUCCEEDED;
+      case 2: return COMPLETED;
       case 3: return FAILED;
       default: return null;
     }
   }
 
-  public static com.google.protobuf.Internal.EnumLiteMap<OperationStatus>
+  public static com.google.protobuf.Internal.EnumLiteMap<BackupStatus>
       internalGetValueMap() {
     return internalValueMap;
   }
   private static final com.google.protobuf.Internal.EnumLiteMap<
-      OperationStatus> internalValueMap =
-        new com.google.protobuf.Internal.EnumLiteMap<OperationStatus>() {
-          public OperationStatus findValueByNumber(int number) {
-            return OperationStatus.forNumber(number);
+      BackupStatus> internalValueMap =
+        new com.google.protobuf.Internal.EnumLiteMap<BackupStatus>() {
+          public BackupStatus findValueByNumber(int number) {
+            return BackupStatus.forNumber(number);
           }
         };
 
@@ -96,9 +96,9 @@ public enum OperationStatus
     return com.scalar.backup.cassandra.rpc.CassandraBackupProto.getDescriptor().getEnumTypes().get(0);
   }
 
-  private static final OperationStatus[] VALUES = values();
+  private static final BackupStatus[] VALUES = values();
 
-  public static OperationStatus valueOf(
+  public static BackupStatus valueOf(
       com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
     if (desc.getType() != getDescriptor()) {
       throw new java.lang.IllegalArgumentException(
@@ -112,10 +112,10 @@ public enum OperationStatus
 
   private final int value;
 
-  private OperationStatus(int value) {
+  private BackupStatus(int value) {
     this.value = value;
   }
 
-  // @@protoc_insertion_point(enum_scope:rpc.OperationStatus)
+  // @@protoc_insertion_point(enum_scope:rpc.BackupStatus)
 }
 
