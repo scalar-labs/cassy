@@ -17,7 +17,7 @@ private static final long serialVersionUID = 0L;
   }
   private RestoreRequest() {
     clusterId_ = "";
-    backupId_ = "";
+    backupId_ = 0L;
     restoreType_ = 0;
     targetIps_ = com.google.protobuf.LazyStringArrayList.EMPTY;
   }
@@ -52,10 +52,9 @@ private static final long serialVersionUID = 0L;
             clusterId_ = s;
             break;
           }
-          case 18: {
-            java.lang.String s = input.readStringRequireUtf8();
+          case 16: {
 
-            backupId_ = s;
+            backupId_ = input.readUInt64();
             break;
           }
           case 24: {
@@ -143,37 +142,12 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int BACKUP_ID_FIELD_NUMBER = 2;
-  private volatile java.lang.Object backupId_;
+  private long backupId_;
   /**
-   * <code>string backup_id = 2;</code>
+   * <code>uint64 backup_id = 2;</code>
    */
-  public java.lang.String getBackupId() {
-    java.lang.Object ref = backupId_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      backupId_ = s;
-      return s;
-    }
-  }
-  /**
-   * <code>string backup_id = 2;</code>
-   */
-  public com.google.protobuf.ByteString
-      getBackupIdBytes() {
-    java.lang.Object ref = backupId_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      backupId_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  public long getBackupId() {
+    return backupId_;
   }
 
   public static final int RESTORE_TYPE_FIELD_NUMBER = 3;
@@ -231,8 +205,8 @@ private static final long serialVersionUID = 0L;
     if (!getClusterIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, clusterId_);
     }
-    if (!getBackupIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, backupId_);
+    if (backupId_ != 0L) {
+      output.writeUInt64(2, backupId_);
     }
     if (restoreType_ != 0) {
       output.writeUInt32(3, restoreType_);
@@ -252,8 +226,9 @@ private static final long serialVersionUID = 0L;
     if (!getClusterIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, clusterId_);
     }
-    if (!getBackupIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, backupId_);
+    if (backupId_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeUInt64Size(2, backupId_);
     }
     if (restoreType_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -285,8 +260,8 @@ private static final long serialVersionUID = 0L;
     boolean result = true;
     result = result && getClusterId()
         .equals(other.getClusterId());
-    result = result && getBackupId()
-        .equals(other.getBackupId());
+    result = result && (getBackupId()
+        == other.getBackupId());
     result = result && (getRestoreType()
         == other.getRestoreType());
     result = result && getTargetIpsList()
@@ -305,7 +280,8 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + CLUSTER_ID_FIELD_NUMBER;
     hash = (53 * hash) + getClusterId().hashCode();
     hash = (37 * hash) + BACKUP_ID_FIELD_NUMBER;
-    hash = (53 * hash) + getBackupId().hashCode();
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getBackupId());
     hash = (37 * hash) + RESTORE_TYPE_FIELD_NUMBER;
     hash = (53 * hash) + getRestoreType();
     if (getTargetIpsCount() > 0) {
@@ -447,7 +423,7 @@ private static final long serialVersionUID = 0L;
       super.clear();
       clusterId_ = "";
 
-      backupId_ = "";
+      backupId_ = 0L;
 
       restoreType_ = 0;
 
@@ -542,9 +518,8 @@ private static final long serialVersionUID = 0L;
         clusterId_ = other.clusterId_;
         onChanged();
       }
-      if (!other.getBackupId().isEmpty()) {
-        backupId_ = other.backupId_;
-        onChanged();
+      if (other.getBackupId() != 0L) {
+        setBackupId(other.getBackupId());
       }
       if (other.getRestoreType() != 0) {
         setRestoreType(other.getRestoreType());
@@ -658,71 +633,28 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private java.lang.Object backupId_ = "";
+    private long backupId_ ;
     /**
-     * <code>string backup_id = 2;</code>
+     * <code>uint64 backup_id = 2;</code>
      */
-    public java.lang.String getBackupId() {
-      java.lang.Object ref = backupId_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        backupId_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
+    public long getBackupId() {
+      return backupId_;
     }
     /**
-     * <code>string backup_id = 2;</code>
+     * <code>uint64 backup_id = 2;</code>
      */
-    public com.google.protobuf.ByteString
-        getBackupIdBytes() {
-      java.lang.Object ref = backupId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        backupId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>string backup_id = 2;</code>
-     */
-    public Builder setBackupId(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+    public Builder setBackupId(long value) {
+      
       backupId_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>string backup_id = 2;</code>
+     * <code>uint64 backup_id = 2;</code>
      */
     public Builder clearBackupId() {
       
-      backupId_ = getDefaultInstance().getBackupId();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string backup_id = 2;</code>
-     */
-    public Builder setBackupIdBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
-      backupId_ = value;
+      backupId_ = 0L;
       onChanged();
       return this;
     }

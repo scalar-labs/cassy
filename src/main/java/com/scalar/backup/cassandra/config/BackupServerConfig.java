@@ -21,6 +21,7 @@ public class BackupServerConfig {
   public static final String SCALAR_HOSTS = PREFIX + "scalar_hosts";
   public static final String SLAVE_COMMAND_PATH = PREFIX + "slave_command_path";
   public static final String STORAGE_BASE_URI = PREFIX + "storage_base_uri";
+  public static final String HISTORY_DB_URL = PREFIX + "history_db_url";
   private int port = 20051;
   private int jmxPort = 7199;
   private String userName;
@@ -29,6 +30,7 @@ public class BackupServerConfig {
   private String scalarHosts;
   private String slaveCommandPath;
   private String storageBaseUri;
+  private String historyDbUrl;
 
   public BackupServerConfig(File propertiesFile) throws IOException {
     this(new FileInputStream(propertiesFile));
@@ -81,6 +83,10 @@ public class BackupServerConfig {
     return storageBaseUri;
   }
 
+  public String getHistoryDbUrl() {
+    return historyDbUrl;
+  }
+
   private void load() {
     if (props.getProperty(PORT) != null) {
       port = Integer.parseInt(props.getProperty(PORT));
@@ -100,5 +106,7 @@ public class BackupServerConfig {
     slaveCommandPath = props.getProperty(SLAVE_COMMAND_PATH);
     checkArgument(props.getProperty(STORAGE_BASE_URI) != null);
     storageBaseUri = props.getProperty(STORAGE_BASE_URI);
+    checkArgument(props.getProperty(HISTORY_DB_URL) != null);
+    historyDbUrl = props.getProperty(HISTORY_DB_URL);
   }
 }

@@ -20,6 +20,7 @@ private static final long serialVersionUID = 0L;
     backupType_ = 0;
     targetIp_ = "";
     keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    snapshotId_ = "";
   }
 
   @java.lang.Override
@@ -70,6 +71,12 @@ private static final long serialVersionUID = 0L;
               mutable_bitField0_ |= 0x00000008;
             }
             keyspaces_.add(s);
+            break;
+          }
+          case 42: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            snapshotId_ = s;
             break;
           }
           default: {
@@ -214,6 +221,40 @@ private static final long serialVersionUID = 0L;
     return keyspaces_.getByteString(index);
   }
 
+  public static final int SNAPSHOT_ID_FIELD_NUMBER = 5;
+  private volatile java.lang.Object snapshotId_;
+  /**
+   * <code>string snapshot_id = 5;</code>
+   */
+  public java.lang.String getSnapshotId() {
+    java.lang.Object ref = snapshotId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      snapshotId_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string snapshot_id = 5;</code>
+   */
+  public com.google.protobuf.ByteString
+      getSnapshotIdBytes() {
+    java.lang.Object ref = snapshotId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      snapshotId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -239,6 +280,9 @@ private static final long serialVersionUID = 0L;
     }
     for (int i = 0; i < keyspaces_.size(); i++) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 4, keyspaces_.getRaw(i));
+    }
+    if (!getSnapshotIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 5, snapshotId_);
     }
     unknownFields.writeTo(output);
   }
@@ -267,6 +311,9 @@ private static final long serialVersionUID = 0L;
       size += dataSize;
       size += 1 * getKeyspacesList().size();
     }
+    if (!getSnapshotIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, snapshotId_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -291,6 +338,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getTargetIp());
     result = result && getKeyspacesList()
         .equals(other.getKeyspacesList());
+    result = result && getSnapshotId()
+        .equals(other.getSnapshotId());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -312,6 +361,8 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + KEYSPACES_FIELD_NUMBER;
       hash = (53 * hash) + getKeyspacesList().hashCode();
     }
+    hash = (37 * hash) + SNAPSHOT_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getSnapshotId().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -453,6 +504,8 @@ private static final long serialVersionUID = 0L;
 
       keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       bitField0_ = (bitField0_ & ~0x00000008);
+      snapshotId_ = "";
+
       return this;
     }
 
@@ -489,6 +542,7 @@ private static final long serialVersionUID = 0L;
         bitField0_ = (bitField0_ & ~0x00000008);
       }
       result.keyspaces_ = keyspaces_;
+      result.snapshotId_ = snapshotId_;
       result.bitField0_ = to_bitField0_;
       onBuilt();
       return result;
@@ -557,6 +611,10 @@ private static final long serialVersionUID = 0L;
           ensureKeyspacesIsMutable();
           keyspaces_.addAll(other.keyspaces_);
         }
+        onChanged();
+      }
+      if (!other.getSnapshotId().isEmpty()) {
+        snapshotId_ = other.snapshotId_;
         onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
@@ -843,6 +901,75 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       ensureKeyspacesIsMutable();
       keyspaces_.add(value);
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object snapshotId_ = "";
+    /**
+     * <code>string snapshot_id = 5;</code>
+     */
+    public java.lang.String getSnapshotId() {
+      java.lang.Object ref = snapshotId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        snapshotId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string snapshot_id = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSnapshotIdBytes() {
+      java.lang.Object ref = snapshotId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        snapshotId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string snapshot_id = 5;</code>
+     */
+    public Builder setSnapshotId(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      snapshotId_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string snapshot_id = 5;</code>
+     */
+    public Builder clearSnapshotId() {
+      
+      snapshotId_ = getDefaultInstance().getSnapshotId();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string snapshot_id = 5;</code>
+     */
+    public Builder setSnapshotIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      snapshotId_ = value;
       onChanged();
       return this;
     }
