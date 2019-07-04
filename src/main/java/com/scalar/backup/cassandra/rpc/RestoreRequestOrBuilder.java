@@ -18,31 +18,61 @@ public interface RestoreRequestOrBuilder extends
       getClusterIdBytes();
 
   /**
-   * <code>uint64 backup_id = 2;</code>
-   */
-  long getBackupId();
-
-  /**
-   * <code>uint32 restore_type = 3;</code>
-   */
-  int getRestoreType();
-
-  /**
-   * <code>repeated string target_ips = 4;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>repeated string target_ips = 2;</code>
    */
   java.util.List<java.lang.String>
       getTargetIpsList();
   /**
-   * <code>repeated string target_ips = 4;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>repeated string target_ips = 2;</code>
    */
   int getTargetIpsCount();
   /**
-   * <code>repeated string target_ips = 4;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>repeated string target_ips = 2;</code>
    */
   java.lang.String getTargetIps(int index);
   /**
-   * <code>repeated string target_ips = 4;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>repeated string target_ips = 2;</code>
    */
   com.google.protobuf.ByteString
       getTargetIpsBytes(int index);
+
+  /**
+   * <code>string snapshot_id = 3;</code>
+   */
+  java.lang.String getSnapshotId();
+  /**
+   * <code>string snapshot_id = 3;</code>
+   */
+  com.google.protobuf.ByteString
+      getSnapshotIdBytes();
+
+  /**
+   * <code>uint32 restore_type = 4;</code>
+   */
+  int getRestoreType();
+
+  /**
+   * <pre>
+   * optional (default: false)
+   * </pre>
+   *
+   * <code>bool snapshot_only = 5;</code>
+   */
+  boolean getSnapshotOnly();
 }

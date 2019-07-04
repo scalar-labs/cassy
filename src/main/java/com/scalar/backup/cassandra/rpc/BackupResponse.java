@@ -16,8 +16,10 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private BackupResponse() {
+    status_ = 0;
     message_ = "";
-    backupId_ = 0L;
+    snapshotId_ = "";
+    incrementalId_ = 0L;
   }
 
   @java.lang.Override
@@ -44,15 +46,27 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 10: {
+          case 8: {
+            int rawValue = input.readEnum();
+
+            status_ = rawValue;
+            break;
+          }
+          case 18: {
             java.lang.String s = input.readStringRequireUtf8();
 
             message_ = s;
             break;
           }
-          case 16: {
+          case 26: {
+            java.lang.String s = input.readStringRequireUtf8();
 
-            backupId_ = input.readUInt64();
+            snapshotId_ = s;
+            break;
+          }
+          case 32: {
+
+            incrementalId_ = input.readInt64();
             break;
           }
           default: {
@@ -87,10 +101,27 @@ private static final long serialVersionUID = 0L;
             com.scalar.backup.cassandra.rpc.BackupResponse.class, com.scalar.backup.cassandra.rpc.BackupResponse.Builder.class);
   }
 
-  public static final int MESSAGE_FIELD_NUMBER = 1;
+  public static final int STATUS_FIELD_NUMBER = 1;
+  private int status_;
+  /**
+   * <code>.rpc.OperationStatus status = 1;</code>
+   */
+  public int getStatusValue() {
+    return status_;
+  }
+  /**
+   * <code>.rpc.OperationStatus status = 1;</code>
+   */
+  public com.scalar.backup.cassandra.rpc.OperationStatus getStatus() {
+    @SuppressWarnings("deprecation")
+    com.scalar.backup.cassandra.rpc.OperationStatus result = com.scalar.backup.cassandra.rpc.OperationStatus.valueOf(status_);
+    return result == null ? com.scalar.backup.cassandra.rpc.OperationStatus.UNRECOGNIZED : result;
+  }
+
+  public static final int MESSAGE_FIELD_NUMBER = 2;
   private volatile java.lang.Object message_;
   /**
-   * <code>string message = 1;</code>
+   * <code>string message = 2;</code>
    */
   public java.lang.String getMessage() {
     java.lang.Object ref = message_;
@@ -105,7 +136,7 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string message = 1;</code>
+   * <code>string message = 2;</code>
    */
   public com.google.protobuf.ByteString
       getMessageBytes() {
@@ -121,13 +152,47 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int BACKUP_ID_FIELD_NUMBER = 2;
-  private long backupId_;
+  public static final int SNAPSHOT_ID_FIELD_NUMBER = 3;
+  private volatile java.lang.Object snapshotId_;
   /**
-   * <code>uint64 backup_id = 2;</code>
+   * <code>string snapshot_id = 3;</code>
    */
-  public long getBackupId() {
-    return backupId_;
+  public java.lang.String getSnapshotId() {
+    java.lang.Object ref = snapshotId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      snapshotId_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string snapshot_id = 3;</code>
+   */
+  public com.google.protobuf.ByteString
+      getSnapshotIdBytes() {
+    java.lang.Object ref = snapshotId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      snapshotId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int INCREMENTAL_ID_FIELD_NUMBER = 4;
+  private long incrementalId_;
+  /**
+   * <code>int64 incremental_id = 4;</code>
+   */
+  public long getIncrementalId() {
+    return incrementalId_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -144,11 +209,17 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getMessageBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, message_);
+    if (status_ != com.scalar.backup.cassandra.rpc.OperationStatus.UNKNOWN.getNumber()) {
+      output.writeEnum(1, status_);
     }
-    if (backupId_ != 0L) {
-      output.writeUInt64(2, backupId_);
+    if (!getMessageBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, message_);
+    }
+    if (!getSnapshotIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, snapshotId_);
+    }
+    if (incrementalId_ != 0L) {
+      output.writeInt64(4, incrementalId_);
     }
     unknownFields.writeTo(output);
   }
@@ -159,12 +230,19 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getMessageBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, message_);
-    }
-    if (backupId_ != 0L) {
+    if (status_ != com.scalar.backup.cassandra.rpc.OperationStatus.UNKNOWN.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
-        .computeUInt64Size(2, backupId_);
+        .computeEnumSize(1, status_);
+    }
+    if (!getMessageBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, message_);
+    }
+    if (!getSnapshotIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, snapshotId_);
+    }
+    if (incrementalId_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(4, incrementalId_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -182,10 +260,13 @@ private static final long serialVersionUID = 0L;
     com.scalar.backup.cassandra.rpc.BackupResponse other = (com.scalar.backup.cassandra.rpc.BackupResponse) obj;
 
     boolean result = true;
+    result = result && status_ == other.status_;
     result = result && getMessage()
         .equals(other.getMessage());
-    result = result && (getBackupId()
-        == other.getBackupId());
+    result = result && getSnapshotId()
+        .equals(other.getSnapshotId());
+    result = result && (getIncrementalId()
+        == other.getIncrementalId());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -197,11 +278,15 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
+    hash = (37 * hash) + STATUS_FIELD_NUMBER;
+    hash = (53 * hash) + status_;
     hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
     hash = (53 * hash) + getMessage().hashCode();
-    hash = (37 * hash) + BACKUP_ID_FIELD_NUMBER;
+    hash = (37 * hash) + SNAPSHOT_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getSnapshotId().hashCode();
+    hash = (37 * hash) + INCREMENTAL_ID_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        getBackupId());
+        getIncrementalId());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -335,9 +420,13 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      status_ = 0;
+
       message_ = "";
 
-      backupId_ = 0L;
+      snapshotId_ = "";
+
+      incrementalId_ = 0L;
 
       return this;
     }
@@ -365,8 +454,10 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.scalar.backup.cassandra.rpc.BackupResponse buildPartial() {
       com.scalar.backup.cassandra.rpc.BackupResponse result = new com.scalar.backup.cassandra.rpc.BackupResponse(this);
+      result.status_ = status_;
       result.message_ = message_;
-      result.backupId_ = backupId_;
+      result.snapshotId_ = snapshotId_;
+      result.incrementalId_ = incrementalId_;
       onBuilt();
       return result;
     }
@@ -415,12 +506,19 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(com.scalar.backup.cassandra.rpc.BackupResponse other) {
       if (other == com.scalar.backup.cassandra.rpc.BackupResponse.getDefaultInstance()) return this;
+      if (other.status_ != 0) {
+        setStatusValue(other.getStatusValue());
+      }
       if (!other.getMessage().isEmpty()) {
         message_ = other.message_;
         onChanged();
       }
-      if (other.getBackupId() != 0L) {
-        setBackupId(other.getBackupId());
+      if (!other.getSnapshotId().isEmpty()) {
+        snapshotId_ = other.snapshotId_;
+        onChanged();
+      }
+      if (other.getIncrementalId() != 0L) {
+        setIncrementalId(other.getIncrementalId());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -451,9 +549,54 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private int status_ = 0;
+    /**
+     * <code>.rpc.OperationStatus status = 1;</code>
+     */
+    public int getStatusValue() {
+      return status_;
+    }
+    /**
+     * <code>.rpc.OperationStatus status = 1;</code>
+     */
+    public Builder setStatusValue(int value) {
+      status_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.rpc.OperationStatus status = 1;</code>
+     */
+    public com.scalar.backup.cassandra.rpc.OperationStatus getStatus() {
+      @SuppressWarnings("deprecation")
+      com.scalar.backup.cassandra.rpc.OperationStatus result = com.scalar.backup.cassandra.rpc.OperationStatus.valueOf(status_);
+      return result == null ? com.scalar.backup.cassandra.rpc.OperationStatus.UNRECOGNIZED : result;
+    }
+    /**
+     * <code>.rpc.OperationStatus status = 1;</code>
+     */
+    public Builder setStatus(com.scalar.backup.cassandra.rpc.OperationStatus value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      
+      status_ = value.getNumber();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.rpc.OperationStatus status = 1;</code>
+     */
+    public Builder clearStatus() {
+      
+      status_ = 0;
+      onChanged();
+      return this;
+    }
+
     private java.lang.Object message_ = "";
     /**
-     * <code>string message = 1;</code>
+     * <code>string message = 2;</code>
      */
     public java.lang.String getMessage() {
       java.lang.Object ref = message_;
@@ -468,7 +611,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string message = 1;</code>
+     * <code>string message = 2;</code>
      */
     public com.google.protobuf.ByteString
         getMessageBytes() {
@@ -484,7 +627,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string message = 1;</code>
+     * <code>string message = 2;</code>
      */
     public Builder setMessage(
         java.lang.String value) {
@@ -497,7 +640,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string message = 1;</code>
+     * <code>string message = 2;</code>
      */
     public Builder clearMessage() {
       
@@ -506,7 +649,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string message = 1;</code>
+     * <code>string message = 2;</code>
      */
     public Builder setMessageBytes(
         com.google.protobuf.ByteString value) {
@@ -520,28 +663,97 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private long backupId_ ;
+    private java.lang.Object snapshotId_ = "";
     /**
-     * <code>uint64 backup_id = 2;</code>
+     * <code>string snapshot_id = 3;</code>
      */
-    public long getBackupId() {
-      return backupId_;
+    public java.lang.String getSnapshotId() {
+      java.lang.Object ref = snapshotId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        snapshotId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
     }
     /**
-     * <code>uint64 backup_id = 2;</code>
+     * <code>string snapshot_id = 3;</code>
      */
-    public Builder setBackupId(long value) {
-      
-      backupId_ = value;
+    public com.google.protobuf.ByteString
+        getSnapshotIdBytes() {
+      java.lang.Object ref = snapshotId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        snapshotId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string snapshot_id = 3;</code>
+     */
+    public Builder setSnapshotId(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      snapshotId_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>uint64 backup_id = 2;</code>
+     * <code>string snapshot_id = 3;</code>
      */
-    public Builder clearBackupId() {
+    public Builder clearSnapshotId() {
       
-      backupId_ = 0L;
+      snapshotId_ = getDefaultInstance().getSnapshotId();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string snapshot_id = 3;</code>
+     */
+    public Builder setSnapshotIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      snapshotId_ = value;
+      onChanged();
+      return this;
+    }
+
+    private long incrementalId_ ;
+    /**
+     * <code>int64 incremental_id = 4;</code>
+     */
+    public long getIncrementalId() {
+      return incrementalId_;
+    }
+    /**
+     * <code>int64 incremental_id = 4;</code>
+     */
+    public Builder setIncrementalId(long value) {
+      
+      incrementalId_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int64 incremental_id = 4;</code>
+     */
+    public Builder clearIncrementalId() {
+      
+      incrementalId_ = 0L;
       onChanged();
       return this;
     }

@@ -12,8 +12,8 @@ import static org.mockito.Mockito.when;
 import com.scalar.backup.cassandra.config.BackupType;
 import com.scalar.backup.cassandra.exception.StatusDatabaseException;
 import com.scalar.backup.cassandra.rpc.BackupListingRequest;
-import com.scalar.backup.cassandra.rpc.BackupRequest;
-import com.scalar.backup.cassandra.rpc.BackupStatus;
+import com.scalar.backup.cassandra.rpc.OperationStatus;
+import com.scalar.backup.cassandra.service.BackupKey;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,8 +29,8 @@ public class BackupHistoryTest {
   private final String TARGET_IP = "127.0.0.1";
   private final BackupType BACKUP_TYPE = BackupType.NODE_SNAPSHOT;
   private final String SNAPSHOT_ID = "snapshot_id";
-  private final long BACKUP_ID = 1L;
-  private final BackupStatus BACKUP_STATUS = BackupStatus.COMPLETED;
+  private final long INCREMENTAL_ID = 1L;
+  private final OperationStatus BACKUP_STATUS = OperationStatus.COMPLETED;
   private final int N = 3;
   @Mock private Connection connection;
   @Mock private PreparedStatement insert;
@@ -67,19 +67,20 @@ public class BackupHistoryTest {
     // Arrange
     when(insert.executeUpdate()).thenReturn(1);
     doNothing().when(insert).clearParameters();
-    BackupRequest request =
-        BackupRequest.newBuilder()
-            .setClusterId(CLUSTER_ID)
-            .setTargetIp(TARGET_IP)
-            .setBackupType(BACKUP_TYPE.get())
+    BackupKey key =
+        BackupKey.newBuilder()
+            .clusterId(CLUSTER_ID)
+            .targetIp(TARGET_IP)
+            .snapshotId(SNAPSHOT_ID)
+            .incrementalId(INCREMENTAL_ID)
             .build();
 
     // Act
-    history.insert(request, SNAPSHOT_ID, BACKUP_ID, BACKUP_STATUS);
+    history.insert(key, BACKUP_TYPE, BACKUP_STATUS);
 
     // Assert
     verify(insert).setString(1, SNAPSHOT_ID);
-    verify(insert).setLong(2, BACKUP_ID);
+    verify(insert).setLong(2, INCREMENTAL_ID);
     verify(insert).setString(3, CLUSTER_ID);
     verify(insert).setString(4, TARGET_IP);
     verify(insert).setInt(5, BACKUP_TYPE.get());
@@ -94,24 +95,25 @@ public class BackupHistoryTest {
     SQLException toThrow = mock(SQLException.class);
     when(insert.executeUpdate()).thenThrow(toThrow);
     doNothing().when(insert).clearParameters();
-    BackupRequest request =
-        BackupRequest.newBuilder()
-            .setClusterId(CLUSTER_ID)
-            .setTargetIp(TARGET_IP)
-            .setBackupType(BACKUP_TYPE.get())
+    BackupKey key =
+        BackupKey.newBuilder()
+            .clusterId(CLUSTER_ID)
+            .targetIp(TARGET_IP)
+            .snapshotId(SNAPSHOT_ID)
+            .incrementalId(INCREMENTAL_ID)
             .build();
 
     // Act Assert
     assertThatThrownBy(
             () -> {
-              history.insert(request, SNAPSHOT_ID, BACKUP_ID, BACKUP_STATUS);
+              history.insert(key, BACKUP_TYPE, BACKUP_STATUS);
             })
         .isInstanceOf(StatusDatabaseException.class)
         .hasCause(toThrow);
 
     // Assert
     verify(insert).setString(1, SNAPSHOT_ID);
-    verify(insert).setLong(2, BACKUP_ID);
+    verify(insert).setLong(2, INCREMENTAL_ID);
     verify(insert).setString(3, CLUSTER_ID);
     verify(insert).setString(4, TARGET_IP);
     verify(insert).setInt(5, BACKUP_TYPE.get());
@@ -125,16 +127,21 @@ public class BackupHistoryTest {
     // Arrange
     when(update.executeUpdate()).thenReturn(1);
     doNothing().when(update).clearParameters();
-    BackupRequest request =
-        BackupRequest.newBuilder().setClusterId(CLUSTER_ID).setTargetIp(TARGET_IP).build();
+    BackupKey key =
+        BackupKey.newBuilder()
+            .clusterId(CLUSTER_ID)
+            .targetIp(TARGET_IP)
+            .snapshotId(SNAPSHOT_ID)
+            .incrementalId(INCREMENTAL_ID)
+            .build();
 
     // Act
-    history.update(request, SNAPSHOT_ID, BACKUP_ID, BACKUP_STATUS);
+    history.update(key, BACKUP_STATUS);
 
     // Assert
     verify(update).setInt(1, BACKUP_STATUS.getNumber());
     verify(update).setString(3, SNAPSHOT_ID);
-    verify(update).setLong(4, BACKUP_ID);
+    verify(update).setLong(4, INCREMENTAL_ID);
     verify(update).setString(5, CLUSTER_ID);
     verify(update).setString(6, TARGET_IP);
     verify(update).executeUpdate();
@@ -147,13 +154,18 @@ public class BackupHistoryTest {
     SQLException toThrow = mock(SQLException.class);
     when(update.executeUpdate()).thenThrow(toThrow);
     doNothing().when(update).clearParameters();
-    BackupRequest request =
-        BackupRequest.newBuilder().setClusterId(CLUSTER_ID).setTargetIp(TARGET_IP).build();
+    BackupKey key =
+        BackupKey.newBuilder()
+            .clusterId(CLUSTER_ID)
+            .targetIp(TARGET_IP)
+            .snapshotId(SNAPSHOT_ID)
+            .incrementalId(INCREMENTAL_ID)
+            .build();
 
     // Act Assert
     assertThatThrownBy(
             () -> {
-              history.update(request, SNAPSHOT_ID, BACKUP_ID, BACKUP_STATUS);
+              history.update(key, BACKUP_STATUS);
             })
         .isInstanceOf(StatusDatabaseException.class)
         .hasCause(toThrow);
@@ -161,7 +173,7 @@ public class BackupHistoryTest {
     // Assert
     verify(update).setInt(1, BACKUP_STATUS.getNumber());
     verify(update).setString(3, SNAPSHOT_ID);
-    verify(update).setLong(4, BACKUP_ID);
+    verify(update).setLong(4, INCREMENTAL_ID);
     verify(update).setString(5, CLUSTER_ID);
     verify(update).setString(6, TARGET_IP);
     verify(update).executeUpdate();

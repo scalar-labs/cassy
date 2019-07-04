@@ -18,46 +18,43 @@ public interface BackupRequestOrBuilder extends
       getClusterIdBytes();
 
   /**
-   * <code>uint32 backup_type = 2;</code>
-   */
-  int getBackupType();
-
-  /**
-   * <code>string target_ip = 3;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>string target_ip = 2;</code>
    */
   java.lang.String getTargetIp();
   /**
-   * <code>string target_ip = 3;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>string target_ip = 2;</code>
    */
   com.google.protobuf.ByteString
       getTargetIpBytes();
 
   /**
-   * <code>repeated string keyspaces = 4;</code>
-   */
-  java.util.List<java.lang.String>
-      getKeyspacesList();
-  /**
-   * <code>repeated string keyspaces = 4;</code>
-   */
-  int getKeyspacesCount();
-  /**
-   * <code>repeated string keyspaces = 4;</code>
-   */
-  java.lang.String getKeyspaces(int index);
-  /**
-   * <code>repeated string keyspaces = 4;</code>
-   */
-  com.google.protobuf.ByteString
-      getKeyspacesBytes(int index);
-
-  /**
-   * <code>string snapshot_id = 5;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>string snapshot_id = 3;</code>
    */
   java.lang.String getSnapshotId();
   /**
-   * <code>string snapshot_id = 5;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>string snapshot_id = 3;</code>
    */
   com.google.protobuf.ByteString
       getSnapshotIdBytes();
+
+  /**
+   * <code>uint32 backup_type = 4;</code>
+   */
+  int getBackupType();
 }

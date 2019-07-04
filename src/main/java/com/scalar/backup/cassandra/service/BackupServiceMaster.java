@@ -6,7 +6,6 @@ import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.config.BackupType;
 import com.scalar.backup.cassandra.exception.RemoteExecutionException;
 import com.scalar.backup.cassandra.jmx.JmxManager;
-import com.scalar.backup.cassandra.rpc.BackupRequest;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -25,79 +24,73 @@ public class BackupServiceMaster extends AbstractServiceMaster {
     super(config, jmx, executor);
   }
 
-  public void takeBackup(String backupId, BackupRequest request) {
+  public void takeBackup(List<BackupKey> backupKeys, BackupType type) {
     if (!areAllNodesAlive()) {
       throw new RemoteExecutionException(
           "This operation is allowed only when all the nodes are alive at the moment.");
     }
-    // TODO: status update
 
-    switch (BackupType.getByType(request.getBackupType())) {
+    switch (type) {
       case CLUSTER_SNAPSHOT:
-        takeClusterSnapshots(backupId, request);
+        takeClusterSnapshots(backupKeys, type);
         break;
       case NODE_SNAPSHOT:
       case NODE_INCREMENTAL:
-        takeNodesBackups(backupId, request);
+        takeNodesBackups(backupKeys, type);
         break;
       default:
         throw new IllegalArgumentException("Unsupported backup type.");
     }
   }
 
-  private void takeClusterSnapshots(String backupId, BackupRequest request) {
+  private void takeClusterSnapshots(List<BackupKey> backupKeys, BackupType type) {
     // 1. TODO: stop DLs (coming in a later PR)
 
     // 2. take snapshots of all the nodes
-    takeNodesSnapshots(backupId, jmx.getLiveNodes(), request);
+    takeNodesSnapshots(backupKeys, type);
 
     // 3. TODO: start DLs (coming in a later PR)
 
     // 4. copy snapshots in parallel
-    uploadNodesBackups(backupId, jmx.getLiveNodes(), request);
+    uploadNodesBackups(backupKeys, type);
   }
 
-  private void takeNodesBackups(String backupId, BackupRequest request) {
-    List<String> targets = jmx.getLiveNodes();
-    if (!request.getTargetIp().isEmpty()) {
-      targets = Arrays.asList(request.getTargetIp());
-    }
-
+  private void takeNodesBackups(List<BackupKey> backupKeys, BackupType type) {
     // 1. take snapshots of the specified nodes if NODE_SNAPSHOT
-    if (request.getBackupType() == BackupType.NODE_SNAPSHOT.get()) {
-      takeNodesSnapshots(backupId, targets, request);
+    if (type == BackupType.NODE_SNAPSHOT) {
+      takeNodesSnapshots(backupKeys, type);
     }
 
     // 2. copy backups in parallel
-    uploadNodesBackups(backupId, targets, request);
+    uploadNodesBackups(backupKeys, type);
   }
 
-  private void takeNodesSnapshots(String backupId, List<String> targets, BackupRequest request) {
-    String[] keyspaces = getTargetKeyspaces(request).toArray(new String[0]);
+  private void takeNodesSnapshots(List<BackupKey> backupKeys, BackupType type) {
+    String[] keyspaces = jmx.getKeyspaces().toArray(new String[0]);
 
     ExecutorService executor = Executors.newCachedThreadPool();
-    targets.forEach(
-        ip ->
+    backupKeys.forEach(
+        backupKey ->
             executor.submit(
                 () -> {
-                  JmxManager eachJmx = getJmx(ip, config.getJmxPort());
+                  JmxManager eachJmx = getJmx(backupKey.getTargetIp(), config.getJmxPort());
                   eachJmx.clearSnapshot(null, keyspaces);
-                  eachJmx.takeSnapshot(backupId, keyspaces);
+                  eachJmx.takeSnapshot(backupKey.getSnapshotId(), keyspaces);
                 }));
     awaitTermination(executor, "takeNodesSnapshots");
   }
 
-  private void uploadNodesBackups(String backupId, List<String> targets, BackupRequest request) {
+  private void uploadNodesBackups(List<BackupKey> backupKeys, BackupType type) {
     // Parallel upload for now. It will be adjusted based on workload
     ExecutorService executor = Executors.newCachedThreadPool();
-    targets.forEach(
-        ip ->
+    backupKeys.forEach(
+        backupKey ->
             executor.submit(
                 () -> {
-                  if (request.getBackupType() != BackupType.NODE_INCREMENTAL.get()) {
-                    removeIncremental(ip);
+                  if (type != BackupType.NODE_INCREMENTAL) {
+                    removeIncremental(backupKey.getTargetIp());
                   }
-                  uploadNodeBackups(backupId, ip, request);
+                  uploadNodeBackups(backupKey, type);
                 }));
     awaitTermination(executor, "copyNodesBackups");
   }
@@ -108,20 +101,20 @@ public class BackupServiceMaster extends AbstractServiceMaster {
   }
 
   @VisibleForTesting
-  void uploadNodeBackups(String backupId, String ip, BackupRequest request) {
+  void uploadNodeBackups(BackupKey backupKey, BackupType type) {
     List<String> arguments =
         Arrays.asList(
             CLUSTER_ID_OPTION + jmx.getClusterName(),
-            BACKUP_ID_OPTION + backupId,
-            TARGET_IP_OPTION + ip,
+            BACKUP_ID_OPTION + backupKey.getSnapshotId(),
+            TARGET_IP_OPTION + backupKey.getTargetIp(),
             DATA_DIR_OPTION + jmx.getAllDataFileLocations().get(0),
             STORE_BASE_URI_OPTION + config.getStorageBaseUri(),
-            KEYSPACES_OPTION + Joiner.on(',').join(getTargetKeyspaces(request)),
-            BACKUP_TYPE_OPTION + request.getBackupType());
+            KEYSPACES_OPTION + Joiner.on(',').join(jmx.getKeyspaces()),
+            BACKUP_TYPE_OPTION + type.get());
 
     RemoteCommand command =
         RemoteCommand.newBuilder()
-            .ip(ip)
+            .ip(backupKey.getTargetIp())
             .username(config.getUserName())
             .privateKeyFile(Paths.get(config.getPrivateKeyPath()))
             .name(BACKUP_COMMAND)
@@ -130,15 +123,5 @@ public class BackupServiceMaster extends AbstractServiceMaster {
             .build();
 
     executor.execute(command);
-  }
-
-  private List<String> getTargetKeyspaces(BackupRequest request) {
-    List<String> keyspaces;
-    if (request.getKeyspacesList().isEmpty()) {
-      keyspaces = jmx.getKeyspaces();
-    } else {
-      keyspaces = request.getKeyspacesList();
-    }
-    return keyspaces;
   }
 }

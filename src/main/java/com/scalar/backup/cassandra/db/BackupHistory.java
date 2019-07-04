@@ -3,8 +3,8 @@ package com.scalar.backup.cassandra.db;
 import com.scalar.backup.cassandra.config.BackupType;
 import com.scalar.backup.cassandra.exception.StatusDatabaseException;
 import com.scalar.backup.cassandra.rpc.BackupListingRequest;
-import com.scalar.backup.cassandra.rpc.BackupRequest;
-import com.scalar.backup.cassandra.rpc.BackupStatus;
+import com.scalar.backup.cassandra.rpc.OperationStatus;
+import com.scalar.backup.cassandra.service.BackupKey;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,17 +55,17 @@ public class BackupHistory {
     }
   }
 
-  public void insert(BackupRequest request, String snapshotId, long backupId, BackupStatus status) {
+  public void insert(BackupKey backupKey, BackupType type, OperationStatus status) {
     try {
-      insertImpl(request, snapshotId, backupId, status);
+      insertImpl(backupKey, type, status);
     } catch (SQLException e) {
       throw new StatusDatabaseException(e);
     }
   }
 
-  public void update(BackupRequest request, String snapshotId, long backupId, BackupStatus status) {
+  public void update(BackupKey backupKey, OperationStatus status) {
     try {
-      updateImpl(request, snapshotId, backupId, status);
+      updateImpl(backupKey, status);
     } catch (SQLException e) {
       throw new StatusDatabaseException(e);
     }
@@ -99,16 +99,15 @@ public class BackupHistory {
     return records;
   }
 
-  private void insertImpl(
-      BackupRequest request, String snapshotId, long backupId, BackupStatus status)
+  private void insertImpl(BackupKey backupKey, BackupType type, OperationStatus status)
       throws SQLException {
     insert.clearParameters();
     long currentTimestamp = System.currentTimeMillis();
-    insert.setString(1, snapshotId);
-    insert.setLong(2, backupId);
-    insert.setString(3, request.getClusterId());
-    insert.setString(4, request.getTargetIp());
-    insert.setInt(5, request.getBackupType());
+    insert.setString(1, backupKey.getSnapshotId());
+    insert.setLong(2, backupKey.getIncrementalId());
+    insert.setString(3, backupKey.getClusterId());
+    insert.setString(4, backupKey.getTargetIp());
+    insert.setInt(5, type.get());
     insert.setLong(6, currentTimestamp);
     insert.setLong(7, currentTimestamp);
     insert.setInt(8, status.getNumber());
@@ -117,17 +116,15 @@ public class BackupHistory {
     }
   }
 
-  private void updateImpl(
-      BackupRequest request, String snapshotId, long backupId, BackupStatus status)
-      throws SQLException {
+  private void updateImpl(BackupKey backupKey, OperationStatus status) throws SQLException {
     update.clearParameters();
     long currentTimestamp = System.currentTimeMillis();
     update.setInt(1, status.getNumber());
     update.setLong(2, currentTimestamp);
-    update.setString(3, snapshotId);
-    update.setLong(4, backupId);
-    update.setString(5, request.getClusterId());
-    update.setString(6, request.getTargetIp());
+    update.setString(3, backupKey.getSnapshotId());
+    update.setLong(4, backupKey.getIncrementalId());
+    update.setString(5, backupKey.getClusterId());
+    update.setString(6, backupKey.getTargetIp());
 
     if (update.executeUpdate() != 1) {
       throw new SQLException("Updating the record failed.");
@@ -158,13 +155,13 @@ public class BackupHistory {
       while (resultSet.next()) {
         BackupHistoryRecord.Builder builder = BackupHistoryRecord.newBuilder();
         builder.snapshotId(resultSet.getString("snapshot_id"));
-        builder.backupId(resultSet.getLong("backup_id"));
+        builder.incrementalId(resultSet.getLong("incremental_id"));
         builder.clusterId(resultSet.getString("cluster_id"));
         builder.targetIp(resultSet.getString("target_ip"));
         builder.backupType(BackupType.getByType(resultSet.getInt("backup_type")));
         builder.createdAt(resultSet.getLong("created_at"));
         builder.updatedAt(resultSet.getLong("updated_at"));
-        builder.status(BackupStatus.forNumber(resultSet.getInt("status")));
+        builder.status(OperationStatus.forNumber(resultSet.getInt("status")));
         records.add(builder.build());
       }
     } catch (SQLException e) {

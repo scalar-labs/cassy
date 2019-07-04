@@ -33,7 +33,7 @@ service CassandraBackup {
     }
     rpc RestoreBackup (RestoreRequest) returns (RestoreResponse) {
         option (google.api.http) = {
-            put: "/v1/clusters/{cluster_id}/data/{backup_id}"
+            put: "/v1/clusters/{cluster_id}/data/{snapshot_id}"
             body: "*"
         };
     }
@@ -71,44 +71,48 @@ message BackupListingRequest {
 
 message BackupListingResponse {
     message Entry {
-        string snapshot_id = 1;
-        uint64 backup_id = 2;
-        string cluster_id = 3;
-        string target_ip = 4;
+        string cluster_id = 1;
+        string target_ip = 2;
+        string snapshot_id = 3;
+        int64 incremental_id = 4;
         uint32 backup_type = 5;
-        BackupStatus status = 6;
+        OperationStatus status = 6;
         uint64 timestamp = 7;
     }
     repeated Entry entries = 1;
 }
 
-enum BackupStatus {
+enum OperationStatus {
     UNKNOWN = 0;
-    STARTED = 1;
-    COMPLETED = 2;
-    FAILED = 3;
+    INITIALIZED = 1;
+    STARTED = 2;
+    COMPLETED = 3;
+    FAILED = 4;
 }
 
 message BackupRequest {
     string cluster_id = 1;
-    uint32 backup_type = 2;
-    string target_ip = 3;
-    repeated string keyspaces = 4;
-    string snapshot_id = 5;
+    string target_ip = 2; // optional
+    string snapshot_id = 3; // optional
+    uint32 backup_type = 4;
 }
 
 message BackupResponse {
-    string message = 1;
-    uint64 backup_id = 2;
+    OperationStatus status = 1;
+    string message = 2;
+    string snapshot_id = 3;
+    int64 incremental_id = 4;
 }
 
 message RestoreRequest {
     string cluster_id = 1;
-    uint64 backup_id = 2;
-    uint32 restore_type = 3;
-    repeated string target_ips = 4;
+    repeated string target_ips = 2; // optional
+    string snapshot_id = 3;
+    uint32 restore_type = 4;
+    bool snapshot_only = 5; // optional (default: false)
 }
 
 message RestoreResponse {
-    string message = 1;
+    OperationStatus status = 1;
+    string message = 2;
 }

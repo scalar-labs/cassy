@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.config.BackupType;
 import com.scalar.backup.cassandra.jmx.JmxManager;
-import com.scalar.backup.cassandra.rpc.BackupRequest;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.assertj.core.util.Lists;
@@ -26,7 +26,9 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 public class BackupServiceMasterTest {
-  private static final String ANY_BACKUP_ID = "backup_id";
+  private static final String CLUSTER_ID = "cluster_id";
+  private static final String SNAPSHOT_ID = "snapshot_id";
+  private static final long INCREMENTAL_ID = 0L;
   private static final int JMX_PORT = 7199;
   private static final String NODE1 = "192.168.1.1";
   private static final String NODE2 = "192.168.1.2";
@@ -46,12 +48,27 @@ public class BackupServiceMasterTest {
     MockitoAnnotations.initMocks(this);
   }
 
-  private void prepareNodes(JmxManager mockJmx, List<String> liveNodes) {
-    when(mockJmx.getLiveNodes()).thenReturn(liveNodes);
+  private void prepareNodes(JmxManager mockJmx, List<String> nodes) {
+    when(mockJmx.getLiveNodes()).thenReturn(nodes);
     when(mockJmx.getJoiningNodes()).thenReturn(Lists.emptyList());
     when(mockJmx.getMovingNodes()).thenReturn(Lists.emptyList());
     when(mockJmx.getLeavingNodes()).thenReturn(Lists.emptyList());
     when(mockJmx.getUnreachableNodes()).thenReturn(Lists.emptyList());
+  }
+
+  private List<BackupKey> prepareBackupKeys(
+      String clusterId, List<String> nodes, String snaphotId, long incrementalId) {
+    List<BackupKey> backupKeys = new ArrayList<>();
+    nodes.forEach(
+        n ->
+            backupKeys.add(
+                BackupKey.newBuilder()
+                    .clusterId(clusterId)
+                    .targetIp(n)
+                    .snapshotId(snaphotId)
+                    .incrementalId(incrementalId)
+                    .build()));
+    return backupKeys;
   }
 
   @Test
@@ -60,50 +77,22 @@ public class BackupServiceMasterTest {
     when(config.getJmxPort()).thenReturn(JMX_PORT);
     when(jmx.getKeyspaces()).thenReturn(keyspaces);
     prepareNodes(jmx, nodes);
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
-    BackupRequest request =
-        BackupRequest.newBuilder().setBackupType(BackupType.CLUSTER_SNAPSHOT.get()).build();
-    doNothing().when(master).uploadNodeBackups(anyString(), anyString(), any(BackupRequest.class));
+    doNothing().when(master).uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
     doNothing().when(master).removeIncremental(anyString());
 
     // Act
-    master.takeBackup(ANY_BACKUP_ID, request);
+    master.takeBackup(keys, BackupType.CLUSTER_SNAPSHOT);
 
     // Assert
     nodes.forEach(ip -> verify(master).getJmx(ip, JMX_PORT));
     verify(eachJmx, times(nodes.size())).clearSnapshot(null, keyspaces.toArray(new String[0]));
     verify(eachJmx, times(nodes.size()))
-        .takeSnapshot(ANY_BACKUP_ID, keyspaces.toArray(new String[0]));
-    nodes.forEach(ip -> verify(master).uploadNodeBackups(ANY_BACKUP_ID, ip, request));
+        .takeSnapshot(SNAPSHOT_ID, keyspaces.toArray(new String[0]));
+    keys.forEach(key -> verify(master).uploadNodeBackups(key, BackupType.CLUSTER_SNAPSHOT));
     nodes.forEach(ip -> verify(master).removeIncremental(ip));
-  }
-
-  @Test
-  public void
-      takeBackup_ClusterSnapshotTypeAndKeyspacesGiven_takeSnapshotsForTheKeyspacesAndUploadOnEveryNode() {
-    // Arrange
-    when(config.getJmxPort()).thenReturn(JMX_PORT);
-    List<String> someKeyspaces = Arrays.asList(keyspaces.get(0));
-    prepareNodes(jmx, nodes);
-    JmxManager eachJmx = mock(JmxManager.class);
-    doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
-    BackupRequest request =
-        BackupRequest.newBuilder()
-            .setBackupType(BackupType.CLUSTER_SNAPSHOT.get())
-            .addAllKeyspaces(someKeyspaces)
-            .build();
-    doNothing().when(master).uploadNodeBackups(anyString(), anyString(), any(BackupRequest.class));
-    doNothing().when(master).removeIncremental(anyString());
-
-    // Act
-    master.takeBackup(ANY_BACKUP_ID, request);
-
-    // Assert
-    nodes.forEach(n -> verify(master).getJmx(n, JMX_PORT));
-    verify(eachJmx, times(nodes.size())).clearSnapshot(null, someKeyspaces.toArray(new String[0]));
-    verify(eachJmx, times(nodes.size()))
-        .takeSnapshot(ANY_BACKUP_ID, someKeyspaces.toArray(new String[0]));
   }
 
   @Test
@@ -112,49 +101,21 @@ public class BackupServiceMasterTest {
     when(config.getJmxPort()).thenReturn(JMX_PORT);
     when(jmx.getKeyspaces()).thenReturn(keyspaces);
     prepareNodes(jmx, nodes);
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
-    BackupRequest request =
-        BackupRequest.newBuilder().setBackupType(BackupType.NODE_SNAPSHOT.get()).build();
-    doNothing().when(master).uploadNodeBackups(anyString(), anyString(), any(BackupRequest.class));
+    doNothing().when(master).uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
     doNothing().when(master).removeIncremental(anyString());
 
     // Act
-    master.takeBackup(ANY_BACKUP_ID, request);
+    master.takeBackup(keys, BackupType.NODE_SNAPSHOT);
 
     // Assert
     nodes.forEach(n -> verify(master).getJmx(n, JMX_PORT));
     verify(eachJmx, times(nodes.size())).clearSnapshot(null, keyspaces.toArray(new String[0]));
     verify(eachJmx, times(nodes.size()))
-        .takeSnapshot(ANY_BACKUP_ID, keyspaces.toArray(new String[0]));
-    nodes.forEach(ip -> verify(master).uploadNodeBackups(ANY_BACKUP_ID, ip, request));
-    nodes.forEach(ip -> verify(master).removeIncremental(ip));
-  }
-
-  @Test
-  public void
-      takeBackup_NodeSnapshotTypeAndKeyspacesGiven_takeSnapshotsForTheKeyspacesAndUploadOnEveryNode() {
-    // Arrange
-    when(config.getJmxPort()).thenReturn(JMX_PORT);
-    List<String> someKeyspaces = Arrays.asList(keyspaces.get(0));
-    when(jmx.getKeyspaces()).thenReturn(someKeyspaces);
-    prepareNodes(jmx, nodes);
-    JmxManager eachJmx = mock(JmxManager.class);
-    doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
-    BackupRequest request =
-        BackupRequest.newBuilder().setBackupType(BackupType.NODE_SNAPSHOT.get()).build();
-    doNothing().when(master).uploadNodeBackups(anyString(), anyString(), any(BackupRequest.class));
-    doNothing().when(master).removeIncremental(anyString());
-
-    // Act
-    master.takeBackup(ANY_BACKUP_ID, request);
-
-    // Assert
-    nodes.forEach(n -> verify(master).getJmx(n, JMX_PORT));
-    verify(eachJmx, times(nodes.size())).clearSnapshot(null, someKeyspaces.toArray(new String[0]));
-    verify(eachJmx, times(nodes.size()))
-        .takeSnapshot(ANY_BACKUP_ID, someKeyspaces.toArray(new String[0]));
-    nodes.forEach(ip -> verify(master).uploadNodeBackups(ANY_BACKUP_ID, ip, request));
+        .takeSnapshot(SNAPSHOT_ID, keyspaces.toArray(new String[0]));
+    keys.forEach(key -> verify(master).uploadNodeBackups(key, BackupType.NODE_SNAPSHOT));
     nodes.forEach(ip -> verify(master).removeIncremental(ip));
   }
 
@@ -165,22 +126,21 @@ public class BackupServiceMasterTest {
     when(jmx.getKeyspaces()).thenReturn(keyspaces);
     List<String> someNodes = Arrays.asList(nodes.get(0));
     prepareNodes(jmx, someNodes);
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, INCREMENTAL_ID);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
-    BackupRequest request =
-        BackupRequest.newBuilder().setBackupType(BackupType.NODE_SNAPSHOT.get()).build();
-    doNothing().when(master).uploadNodeBackups(anyString(), anyString(), any(BackupRequest.class));
+    doNothing().when(master).uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
     doNothing().when(master).removeIncremental(anyString());
 
     // Act
-    master.takeBackup(ANY_BACKUP_ID, request);
+    master.takeBackup(keys, BackupType.NODE_SNAPSHOT);
 
     // Assert
     someNodes.forEach(n -> verify(master).getJmx(n, JMX_PORT));
     verify(eachJmx, times(someNodes.size())).clearSnapshot(null, keyspaces.toArray(new String[0]));
     verify(eachJmx, times(someNodes.size()))
-        .takeSnapshot(ANY_BACKUP_ID, keyspaces.toArray(new String[0]));
-    someNodes.forEach(ip -> verify(master).uploadNodeBackups(ANY_BACKUP_ID, ip, request));
+        .takeSnapshot(SNAPSHOT_ID, keyspaces.toArray(new String[0]));
+    keys.forEach(key -> verify(master).uploadNodeBackups(key, BackupType.NODE_SNAPSHOT));
     someNodes.forEach(ip -> verify(master).removeIncremental(ip));
   }
 
@@ -189,16 +149,15 @@ public class BackupServiceMasterTest {
     // Arrange
     when(jmx.getKeyspaces()).thenReturn(keyspaces);
     prepareNodes(jmx, nodes);
-    BackupRequest request =
-        BackupRequest.newBuilder().setBackupType(BackupType.NODE_INCREMENTAL.get()).build();
-    doNothing().when(master).uploadNodeBackups(anyString(), anyString(), any(BackupRequest.class));
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
+    doNothing().when(master).uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
 
     // Act
-    master.takeBackup(ANY_BACKUP_ID, request);
+    master.takeBackup(keys, BackupType.NODE_INCREMENTAL);
 
     // Assert
     verify(master, never()).getJmx(anyString(), anyInt());
-    nodes.forEach(ip -> verify(master).uploadNodeBackups(ANY_BACKUP_ID, ip, request));
+    keys.forEach(key -> verify(master).uploadNodeBackups(key, BackupType.NODE_INCREMENTAL));
     verify(master, never()).removeIncremental(anyString());
   }
 
@@ -208,16 +167,15 @@ public class BackupServiceMasterTest {
     when(jmx.getKeyspaces()).thenReturn(keyspaces);
     List<String> someNodes = Arrays.asList(nodes.get(0));
     prepareNodes(jmx, someNodes);
-    BackupRequest request =
-        BackupRequest.newBuilder().setBackupType(BackupType.NODE_INCREMENTAL.get()).build();
-    doNothing().when(master).uploadNodeBackups(anyString(), anyString(), any(BackupRequest.class));
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, INCREMENTAL_ID);
+    doNothing().when(master).uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
 
     // Act
-    master.takeBackup(ANY_BACKUP_ID, request);
+    master.takeBackup(keys, BackupType.NODE_INCREMENTAL);
 
     // Assert
     verify(master, never()).getJmx(anyString(), anyInt());
-    someNodes.forEach(ip -> verify(master).uploadNodeBackups(ANY_BACKUP_ID, ip, request));
+    keys.forEach(key -> verify(master).uploadNodeBackups(key, BackupType.NODE_INCREMENTAL));
     verify(master, never()).removeIncremental(anyString());
   }
 }

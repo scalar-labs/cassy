@@ -5,14 +5,13 @@ import com.scalar.backup.cassandra.db.BackupHistory;
 import com.scalar.backup.cassandra.rpc.CassandraBackupGrpc;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
-
-import javax.annotation.concurrent.Immutable;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public final class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {

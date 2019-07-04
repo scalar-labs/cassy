@@ -3,6 +3,7 @@ package com.scalar.backup.cassandra.server;
 import com.google.common.annotations.VisibleForTesting;
 import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.config.BackupType;
+import com.scalar.backup.cassandra.config.RestoreType;
 import com.scalar.backup.cassandra.db.BackupHistory;
 import com.scalar.backup.cassandra.db.BackupHistoryRecord;
 import com.scalar.backup.cassandra.jmx.JmxManager;
@@ -10,23 +11,25 @@ import com.scalar.backup.cassandra.rpc.BackupListingRequest;
 import com.scalar.backup.cassandra.rpc.BackupListingResponse;
 import com.scalar.backup.cassandra.rpc.BackupRequest;
 import com.scalar.backup.cassandra.rpc.BackupResponse;
-import com.scalar.backup.cassandra.rpc.BackupStatus;
 import com.scalar.backup.cassandra.rpc.CassandraBackupGrpc;
 import com.scalar.backup.cassandra.rpc.ClusterListingResponse;
 import com.scalar.backup.cassandra.rpc.NodeListingRequest;
 import com.scalar.backup.cassandra.rpc.NodeListingResponse;
+import com.scalar.backup.cassandra.rpc.OperationStatus;
 import com.scalar.backup.cassandra.rpc.RestoreRequest;
 import com.scalar.backup.cassandra.rpc.RestoreResponse;
+import com.scalar.backup.cassandra.service.BackupKey;
 import com.scalar.backup.cassandra.service.BackupServiceMaster;
 import com.scalar.backup.cassandra.service.RemoteCommandExecutor;
 import com.scalar.backup.cassandra.service.RestoreServiceMaster;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
-
-import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
+import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public final class BackupServerController extends CassandraBackupGrpc.CassandraBackupImplBase {
@@ -83,11 +86,11 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
           BackupListingResponse.Entry entry =
               BackupListingResponse.Entry.newBuilder()
                   .setSnapshotId(r.getSnapshotId())
-                  .setBackupId(r.getBackupId())
+                  .setIncrementalId(r.getIncrementalId())
                   .setClusterId(r.getClusterId())
                   .setTargetIp(r.getTargetIp())
                   .setBackupType(r.getBackupType().get())
-                  .setStatus(BackupStatus.forNumber(r.getStatus().getNumber()))
+                  .setStatus(OperationStatus.forNumber(r.getStatus().getNumber()))
                   .setTimestamp(r.getUpdatedAt())
                   .build();
           builder.addEntries(entry);
@@ -111,33 +114,45 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
         && request.getBackupType() != BackupType.NODE_INCREMENTAL.get()) {
       responseObserver.onError(
           Status.INVALID_ARGUMENT
-              .withDescription("snapshot must be empty when taking snapshots.")
+              .withDescription("snapshot_id must be empty when taking snapshots.")
               .asRuntimeException());
       return;
     }
 
-    String snapshotId = request.getSnapshotId();
-    if (request.getSnapshotId().isEmpty()) {
-      snapshotId = UUID.randomUUID().toString();
-    }
-    long backupId = System.currentTimeMillis();
+    final String snapshotId =
+        request.getSnapshotId().isEmpty() ? UUID.randomUUID().toString() : request.getSnapshotId();
+    final long incrementalId = request.getSnapshotId().isEmpty() ? 0L : System.currentTimeMillis();
 
-    // TODO: it will be removed when the backup processing is asynchronous
-    history.insert(request, snapshotId, backupId, BackupStatus.STARTED);
-
-    BackupResponse.Builder builder = BackupResponse.newBuilder().setBackupId(backupId);
     JmxManager jmx = getJmx(config.getCassandraHost(), config.getJmxPort());
-    RemoteCommandExecutor executor = new RemoteCommandExecutor();
+
+    List<BackupKey> backupKeys = new ArrayList<>();
+    getTargets(request, jmx)
+        .forEach(
+            ip ->
+                backupKeys.add(
+                    BackupKey.newBuilder()
+                        .snapshotId(snapshotId)
+                        .incrementalId(incrementalId)
+                        .clusterId(jmx.getClusterName())
+                        .targetIp(ip)
+                        .build()));
+
+    BackupType type = BackupType.getByType(request.getBackupType());
+    backupKeys.forEach(backupKey -> history.insert(backupKey, type, OperationStatus.INITIALIZED));
+
+    BackupResponse.Builder builder =
+        BackupResponse.newBuilder().setSnapshotId(snapshotId).setIncrementalId(incrementalId);
 
     try {
-      new BackupServiceMaster(config, jmx, executor).takeBackup(snapshotId, request);
-
-      // TODO: it will be removed when the backup processing is asynchronous
-      history.update(request, snapshotId, backupId, BackupStatus.COMPLETED);
+      BackupServiceMaster master =
+          new BackupServiceMaster(config, jmx, new RemoteCommandExecutor());
+      // TODO: Future will be returned in a later PR
+      master.takeBackup(backupKeys, type);
+      backupKeys.forEach(backupKey -> history.update(backupKey, OperationStatus.STARTED));
     } catch (Exception e) {
       builder.setMessage(e.getMessage());
-      // TODO: it will be removed when the backup processing is asynchronous
-      history.update(request, snapshotId, backupId, BackupStatus.FAILED);
+      builder.setStatus(OperationStatus.FAILED);
+      backupKeys.forEach(backupKey -> history.update(backupKey, OperationStatus.FAILED));
     }
 
     responseObserver.onNext(builder.build());
@@ -147,17 +162,31 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
   @Override
   public void restoreBackup(
       RestoreRequest request, StreamObserver<RestoreResponse> responseObserver) {
-
-    // TODO: restoration status might be added in a later PR
-
     RestoreResponse.Builder builder = RestoreResponse.newBuilder();
     JmxManager jmx = getJmx(config.getCassandraHost(), config.getJmxPort());
     RemoteCommandExecutor executor = new RemoteCommandExecutor();
 
+    List<BackupKey> backupKeys = new ArrayList<>();
+    getTargets(request, jmx)
+        .forEach(
+            ip -> {
+              BackupKey.Builder keyBuilder =
+                  BackupKey.newBuilder()
+                      .snapshotId(request.getSnapshotId())
+                      .clusterId(jmx.getClusterName())
+                      .targetIp(ip);
+              if (request.getSnapshotOnly()) {
+                keyBuilder.incrementalId(0L);
+              }
+              backupKeys.add(keyBuilder.build());
+            });
+
     try {
-      new RestoreServiceMaster(config, jmx, executor).restoreBackup(request);
+      RestoreType type = RestoreType.getByType(request.getRestoreType());
+      new RestoreServiceMaster(config, jmx, executor).restoreBackup(backupKeys, type);
     } catch (Exception e) {
       builder.setMessage(e.getMessage());
+      builder.setStatus(OperationStatus.FAILED);
     }
 
     responseObserver.onNext(builder.build());
@@ -177,5 +206,15 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
   @VisibleForTesting
   JmxManager getJmx(String ip, int port) {
     return new JmxManager(ip, port);
+  }
+
+  private List<String> getTargets(BackupRequest request, JmxManager jmx) {
+    return request.getTargetIp().isEmpty()
+        ? jmx.getLiveNodes()
+        : Arrays.asList(request.getTargetIp());
+  }
+
+  private List<String> getTargets(RestoreRequest request, JmxManager jmx) {
+    return request.getTargetIpsList().isEmpty() ? jmx.getLiveNodes() : request.getTargetIpsList();
   }
 }
