@@ -6,7 +6,6 @@ import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.config.RestoreType;
 import com.scalar.backup.cassandra.exception.RemoteExecutionException;
 import com.scalar.backup.cassandra.jmx.JmxManager;
-import com.scalar.backup.cassandra.rpc.RestoreRequest;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -22,61 +21,45 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
     super(config, jmx, executor);
   }
 
-  public void restoreBackup(RestoreRequest request) {
+  public void restoreBackup(List<BackupKey> backupKeys, RestoreType type) {
     if (!areAllNodesAlive()) {
       throw new RemoteExecutionException(
           "This operation is allowed only when all the nodes are alive at the moment.");
     }
-    // TODO: status update
 
-    switch (RestoreType.getByType(request.getRestoreType())) {
-      case CLUSTER:
-        restoreClusterSnapshots(request);
-        break;
-      case NODE:
-        restoreNodesBackups(request);
-        break;
-      default:
-        throw new IllegalArgumentException("Unsupported restore type.");
+    if (type != RestoreType.CLUSTER && type != RestoreType.NODE) {
+      throw new IllegalArgumentException("Unsupported restore type.");
     }
+
+    downloadNodesBackups(backupKeys, type);
   }
 
-  private void restoreClusterSnapshots(RestoreRequest request) {
-    downloadNodesBackups(jmx.getLiveNodes(), request);
-  }
-
-  private void restoreNodesBackups(RestoreRequest request) {
-    downloadNodesBackups(request.getTargetIpsList(), request);
-  }
-
-  private void downloadNodesBackups(List<String> targets, RestoreRequest request) {
+  private void downloadNodesBackups(List<BackupKey> backupKeys, RestoreType type) {
     ExecutorService executor = Executors.newCachedThreadPool();
-    targets.forEach(
-        ip ->
+    backupKeys.forEach(
+        backupKey ->
             executor.submit(
                 () -> {
-                  downloadNodeBackups(ip, request);
+                  downloadNodeBackups(backupKey, type);
                 }));
     awaitTermination(executor, "downloadNodesBackups");
   }
 
   @VisibleForTesting
-  void downloadNodeBackups(String ip, RestoreRequest request) {
+  void downloadNodeBackups(BackupKey backupKey, RestoreType type) {
     List<String> arguments =
         Arrays.asList(
             CLUSTER_ID_OPTION + jmx.getClusterName(),
-            BACKUP_ID_OPTION + request.getBackupId(),
-            TARGET_IP_OPTION + ip,
-            // TODO: it will be updated in a later PR
-            // DATA_DIR_OPTION + jmx.getAllDataFileLocations().get(0),
-            DATA_DIR_OPTION + "/tmp/",
+            BACKUP_ID_OPTION + backupKey.getSnapshotId(),
+            TARGET_IP_OPTION + backupKey.getTargetIp(),
+            DATA_DIR_OPTION + jmx.getAllDataFileLocations().get(0),
             STORE_BASE_URI_OPTION + config.getStorageBaseUri(),
             KEYSPACES_OPTION + Joiner.on(',').join(jmx.getKeyspaces()),
-            RESTORE_TYPE_OPTION + request.getRestoreType());
+            RESTORE_TYPE_OPTION + type.get());
 
     RemoteCommand command =
         RemoteCommand.newBuilder()
-            .ip(ip)
+            .ip(backupKey.getTargetIp())
             .username(config.getUserName())
             .privateKeyFile(Paths.get(config.getPrivateKeyPath()))
             .name(RESTORE_COMMAND)

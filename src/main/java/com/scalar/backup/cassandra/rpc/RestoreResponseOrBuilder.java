@@ -8,11 +8,20 @@ public interface RestoreResponseOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string message = 1;</code>
+   * <code>.rpc.OperationStatus status = 1;</code>
+   */
+  int getStatusValue();
+  /**
+   * <code>.rpc.OperationStatus status = 1;</code>
+   */
+  com.scalar.backup.cassandra.rpc.OperationStatus getStatus();
+
+  /**
+   * <code>string message = 2;</code>
    */
   java.lang.String getMessage();
   /**
-   * <code>string message = 1;</code>
+   * <code>string message = 2;</code>
    */
   com.google.protobuf.ByteString
       getMessageBytes();

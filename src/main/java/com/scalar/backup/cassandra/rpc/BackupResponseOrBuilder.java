@@ -8,17 +8,36 @@ public interface BackupResponseOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string message = 1;</code>
+   * <code>.rpc.OperationStatus status = 1;</code>
+   */
+  int getStatusValue();
+  /**
+   * <code>.rpc.OperationStatus status = 1;</code>
+   */
+  com.scalar.backup.cassandra.rpc.OperationStatus getStatus();
+
+  /**
+   * <code>string message = 2;</code>
    */
   java.lang.String getMessage();
   /**
-   * <code>string message = 1;</code>
+   * <code>string message = 2;</code>
    */
   com.google.protobuf.ByteString
       getMessageBytes();
 
   /**
-   * <code>uint64 backup_id = 2;</code>
+   * <code>string snapshot_id = 3;</code>
    */
-  long getBackupId();
+  java.lang.String getSnapshotId();
+  /**
+   * <code>string snapshot_id = 3;</code>
+   */
+  com.google.protobuf.ByteString
+      getSnapshotIdBytes();
+
+  /**
+   * <code>int64 incremental_id = 4;</code>
+   */
+  long getIncrementalId();
 }

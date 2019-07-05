@@ -3,23 +3,23 @@ package com.scalar.backup.cassandra.db;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.scalar.backup.cassandra.config.BackupType;
-import com.scalar.backup.cassandra.rpc.BackupStatus;
+import com.scalar.backup.cassandra.rpc.OperationStatus;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public final class BackupHistoryRecord {
   private final String snapshotId;
-  private final long backupId;
+  private final long incrementalId;
   private final String clusterId;
   private final String targetIp;
   private final BackupType backupType;
   private final long createdAt;
   private final long updatedAt;
-  private final BackupStatus status;
+  private final OperationStatus status;
 
   private BackupHistoryRecord(Builder builder) {
     this.snapshotId = builder.snapshotId;
-    this.backupId = builder.backupId;
+    this.incrementalId = builder.incrementalId;
     this.clusterId = builder.clusterId;
     this.targetIp = builder.targetIp;
     this.backupType = builder.backupType;
@@ -32,8 +32,8 @@ public final class BackupHistoryRecord {
     return snapshotId;
   }
 
-  public long getBackupId() {
-    return backupId;
+  public long getIncrementalId() {
+    return incrementalId;
   }
 
   public String getClusterId() {
@@ -56,7 +56,7 @@ public final class BackupHistoryRecord {
     return updatedAt;
   }
 
-  public BackupStatus getStatus() {
+  public OperationStatus getStatus() {
     return status;
   }
 
@@ -66,13 +66,13 @@ public final class BackupHistoryRecord {
 
   public static final class Builder {
     private String snapshotId;
-    private long backupId;
+    private long incrementalId = -1;
     private String clusterId;
     private String targetIp;
     private BackupType backupType;
     private long createdAt;
     private long updatedAt;
-    private BackupStatus status;
+    private OperationStatus status;
 
     public Builder snapshotId(String snapshotId) {
       checkArgument(snapshotId != null);
@@ -80,9 +80,8 @@ public final class BackupHistoryRecord {
       return this;
     }
 
-    public Builder backupId(long backupId) {
-      checkArgument(backupId != 0L);
-      this.backupId = backupId;
+    public Builder incrementalId(long incrementalId) {
+      this.incrementalId = incrementalId;
       return this;
     }
 
@@ -116,7 +115,7 @@ public final class BackupHistoryRecord {
       return this;
     }
 
-    public Builder status(BackupStatus status) {
+    public Builder status(OperationStatus status) {
       checkArgument(status != null);
       this.status = status;
       return this;
@@ -124,7 +123,7 @@ public final class BackupHistoryRecord {
 
     public BackupHistoryRecord build() {
       if (snapshotId == null
-          || backupId == 0L
+          || incrementalId < 0
           || clusterId == null
           || targetIp == null
           || backupType == null

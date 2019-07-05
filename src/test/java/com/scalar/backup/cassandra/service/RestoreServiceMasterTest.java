@@ -1,7 +1,6 @@
 package com.scalar.backup.cassandra.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,7 +8,7 @@ import static org.mockito.Mockito.when;
 import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.config.RestoreType;
 import com.scalar.backup.cassandra.jmx.JmxManager;
-import com.scalar.backup.cassandra.rpc.RestoreRequest;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.assertj.core.util.Lists;
@@ -22,6 +21,9 @@ import org.mockito.Spy;
 
 public class RestoreServiceMasterTest {
   private static final int JMX_PORT = 7199;
+  private static final String CLUSTER_ID = "cluster_id";
+  private static final String SNAPSHOT_ID = "snapshot_id";
+  private static final long INCREMENTAL_ID = 0L;
   private static final String NODE1 = "192.168.1.1";
   private static final String NODE2 = "192.168.1.2";
   private static final String NODE3 = "192.168.1.3";
@@ -48,21 +50,35 @@ public class RestoreServiceMasterTest {
     when(mockJmx.getUnreachableNodes()).thenReturn(Lists.emptyList());
   }
 
+  private List<BackupKey> prepareBackupKeys(
+      String clusterId, List<String> nodes, String snaphotId, long incrementalId) {
+    List<BackupKey> backupKeys = new ArrayList<>();
+    nodes.forEach(
+        n ->
+            backupKeys.add(
+                BackupKey.newBuilder()
+                    .clusterId(clusterId)
+                    .targetIp(n)
+                    .snapshotId(snaphotId)
+                    .incrementalId(incrementalId)
+                    .build()));
+    return backupKeys;
+  }
+
   @Test
   public void restoreBackup_ClusterTypeGiven_DownloadToEveryNode() {
     // Arrange
     when(config.getJmxPort()).thenReturn(JMX_PORT);
     when(jmx.getKeyspaces()).thenReturn(keyspaces);
     prepareNodes(jmx, nodes);
-    RestoreRequest request =
-        RestoreRequest.newBuilder().setRestoreType(RestoreType.CLUSTER.get()).build();
-    doNothing().when(master).downloadNodeBackups(anyString(), any(RestoreRequest.class));
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
+    doNothing().when(master).downloadNodeBackups(any(BackupKey.class), any(RestoreType.class));
 
     // Act
-    master.restoreBackup(request);
+    master.restoreBackup(keys, RestoreType.CLUSTER);
 
     // Assert
-    nodes.forEach(ip -> verify(master).downloadNodeBackups(ip, request));
+    keys.forEach(key -> verify(master).downloadNodeBackups(key, RestoreType.CLUSTER));
   }
 
   @Test
@@ -72,17 +88,13 @@ public class RestoreServiceMasterTest {
     when(jmx.getKeyspaces()).thenReturn(keyspaces);
     prepareNodes(jmx, nodes);
     List<String> someNodes = Arrays.asList(nodes.get(0));
-    RestoreRequest request =
-        RestoreRequest.newBuilder()
-            .setRestoreType(RestoreType.CLUSTER.get())
-            .addAllTargetIps(someNodes)
-            .build();
-    doNothing().when(master).downloadNodeBackups(anyString(), any(RestoreRequest.class));
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, INCREMENTAL_ID);
+    doNothing().when(master).downloadNodeBackups(any(BackupKey.class), any(RestoreType.class));
 
     // Act
-    master.restoreBackup(request);
+    master.restoreBackup(keys, RestoreType.NODE);
 
     // Assert
-    someNodes.forEach(ip -> verify(master).downloadNodeBackups(ip, request));
+    keys.forEach(key -> verify(master).downloadNodeBackups(key, RestoreType.NODE));
   }
 }

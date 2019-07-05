@@ -17,10 +17,9 @@ private static final long serialVersionUID = 0L;
   }
   private BackupRequest() {
     clusterId_ = "";
-    backupType_ = 0;
     targetIp_ = "";
-    keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     snapshotId_ = "";
+    backupType_ = 0;
   }
 
   @java.lang.Override
@@ -53,30 +52,21 @@ private static final long serialVersionUID = 0L;
             clusterId_ = s;
             break;
           }
-          case 16: {
-
-            backupType_ = input.readUInt32();
-            break;
-          }
-          case 26: {
+          case 18: {
             java.lang.String s = input.readStringRequireUtf8();
 
             targetIp_ = s;
             break;
           }
-          case 34: {
-            java.lang.String s = input.readStringRequireUtf8();
-            if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-              keyspaces_ = new com.google.protobuf.LazyStringArrayList();
-              mutable_bitField0_ |= 0x00000008;
-            }
-            keyspaces_.add(s);
-            break;
-          }
-          case 42: {
+          case 26: {
             java.lang.String s = input.readStringRequireUtf8();
 
             snapshotId_ = s;
+            break;
+          }
+          case 32: {
+
+            backupType_ = input.readUInt32();
             break;
           }
           default: {
@@ -94,9 +84,6 @@ private static final long serialVersionUID = 0L;
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
-      if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-        keyspaces_ = keyspaces_.getUnmodifiableView();
-      }
       this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
@@ -114,7 +101,6 @@ private static final long serialVersionUID = 0L;
             com.scalar.backup.cassandra.rpc.BackupRequest.class, com.scalar.backup.cassandra.rpc.BackupRequest.Builder.class);
   }
 
-  private int bitField0_;
   public static final int CLUSTER_ID_FIELD_NUMBER = 1;
   private volatile java.lang.Object clusterId_;
   /**
@@ -149,19 +135,14 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int BACKUP_TYPE_FIELD_NUMBER = 2;
-  private int backupType_;
-  /**
-   * <code>uint32 backup_type = 2;</code>
-   */
-  public int getBackupType() {
-    return backupType_;
-  }
-
-  public static final int TARGET_IP_FIELD_NUMBER = 3;
+  public static final int TARGET_IP_FIELD_NUMBER = 2;
   private volatile java.lang.Object targetIp_;
   /**
-   * <code>string target_ip = 3;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>string target_ip = 2;</code>
    */
   public java.lang.String getTargetIp() {
     java.lang.Object ref = targetIp_;
@@ -176,7 +157,11 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string target_ip = 3;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>string target_ip = 2;</code>
    */
   public com.google.protobuf.ByteString
       getTargetIpBytes() {
@@ -192,39 +177,14 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int KEYSPACES_FIELD_NUMBER = 4;
-  private com.google.protobuf.LazyStringList keyspaces_;
-  /**
-   * <code>repeated string keyspaces = 4;</code>
-   */
-  public com.google.protobuf.ProtocolStringList
-      getKeyspacesList() {
-    return keyspaces_;
-  }
-  /**
-   * <code>repeated string keyspaces = 4;</code>
-   */
-  public int getKeyspacesCount() {
-    return keyspaces_.size();
-  }
-  /**
-   * <code>repeated string keyspaces = 4;</code>
-   */
-  public java.lang.String getKeyspaces(int index) {
-    return keyspaces_.get(index);
-  }
-  /**
-   * <code>repeated string keyspaces = 4;</code>
-   */
-  public com.google.protobuf.ByteString
-      getKeyspacesBytes(int index) {
-    return keyspaces_.getByteString(index);
-  }
-
-  public static final int SNAPSHOT_ID_FIELD_NUMBER = 5;
+  public static final int SNAPSHOT_ID_FIELD_NUMBER = 3;
   private volatile java.lang.Object snapshotId_;
   /**
-   * <code>string snapshot_id = 5;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>string snapshot_id = 3;</code>
    */
   public java.lang.String getSnapshotId() {
     java.lang.Object ref = snapshotId_;
@@ -239,7 +199,11 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string snapshot_id = 5;</code>
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>string snapshot_id = 3;</code>
    */
   public com.google.protobuf.ByteString
       getSnapshotIdBytes() {
@@ -253,6 +217,15 @@ private static final long serialVersionUID = 0L;
     } else {
       return (com.google.protobuf.ByteString) ref;
     }
+  }
+
+  public static final int BACKUP_TYPE_FIELD_NUMBER = 4;
+  private int backupType_;
+  /**
+   * <code>uint32 backup_type = 4;</code>
+   */
+  public int getBackupType() {
+    return backupType_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -272,17 +245,14 @@ private static final long serialVersionUID = 0L;
     if (!getClusterIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, clusterId_);
     }
-    if (backupType_ != 0) {
-      output.writeUInt32(2, backupType_);
-    }
     if (!getTargetIpBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, targetIp_);
-    }
-    for (int i = 0; i < keyspaces_.size(); i++) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, keyspaces_.getRaw(i));
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, targetIp_);
     }
     if (!getSnapshotIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 5, snapshotId_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, snapshotId_);
+    }
+    if (backupType_ != 0) {
+      output.writeUInt32(4, backupType_);
     }
     unknownFields.writeTo(output);
   }
@@ -296,23 +266,15 @@ private static final long serialVersionUID = 0L;
     if (!getClusterIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, clusterId_);
     }
-    if (backupType_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeUInt32Size(2, backupType_);
-    }
     if (!getTargetIpBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, targetIp_);
-    }
-    {
-      int dataSize = 0;
-      for (int i = 0; i < keyspaces_.size(); i++) {
-        dataSize += computeStringSizeNoTag(keyspaces_.getRaw(i));
-      }
-      size += dataSize;
-      size += 1 * getKeyspacesList().size();
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, targetIp_);
     }
     if (!getSnapshotIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, snapshotId_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, snapshotId_);
+    }
+    if (backupType_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeUInt32Size(4, backupType_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -332,14 +294,12 @@ private static final long serialVersionUID = 0L;
     boolean result = true;
     result = result && getClusterId()
         .equals(other.getClusterId());
-    result = result && (getBackupType()
-        == other.getBackupType());
     result = result && getTargetIp()
         .equals(other.getTargetIp());
-    result = result && getKeyspacesList()
-        .equals(other.getKeyspacesList());
     result = result && getSnapshotId()
         .equals(other.getSnapshotId());
+    result = result && (getBackupType()
+        == other.getBackupType());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -353,16 +313,12 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + CLUSTER_ID_FIELD_NUMBER;
     hash = (53 * hash) + getClusterId().hashCode();
-    hash = (37 * hash) + BACKUP_TYPE_FIELD_NUMBER;
-    hash = (53 * hash) + getBackupType();
     hash = (37 * hash) + TARGET_IP_FIELD_NUMBER;
     hash = (53 * hash) + getTargetIp().hashCode();
-    if (getKeyspacesCount() > 0) {
-      hash = (37 * hash) + KEYSPACES_FIELD_NUMBER;
-      hash = (53 * hash) + getKeyspacesList().hashCode();
-    }
     hash = (37 * hash) + SNAPSHOT_ID_FIELD_NUMBER;
     hash = (53 * hash) + getSnapshotId().hashCode();
+    hash = (37 * hash) + BACKUP_TYPE_FIELD_NUMBER;
+    hash = (53 * hash) + getBackupType();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -498,13 +454,11 @@ private static final long serialVersionUID = 0L;
       super.clear();
       clusterId_ = "";
 
-      backupType_ = 0;
-
       targetIp_ = "";
 
-      keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      bitField0_ = (bitField0_ & ~0x00000008);
       snapshotId_ = "";
+
+      backupType_ = 0;
 
       return this;
     }
@@ -532,18 +486,10 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.scalar.backup.cassandra.rpc.BackupRequest buildPartial() {
       com.scalar.backup.cassandra.rpc.BackupRequest result = new com.scalar.backup.cassandra.rpc.BackupRequest(this);
-      int from_bitField0_ = bitField0_;
-      int to_bitField0_ = 0;
       result.clusterId_ = clusterId_;
-      result.backupType_ = backupType_;
       result.targetIp_ = targetIp_;
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        keyspaces_ = keyspaces_.getUnmodifiableView();
-        bitField0_ = (bitField0_ & ~0x00000008);
-      }
-      result.keyspaces_ = keyspaces_;
       result.snapshotId_ = snapshotId_;
-      result.bitField0_ = to_bitField0_;
+      result.backupType_ = backupType_;
       onBuilt();
       return result;
     }
@@ -596,26 +542,16 @@ private static final long serialVersionUID = 0L;
         clusterId_ = other.clusterId_;
         onChanged();
       }
-      if (other.getBackupType() != 0) {
-        setBackupType(other.getBackupType());
-      }
       if (!other.getTargetIp().isEmpty()) {
         targetIp_ = other.targetIp_;
-        onChanged();
-      }
-      if (!other.keyspaces_.isEmpty()) {
-        if (keyspaces_.isEmpty()) {
-          keyspaces_ = other.keyspaces_;
-          bitField0_ = (bitField0_ & ~0x00000008);
-        } else {
-          ensureKeyspacesIsMutable();
-          keyspaces_.addAll(other.keyspaces_);
-        }
         onChanged();
       }
       if (!other.getSnapshotId().isEmpty()) {
         snapshotId_ = other.snapshotId_;
         onChanged();
+      }
+      if (other.getBackupType() != 0) {
+        setBackupType(other.getBackupType());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -645,7 +581,6 @@ private static final long serialVersionUID = 0L;
       }
       return this;
     }
-    private int bitField0_;
 
     private java.lang.Object clusterId_ = "";
     /**
@@ -716,35 +651,13 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int backupType_ ;
-    /**
-     * <code>uint32 backup_type = 2;</code>
-     */
-    public int getBackupType() {
-      return backupType_;
-    }
-    /**
-     * <code>uint32 backup_type = 2;</code>
-     */
-    public Builder setBackupType(int value) {
-      
-      backupType_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>uint32 backup_type = 2;</code>
-     */
-    public Builder clearBackupType() {
-      
-      backupType_ = 0;
-      onChanged();
-      return this;
-    }
-
     private java.lang.Object targetIp_ = "";
     /**
-     * <code>string target_ip = 3;</code>
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string target_ip = 2;</code>
      */
     public java.lang.String getTargetIp() {
       java.lang.Object ref = targetIp_;
@@ -759,7 +672,11 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string target_ip = 3;</code>
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string target_ip = 2;</code>
      */
     public com.google.protobuf.ByteString
         getTargetIpBytes() {
@@ -775,7 +692,11 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string target_ip = 3;</code>
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string target_ip = 2;</code>
      */
     public Builder setTargetIp(
         java.lang.String value) {
@@ -788,7 +709,11 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string target_ip = 3;</code>
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string target_ip = 2;</code>
      */
     public Builder clearTargetIp() {
       
@@ -797,7 +722,11 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string target_ip = 3;</code>
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string target_ip = 2;</code>
      */
     public Builder setTargetIpBytes(
         com.google.protobuf.ByteString value) {
@@ -811,103 +740,13 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private com.google.protobuf.LazyStringList keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-    private void ensureKeyspacesIsMutable() {
-      if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-        keyspaces_ = new com.google.protobuf.LazyStringArrayList(keyspaces_);
-        bitField0_ |= 0x00000008;
-       }
-    }
-    /**
-     * <code>repeated string keyspaces = 4;</code>
-     */
-    public com.google.protobuf.ProtocolStringList
-        getKeyspacesList() {
-      return keyspaces_.getUnmodifiableView();
-    }
-    /**
-     * <code>repeated string keyspaces = 4;</code>
-     */
-    public int getKeyspacesCount() {
-      return keyspaces_.size();
-    }
-    /**
-     * <code>repeated string keyspaces = 4;</code>
-     */
-    public java.lang.String getKeyspaces(int index) {
-      return keyspaces_.get(index);
-    }
-    /**
-     * <code>repeated string keyspaces = 4;</code>
-     */
-    public com.google.protobuf.ByteString
-        getKeyspacesBytes(int index) {
-      return keyspaces_.getByteString(index);
-    }
-    /**
-     * <code>repeated string keyspaces = 4;</code>
-     */
-    public Builder setKeyspaces(
-        int index, java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureKeyspacesIsMutable();
-      keyspaces_.set(index, value);
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>repeated string keyspaces = 4;</code>
-     */
-    public Builder addKeyspaces(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureKeyspacesIsMutable();
-      keyspaces_.add(value);
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>repeated string keyspaces = 4;</code>
-     */
-    public Builder addAllKeyspaces(
-        java.lang.Iterable<java.lang.String> values) {
-      ensureKeyspacesIsMutable();
-      com.google.protobuf.AbstractMessageLite.Builder.addAll(
-          values, keyspaces_);
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>repeated string keyspaces = 4;</code>
-     */
-    public Builder clearKeyspaces() {
-      keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      bitField0_ = (bitField0_ & ~0x00000008);
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>repeated string keyspaces = 4;</code>
-     */
-    public Builder addKeyspacesBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      ensureKeyspacesIsMutable();
-      keyspaces_.add(value);
-      onChanged();
-      return this;
-    }
-
     private java.lang.Object snapshotId_ = "";
     /**
-     * <code>string snapshot_id = 5;</code>
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string snapshot_id = 3;</code>
      */
     public java.lang.String getSnapshotId() {
       java.lang.Object ref = snapshotId_;
@@ -922,7 +761,11 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string snapshot_id = 5;</code>
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string snapshot_id = 3;</code>
      */
     public com.google.protobuf.ByteString
         getSnapshotIdBytes() {
@@ -938,7 +781,11 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string snapshot_id = 5;</code>
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string snapshot_id = 3;</code>
      */
     public Builder setSnapshotId(
         java.lang.String value) {
@@ -951,7 +798,11 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string snapshot_id = 5;</code>
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string snapshot_id = 3;</code>
      */
     public Builder clearSnapshotId() {
       
@@ -960,7 +811,11 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string snapshot_id = 5;</code>
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string snapshot_id = 3;</code>
      */
     public Builder setSnapshotIdBytes(
         com.google.protobuf.ByteString value) {
@@ -970,6 +825,32 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       snapshotId_ = value;
+      onChanged();
+      return this;
+    }
+
+    private int backupType_ ;
+    /**
+     * <code>uint32 backup_type = 4;</code>
+     */
+    public int getBackupType() {
+      return backupType_;
+    }
+    /**
+     * <code>uint32 backup_type = 4;</code>
+     */
+    public Builder setBackupType(int value) {
+      
+      backupType_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>uint32 backup_type = 4;</code>
+     */
+    public Builder clearBackupType() {
+      
+      backupType_ = 0;
       onChanged();
       return this;
     }
