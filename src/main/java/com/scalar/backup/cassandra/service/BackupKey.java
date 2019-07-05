@@ -63,6 +63,7 @@ public class BackupKey {
     }
 
     public Builder incrementalId(long incrementalId) {
+      checkArgument(incrementalId >= 0);
       this.incrementalId = incrementalId;
       return this;
     }
