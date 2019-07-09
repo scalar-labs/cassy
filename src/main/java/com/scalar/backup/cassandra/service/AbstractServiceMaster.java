@@ -5,6 +5,7 @@ import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.exception.BackupException;
 import com.scalar.backup.cassandra.exception.TimeoutException;
 import com.scalar.backup.cassandra.jmx.JmxManager;
+import com.scalar.backup.cassandra.remotecommand.RemoteCommandExecutor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 

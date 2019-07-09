@@ -2,6 +2,7 @@ package com.scalar.backup.cassandra.server;
 
 import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.db.BackupHistory;
+import com.scalar.backup.cassandra.remotecommand.RemoteCommandContext;
 import com.scalar.backup.cassandra.rpc.CassandraBackupGrpc;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
@@ -10,15 +11,21 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public final class BackupServer extends CassandraBackupGrpc.CassandraBackupImplBase {
   private static final Logger logger = Logger.getLogger(BackupServer.class.getName());
+  private final BackupServerConfig config;
   private io.grpc.Server server;
   private Connection connection;
-  private final BackupServerConfig config;
+  private ExecutorService handlerService;
 
   public BackupServer(BackupServerConfig config) {
     this.config = config;
@@ -26,9 +33,14 @@ public final class BackupServer extends CassandraBackupGrpc.CassandraBackupImplB
 
   private void start() throws IOException, SQLException {
     connection = DriverManager.getConnection(config.getHistoryDbUrl());
+    BackupHistory history = new BackupHistory(connection);
+    BlockingQueue futureQueue = new LinkedBlockingQueue<RemoteCommandContext>();
+    handlerService = Executors.newFixedThreadPool(1);
+    handlerService.submit(new RemoteCommandHandler(futureQueue, history));
+
     ServerBuilder builder =
         ServerBuilder.forPort(config.getPort())
-            .addService(new BackupServerController(config, new BackupHistory(connection)))
+            .addService(new BackupServerController(config, futureQueue, history))
             .addService(ProtoReflectionService.newInstance());
 
     server = builder.build().start();
@@ -60,6 +72,7 @@ public final class BackupServer extends CassandraBackupGrpc.CassandraBackupImplB
   private void blockUntilShutdown() throws InterruptedException {
     if (server != null) {
       server.awaitTermination();
+      handlerService.awaitTermination(Long.MAX_VALUE, TimeUnit.HOURS);
     }
   }
 

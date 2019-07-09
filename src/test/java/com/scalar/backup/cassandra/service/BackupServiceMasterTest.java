@@ -14,6 +14,8 @@ import static org.mockito.Mockito.when;
 import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.config.BackupType;
 import com.scalar.backup.cassandra.jmx.JmxManager;
+import com.scalar.backup.cassandra.remotecommand.RemoteCommandContext;
+import com.scalar.backup.cassandra.remotecommand.RemoteCommandExecutor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -80,7 +82,9 @@ public class BackupServiceMasterTest {
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
-    doNothing().when(master).uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
+    doReturn(mock(RemoteCommandContext.class))
+        .when(master)
+        .uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
     doNothing().when(master).removeIncremental(anyString());
 
     // Act
@@ -104,7 +108,9 @@ public class BackupServiceMasterTest {
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
-    doNothing().when(master).uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
+    doReturn(mock(RemoteCommandContext.class))
+        .when(master)
+        .uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
     doNothing().when(master).removeIncremental(anyString());
 
     // Act
@@ -129,7 +135,9 @@ public class BackupServiceMasterTest {
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, INCREMENTAL_ID);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
-    doNothing().when(master).uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
+    doReturn(mock(RemoteCommandContext.class))
+        .when(master)
+        .uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
     doNothing().when(master).removeIncremental(anyString());
 
     // Act
@@ -150,7 +158,9 @@ public class BackupServiceMasterTest {
     when(jmx.getKeyspaces()).thenReturn(keyspaces);
     prepareNodes(jmx, nodes);
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
-    doNothing().when(master).uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
+    doReturn(mock(RemoteCommandContext.class))
+        .when(master)
+        .uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
 
     // Act
     master.takeBackup(keys, BackupType.NODE_INCREMENTAL);
@@ -168,7 +178,9 @@ public class BackupServiceMasterTest {
     List<String> someNodes = Arrays.asList(nodes.get(0));
     prepareNodes(jmx, someNodes);
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, INCREMENTAL_ID);
-    doNothing().when(master).uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
+    doReturn(mock(RemoteCommandContext.class))
+        .when(master)
+        .uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
 
     // Act
     master.takeBackup(keys, BackupType.NODE_INCREMENTAL);

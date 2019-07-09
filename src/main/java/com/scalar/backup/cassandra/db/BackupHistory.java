@@ -17,19 +17,19 @@ import javax.annotation.concurrent.ThreadSafe;
 public class BackupHistory {
   static final String INSERT =
       "INSERT INTO backup_history "
-          + "(snapshot_id, backup_id, cluster_id, target_ip, backup_type, created_at, updated_at, status) "
+          + "(snapshot_id, incremental_id, cluster_id, target_ip, backup_type, created_at, updated_at, status) "
           + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
   static final String UPDATE =
       "UPDATE backup_history SET status = ?, updated_at = ? "
-          + "WHERE snapshot_id = ? and backup_id = ? and cluster_id = ? and target_ip = ?";
+          + "WHERE snapshot_id = ? and incremental_id = ? and cluster_id = ? and target_ip = ?";
   static final String SELECT_RECENT_SNAPSHOTS_BY_CLUSTER =
       "SELECT * FROM backup_history WHERE cluster_id = ? "
-          + "GROUP BY snapshot_id ORDER BY backup_id DESC limit ?";
+          + "GROUP BY snapshot_id ORDER BY incremental_id DESC limit ?";
   static final String SELECT_RECENT_SNAPSHOTS_BY_HOST =
       "SELECT * FROM backup_history WHERE cluster_id = ? and target_ip = ? "
-          + "GROUP BY snapshot_id ORDER BY backup_id DESC limit ?";
+          + "GROUP BY snapshot_id ORDER BY incremental_id DESC limit ?";
   static final String SELECT_BY_SNAPSHOT_ID =
-      "SELECT * FROM backup_history WHERE snapshot_id = ? ORDER BY backup_id DESC";
+      "SELECT * FROM backup_history WHERE snapshot_id = ? ORDER BY incremental_id DESC";
   private final Connection connection;
   private final PreparedStatement insert;
   private final PreparedStatement update;
