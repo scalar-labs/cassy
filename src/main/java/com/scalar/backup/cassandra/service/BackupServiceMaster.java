@@ -6,7 +6,12 @@ import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.config.BackupType;
 import com.scalar.backup.cassandra.exception.RemoteExecutionException;
 import com.scalar.backup.cassandra.jmx.JmxManager;
+import com.scalar.backup.cassandra.remotecommand.RemoteCommand;
+import com.scalar.backup.cassandra.remotecommand.RemoteCommandContext;
+import com.scalar.backup.cassandra.remotecommand.RemoteCommandExecutor;
+import com.scalar.backup.cassandra.remotecommand.RemoteCommandFuture;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -16,15 +21,15 @@ import org.slf4j.LoggerFactory;
 
 public class BackupServiceMaster extends AbstractServiceMaster {
   private static final Logger logger = LoggerFactory.getLogger(BackupServiceMaster.class.getName());
-  private final String BACKUP_TYPE_OPTION = "--backup-type=";
-  private final String BACKUP_COMMAND = "cassandra-backup";
+  private static final String BACKUP_TYPE_OPTION = "--backup-type=";
+  public static final String BACKUP_COMMAND = "cassandra-backup";
 
   public BackupServiceMaster(
       BackupServerConfig config, JmxManager jmx, RemoteCommandExecutor executor) {
     super(config, jmx, executor);
   }
 
-  public void takeBackup(List<BackupKey> backupKeys, BackupType type) {
+  public List<RemoteCommandContext> takeBackup(List<BackupKey> backupKeys, BackupType type) {
     if (!areAllNodesAlive()) {
       throw new RemoteExecutionException(
           "This operation is allowed only when all the nodes are alive at the moment.");
@@ -32,18 +37,17 @@ public class BackupServiceMaster extends AbstractServiceMaster {
 
     switch (type) {
       case CLUSTER_SNAPSHOT:
-        takeClusterSnapshots(backupKeys, type);
-        break;
+        return takeClusterSnapshots(backupKeys, type);
       case NODE_SNAPSHOT:
       case NODE_INCREMENTAL:
-        takeNodesBackups(backupKeys, type);
-        break;
+        return takeNodesBackups(backupKeys, type);
       default:
         throw new IllegalArgumentException("Unsupported backup type.");
     }
   }
 
-  private void takeClusterSnapshots(List<BackupKey> backupKeys, BackupType type) {
+  private List<RemoteCommandContext> takeClusterSnapshots(
+      List<BackupKey> backupKeys, BackupType type) {
     // 1. TODO: stop DLs (coming in a later PR)
 
     // 2. take snapshots of all the nodes
@@ -52,17 +56,17 @@ public class BackupServiceMaster extends AbstractServiceMaster {
     // 3. TODO: start DLs (coming in a later PR)
 
     // 4. copy snapshots in parallel
-    uploadNodesBackups(backupKeys, type);
+    return uploadNodesBackups(backupKeys, type);
   }
 
-  private void takeNodesBackups(List<BackupKey> backupKeys, BackupType type) {
+  private List<RemoteCommandContext> takeNodesBackups(List<BackupKey> backupKeys, BackupType type) {
     // 1. take snapshots of the specified nodes if NODE_SNAPSHOT
     if (type == BackupType.NODE_SNAPSHOT) {
       takeNodesSnapshots(backupKeys, type);
     }
 
     // 2. copy backups in parallel
-    uploadNodesBackups(backupKeys, type);
+    return uploadNodesBackups(backupKeys, type);
   }
 
   private void takeNodesSnapshots(List<BackupKey> backupKeys, BackupType type) {
@@ -80,7 +84,10 @@ public class BackupServiceMaster extends AbstractServiceMaster {
     awaitTermination(executor, "takeNodesSnapshots");
   }
 
-  private void uploadNodesBackups(List<BackupKey> backupKeys, BackupType type) {
+  private List<RemoteCommandContext> uploadNodesBackups(
+      List<BackupKey> backupKeys, BackupType type) {
+    List<RemoteCommandContext> futures = new ArrayList<>();
+
     // Parallel upload for now. It will be adjusted based on workload
     ExecutorService executor = Executors.newCachedThreadPool();
     backupKeys.forEach(
@@ -90,9 +97,10 @@ public class BackupServiceMaster extends AbstractServiceMaster {
                   if (type != BackupType.NODE_INCREMENTAL) {
                     removeIncremental(backupKey.getTargetIp());
                   }
-                  uploadNodeBackups(backupKey, type);
+                  futures.add(uploadNodeBackups(backupKey, type));
                 }));
     awaitTermination(executor, "copyNodesBackups");
+    return futures;
   }
 
   @VisibleForTesting
@@ -101,7 +109,7 @@ public class BackupServiceMaster extends AbstractServiceMaster {
   }
 
   @VisibleForTesting
-  void uploadNodeBackups(BackupKey backupKey, BackupType type) {
+  RemoteCommandContext uploadNodeBackups(BackupKey backupKey, BackupType type) {
     List<String> arguments =
         Arrays.asList(
             CLUSTER_ID_OPTION + jmx.getClusterName(),
@@ -122,6 +130,7 @@ public class BackupServiceMaster extends AbstractServiceMaster {
             .arguments(arguments)
             .build();
 
-    executor.execute(command);
+    RemoteCommandFuture future = executor.execute(command);
+    return new RemoteCommandContext(command, backupKey, future);
   }
 }

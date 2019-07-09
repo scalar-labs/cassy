@@ -1,7 +1,8 @@
-package com.scalar.backup.cassandra.service;
+package com.scalar.backup.cassandra.remotecommand;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.google.common.collect.ImmutableList;
 import java.nio.file.Path;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
@@ -41,7 +42,7 @@ public final class RemoteCommand {
   }
 
   public List<String> getArguments() {
-    return arguments;
+    return ImmutableList.copyOf(arguments);
   }
 
   public String getName() {

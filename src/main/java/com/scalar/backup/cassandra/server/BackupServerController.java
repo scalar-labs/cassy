@@ -7,6 +7,8 @@ import com.scalar.backup.cassandra.config.RestoreType;
 import com.scalar.backup.cassandra.db.BackupHistory;
 import com.scalar.backup.cassandra.db.BackupHistoryRecord;
 import com.scalar.backup.cassandra.jmx.JmxManager;
+import com.scalar.backup.cassandra.remotecommand.RemoteCommandContext;
+import com.scalar.backup.cassandra.remotecommand.RemoteCommandExecutor;
 import com.scalar.backup.cassandra.rpc.BackupListingRequest;
 import com.scalar.backup.cassandra.rpc.BackupListingResponse;
 import com.scalar.backup.cassandra.rpc.BackupRequest;
@@ -20,7 +22,6 @@ import com.scalar.backup.cassandra.rpc.RestoreRequest;
 import com.scalar.backup.cassandra.rpc.RestoreResponse;
 import com.scalar.backup.cassandra.service.BackupKey;
 import com.scalar.backup.cassandra.service.BackupServiceMaster;
-import com.scalar.backup.cassandra.service.RemoteCommandExecutor;
 import com.scalar.backup.cassandra.service.RestoreServiceMaster;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 import java.util.logging.Logger;
 import javax.annotation.concurrent.Immutable;
 
@@ -35,10 +37,15 @@ import javax.annotation.concurrent.Immutable;
 public final class BackupServerController extends CassandraBackupGrpc.CassandraBackupImplBase {
   private static final Logger logger = Logger.getLogger(BackupServerController.class.getName());
   private final BackupServerConfig config;
+  private final BlockingQueue<RemoteCommandContext> futureQueue;
   private final BackupHistory history;
 
-  public BackupServerController(BackupServerConfig config, BackupHistory history) {
+  public BackupServerController(
+      BackupServerConfig config,
+      BlockingQueue<RemoteCommandContext> futureQueue,
+      BackupHistory history) {
     this.config = config;
+    this.futureQueue = futureQueue;
     this.history = history;
   }
 
@@ -146,9 +153,9 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     try {
       BackupServiceMaster master =
           new BackupServiceMaster(config, jmx, new RemoteCommandExecutor());
-      // TODO: Future will be returned in a later PR
-      master.takeBackup(backupKeys, type);
+      List<RemoteCommandContext> futures = master.takeBackup(backupKeys, type);
       backupKeys.forEach(backupKey -> history.update(backupKey, OperationStatus.STARTED));
+      futureQueue.addAll(futures);
     } catch (Exception e) {
       builder.setMessage(e.getMessage());
       builder.setStatus(OperationStatus.FAILED);
@@ -181,9 +188,13 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
               backupKeys.add(keyBuilder.build());
             });
 
+    // TODO: restore history might be needed in the future
+
     try {
       RestoreType type = RestoreType.getByType(request.getRestoreType());
-      new RestoreServiceMaster(config, jmx, executor).restoreBackup(backupKeys, type);
+      RestoreServiceMaster master = new RestoreServiceMaster(config, jmx, executor);
+      List<RemoteCommandContext> futures = master.restoreBackup(backupKeys, type);
+      futureQueue.addAll(futures);
     } catch (Exception e) {
       builder.setMessage(e.getMessage());
       builder.setStatus(OperationStatus.FAILED);
