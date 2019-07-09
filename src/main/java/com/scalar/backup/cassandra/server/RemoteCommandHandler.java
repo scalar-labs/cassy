@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RemoteCommandHandler implements Runnable {
-  private static final Logger logger = LoggerFactory.getLogger(RemoteCommandContext.class);
+  private static final Logger logger = LoggerFactory.getLogger(RemoteCommandHandler.class);
   private final BlockingQueue<RemoteCommandContext> futures;
   private final BackupHistory history;
 
