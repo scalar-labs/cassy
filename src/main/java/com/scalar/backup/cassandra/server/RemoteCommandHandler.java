@@ -14,12 +14,12 @@ import org.slf4j.LoggerFactory;
 public class RemoteCommandHandler implements Runnable {
   private static final Logger logger = LoggerFactory.getLogger(RemoteCommandHandler.class);
   private final BlockingQueue<RemoteCommandContext> futures;
-  private final DatabaseAccessor accessor;
+  private final DatabaseAccessor database;
 
   public RemoteCommandHandler(
-      BlockingQueue<RemoteCommandContext> futures, DatabaseAccessor accessor) {
+      BlockingQueue<RemoteCommandContext> futures, DatabaseAccessor database) {
     this.futures = futures;
-    this.accessor = accessor;
+    this.database = database;
   }
 
   @Override
@@ -34,14 +34,14 @@ public class RemoteCommandHandler implements Runnable {
               future.getCommand().getCommand() + " failed for some reason");
         }
         if (future.getCommand().getName().equals(BackupServiceMaster.BACKUP_COMMAND)) {
-          accessor.getBackupHistory().update(future.getBackupKey(), OperationStatus.COMPLETED);
+          database.getBackupHistory().update(future.getBackupKey(), OperationStatus.COMPLETED);
         } else {
           // TODO: coming in a later PR
         }
       } catch (Exception e) {
         logger.warn(e.getMessage(), e);
         if (future != null) {
-          accessor.getBackupHistory().update(future.getBackupKey(), OperationStatus.FAILED);
+          database.getBackupHistory().update(future.getBackupKey(), OperationStatus.FAILED);
         }
       }
     }
