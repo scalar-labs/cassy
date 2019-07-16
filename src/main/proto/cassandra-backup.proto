@@ -10,6 +10,12 @@ option java_outer_classname = "CassandraBackupProto";
 package rpc;
 
 service CassandraBackup {
+    rpc registerCluster (ClusterRegistrationRequest) returns (ClusterRegistrationResponse) {
+        option (google.api.http) = {
+            post: "/v1/clusters"
+            body: "*"
+        };
+    }
     rpc ShowClusters (google.protobuf.Empty) returns (ClusterListingResponse) {
         option (google.api.http) = {
             get: "/v1/clusters"
@@ -37,6 +43,17 @@ service CassandraBackup {
             body: "*"
         };
     }
+}
+
+message ClusterRegistrationRequest {
+    string cassandra_host = 1;
+    uint32 jmx_port = 2;
+}
+
+message ClusterRegistrationResponse {
+    string cluster_id = 1;
+    repeated string target_ips = 2;
+    repeated string keyspaces = 3;
 }
 
 message ClusterListingResponse {

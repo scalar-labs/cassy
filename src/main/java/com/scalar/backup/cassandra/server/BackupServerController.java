@@ -4,8 +4,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.config.BackupType;
 import com.scalar.backup.cassandra.config.RestoreType;
-import com.scalar.backup.cassandra.db.BackupHistory;
 import com.scalar.backup.cassandra.db.BackupHistoryRecord;
+import com.scalar.backup.cassandra.db.ClusterInfoRecord;
+import com.scalar.backup.cassandra.db.DatabaseAccessor;
 import com.scalar.backup.cassandra.jmx.JmxManager;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandContext;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandExecutor;
@@ -15,6 +16,8 @@ import com.scalar.backup.cassandra.rpc.BackupRequest;
 import com.scalar.backup.cassandra.rpc.BackupResponse;
 import com.scalar.backup.cassandra.rpc.CassandraBackupGrpc;
 import com.scalar.backup.cassandra.rpc.ClusterListingResponse;
+import com.scalar.backup.cassandra.rpc.ClusterRegistrationRequest;
+import com.scalar.backup.cassandra.rpc.ClusterRegistrationResponse;
 import com.scalar.backup.cassandra.rpc.NodeListingRequest;
 import com.scalar.backup.cassandra.rpc.NodeListingResponse;
 import com.scalar.backup.cassandra.rpc.OperationStatus;
@@ -37,16 +40,58 @@ import javax.annotation.concurrent.Immutable;
 public final class BackupServerController extends CassandraBackupGrpc.CassandraBackupImplBase {
   private static final Logger logger = Logger.getLogger(BackupServerController.class.getName());
   private final BackupServerConfig config;
+  private final DatabaseAccessor database;
   private final BlockingQueue<RemoteCommandContext> futureQueue;
-  private final BackupHistory history;
 
   public BackupServerController(
       BackupServerConfig config,
-      BlockingQueue<RemoteCommandContext> futureQueue,
-      BackupHistory history) {
+      DatabaseAccessor database,
+      BlockingQueue<RemoteCommandContext> futureQueue) {
     this.config = config;
+    this.database = database;
     this.futureQueue = futureQueue;
-    this.history = history;
+  }
+
+  @Override
+  public void registerCluster(
+      ClusterRegistrationRequest request,
+      StreamObserver<ClusterRegistrationResponse> responseObserver) {
+    if (request.getCassandraHost().isEmpty() || request.getJmxPort() == 0) {
+      responseObserver.onError(
+          Status.INVALID_ARGUMENT
+              .withDescription("Please cassandra_host or jmx_port properly.")
+              .asRuntimeException());
+      return;
+    }
+
+    ClusterInfoRecord record;
+    try {
+      JmxManager jmx = getJmx(request.getCassandraHost(), request.getJmxPort());
+      if (!areAllNodesAlive(jmx)) {
+        responseObserver.onError(
+            Status.UNAVAILABLE
+                .withDescription("This method is allowed only when all the nodes are alive.")
+                .asRuntimeException());
+        return;
+      }
+
+      database
+          .getClusterInfo()
+          .upsert(jmx.getClusterName(), jmx.getLiveNodes(), jmx.getKeyspaces());
+      record = database.getClusterInfo().selectByClusterId(jmx.getClusterName());
+    } catch (Exception e) {
+      responseObserver.onError(Status.INTERNAL.withCause(e).asRuntimeException());
+      return;
+    }
+
+    ClusterRegistrationResponse response =
+        ClusterRegistrationResponse.newBuilder()
+            .setClusterId(record.getClusterId())
+            .addAllTargetIps(record.getTargetIps())
+            .addAllKeyspaces(record.getKeyspaces())
+            .build();
+    responseObserver.onNext(response);
+    responseObserver.onCompleted();
   }
 
   @Override
@@ -81,7 +126,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
       BackupListingRequest request, StreamObserver<BackupListingResponse> responseObserver) {
     List<BackupHistoryRecord> records = null;
     try {
-      records = history.selectRecentSnapshots(request);
+      records = database.getBackupHistory().selectRecentSnapshots(request);
     } catch (Exception e) {
       responseObserver.onError(Status.INTERNAL.withCause(e).asRuntimeException());
       return;
@@ -145,7 +190,9 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
                         .build()));
 
     BackupType type = BackupType.getByType(request.getBackupType());
-    backupKeys.forEach(backupKey -> history.insert(backupKey, type, OperationStatus.INITIALIZED));
+    backupKeys.forEach(
+        backupKey ->
+            database.getBackupHistory().insert(backupKey, type, OperationStatus.INITIALIZED));
 
     BackupResponse.Builder builder =
         BackupResponse.newBuilder().setSnapshotId(snapshotId).setIncrementalId(incrementalId);
@@ -154,12 +201,14 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
       BackupServiceMaster master =
           new BackupServiceMaster(config, jmx, new RemoteCommandExecutor());
       List<RemoteCommandContext> futures = master.takeBackup(backupKeys, type);
-      backupKeys.forEach(backupKey -> history.update(backupKey, OperationStatus.STARTED));
+      backupKeys.forEach(
+          backupKey -> database.getBackupHistory().update(backupKey, OperationStatus.STARTED));
       futureQueue.addAll(futures);
     } catch (Exception e) {
       builder.setMessage(e.getMessage());
       builder.setStatus(OperationStatus.FAILED);
-      backupKeys.forEach(backupKey -> history.update(backupKey, OperationStatus.FAILED));
+      backupKeys.forEach(
+          backupKey -> database.getBackupHistory().update(backupKey, OperationStatus.FAILED));
     }
 
     responseObserver.onNext(builder.build());
@@ -227,5 +276,18 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
 
   private List<String> getTargets(RestoreRequest request, JmxManager jmx) {
     return request.getTargetIpsList().isEmpty() ? jmx.getLiveNodes() : request.getTargetIpsList();
+  }
+
+  // TODO: There is a duplicate method in AbstractServiceMaster. The other one will be removed in a
+  // future PR.
+  private boolean areAllNodesAlive(JmxManager jmx) {
+    if (jmx.getJoiningNodes().isEmpty()
+        && jmx.getMovingNodes().isEmpty()
+        && jmx.getLeavingNodes().isEmpty()
+        && jmx.getUnreachableNodes().isEmpty()
+        && jmx.getLiveNodes().size() > 0) {
+      return true;
+    }
+    return false;
   }
 }
