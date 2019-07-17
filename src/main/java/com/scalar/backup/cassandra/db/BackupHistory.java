@@ -1,7 +1,7 @@
 package com.scalar.backup.cassandra.db;
 
 import com.scalar.backup.cassandra.config.BackupType;
-import com.scalar.backup.cassandra.exception.StatusDatabaseException;
+import com.scalar.backup.cassandra.exception.DatabaseException;
 import com.scalar.backup.cassandra.rpc.BackupListingRequest;
 import com.scalar.backup.cassandra.rpc.OperationStatus;
 import com.scalar.backup.cassandra.service.BackupKey;
@@ -51,7 +51,7 @@ public class BackupHistory {
       selectRecentByHost.setQueryTimeout(30);
       selectBySnapshot.setQueryTimeout(30);
     } catch (SQLException e) {
-      throw new StatusDatabaseException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -59,7 +59,7 @@ public class BackupHistory {
     try {
       insertImpl(backupKey, type, status);
     } catch (SQLException e) {
-      throw new StatusDatabaseException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -67,7 +67,7 @@ public class BackupHistory {
     try {
       updateImpl(backupKey, status);
     } catch (SQLException e) {
-      throw new StatusDatabaseException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -80,7 +80,7 @@ public class BackupHistory {
         resultSet = selectRecentSnapshotsByHost(request);
       }
     } catch (SQLException e) {
-      throw new StatusDatabaseException(e);
+      throw new DatabaseException(e);
     }
 
     return traverseResults(resultSet);
@@ -94,7 +94,7 @@ public class BackupHistory {
       records = traverseResults(resultSet);
       selectBySnapshot.clearParameters();
     } catch (SQLException e) {
-      throw new StatusDatabaseException(e);
+      throw new DatabaseException(e);
     }
     return records;
   }
@@ -165,7 +165,7 @@ public class BackupHistory {
         records.add(builder.build());
       }
     } catch (SQLException e) {
-      throw new StatusDatabaseException(e);
+      throw new DatabaseException(e);
     }
     return records;
   }

@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.scalar.backup.cassandra.config.BackupType;
-import com.scalar.backup.cassandra.exception.StatusDatabaseException;
+import com.scalar.backup.cassandra.exception.DatabaseException;
 import com.scalar.backup.cassandra.rpc.BackupListingRequest;
 import com.scalar.backup.cassandra.rpc.OperationStatus;
 import com.scalar.backup.cassandra.service.BackupKey;
@@ -90,7 +90,7 @@ public class BackupHistoryTest {
   }
 
   @Test
-  public void insert_SQLExceptionThrown_ShouldThrowStatusDatabaseException() throws SQLException {
+  public void insert_SQLExceptionThrown_ShouldThrowDatabaseException() throws SQLException {
     // Arrange
     SQLException toThrow = mock(SQLException.class);
     when(insert.executeUpdate()).thenThrow(toThrow);
@@ -108,7 +108,7 @@ public class BackupHistoryTest {
             () -> {
               history.insert(key, BACKUP_TYPE, BACKUP_STATUS);
             })
-        .isInstanceOf(StatusDatabaseException.class)
+        .isInstanceOf(DatabaseException.class)
         .hasCause(toThrow);
 
     // Assert
@@ -149,7 +149,7 @@ public class BackupHistoryTest {
   }
 
   @Test
-  public void update_SQLExceptionThrown_ShouldThrowStatusDatabaseException() throws SQLException {
+  public void update_SQLExceptionThrown_ShouldThrowDatabaseException() throws SQLException {
     // Arrange
     SQLException toThrow = mock(SQLException.class);
     when(update.executeUpdate()).thenThrow(toThrow);
@@ -167,7 +167,7 @@ public class BackupHistoryTest {
             () -> {
               history.update(key, BACKUP_STATUS);
             })
-        .isInstanceOf(StatusDatabaseException.class)
+        .isInstanceOf(DatabaseException.class)
         .hasCause(toThrow);
 
     // Assert
@@ -206,7 +206,7 @@ public class BackupHistoryTest {
   }
 
   @Test
-  public void selectRecentSnapshots_SQLExceptionThrown_ShouldThrowStatusDatabaseException()
+  public void selectRecentSnapshots_SQLExceptionThrown_ShouldThrowDatabaseException()
       throws SQLException {
     // Arrange
     BackupListingRequest request =
@@ -220,7 +220,7 @@ public class BackupHistoryTest {
             () -> {
               history.selectRecentSnapshots(request);
             })
-        .isInstanceOf(StatusDatabaseException.class)
+        .isInstanceOf(DatabaseException.class)
         .hasCause(toThrow);
 
     // Assert
@@ -281,7 +281,7 @@ public class BackupHistoryTest {
   }
 
   @Test
-  public void selectBySnapshotId_SQLExceptionThrown_ShouldThrowStatusDatabaseException()
+  public void selectBySnapshotId_SQLExceptionThrown_ShouldThrowDatabaseException()
       throws SQLException {
     // Arrange
     SQLException toThrow = mock(SQLException.class);
@@ -292,7 +292,7 @@ public class BackupHistoryTest {
             () -> {
               history.selectBySnapshotId(SNAPSHOT_ID);
             })
-        .isInstanceOf(StatusDatabaseException.class)
+        .isInstanceOf(DatabaseException.class)
         .hasCause(toThrow);
 
     // Assert
