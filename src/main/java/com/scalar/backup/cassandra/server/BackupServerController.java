@@ -33,12 +33,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Logger;
 import javax.annotation.concurrent.Immutable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Immutable
 public final class BackupServerController extends CassandraBackupGrpc.CassandraBackupImplBase {
-  private static final Logger logger = Logger.getLogger(BackupServerController.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(BackupServerController.class);
   private final BackupServerConfig config;
   private final DatabaseAccessor database;
   private final BlockingQueue<RemoteCommandContext> futureQueue;
@@ -77,9 +78,14 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
 
       database
           .getClusterInfo()
-          .upsert(jmx.getClusterName(), jmx.getLiveNodes(), jmx.getKeyspaces());
-      record = database.getClusterInfo().selectByClusterId(jmx.getClusterName());
+          .upsert(
+              jmx.getClusterName(),
+              jmx.getLiveNodes(),
+              jmx.getKeyspaces(),
+              jmx.getAllDataFileLocations().get(0));
+      record = database.getClusterInfo().selectByClusterId(jmx.getClusterName()).get();
     } catch (Exception e) {
+      logger.error(e.getMessage(), e);
       responseObserver.onError(Status.INTERNAL.withCause(e).asRuntimeException());
       return;
     }
@@ -89,6 +95,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
             .setClusterId(record.getClusterId())
             .addAllTargetIps(record.getTargetIps())
             .addAllKeyspaces(record.getKeyspaces())
+            .setDataDir(record.getDataDir())
             .build();
     responseObserver.onNext(response);
     responseObserver.onCompleted();

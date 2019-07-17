@@ -25,9 +25,11 @@ public class ClusterInfoTest {
   private final String CLUSTER_ID_ATTR = "cluster_id";
   private final String TARGET_IPS_ATTR = "target_ips";
   private final String KEYSPACES_ATTR = "keyspaces";
+  private final String DATA_DIR_ATTR = "data_dir";
   private final String CLUSTER_ID = "cluster_id";
   private final List<String> TARGET_IPS = Arrays.asList("192.168.0.1", "192.168.0.2");
   private final List<String> KEYSPACES = Arrays.asList("k1", "k2");
+  private final String DATA_DIR = "/data";
   private final long TIMESTAMP = 1L;
   private final int N = 1;
   @Mock private Connection connection;
@@ -61,12 +63,13 @@ public class ClusterInfoTest {
     doNothing().when(insert).clearParameters();
 
     // Act
-    clusterInfo.insert(CLUSTER_ID, TARGET_IPS, KEYSPACES);
+    clusterInfo.insert(CLUSTER_ID, TARGET_IPS, KEYSPACES, DATA_DIR);
 
     // Assert
     verify(insert).setString(1, CLUSTER_ID);
     verify(insert).setString(2, String.join(",", TARGET_IPS));
     verify(insert).setString(3, String.join(",", KEYSPACES));
+    verify(insert).setString(4, DATA_DIR);
     verify(insert).executeUpdate();
     verify(insert).clearParameters();
   }
@@ -79,7 +82,7 @@ public class ClusterInfoTest {
     doNothing().when(insert).clearParameters();
 
     // Act Assert
-    assertThatThrownBy(() -> clusterInfo.insert(CLUSTER_ID, TARGET_IPS, KEYSPACES))
+    assertThatThrownBy(() -> clusterInfo.insert(CLUSTER_ID, TARGET_IPS, KEYSPACES, DATA_DIR))
         .isInstanceOf(DatabaseException.class)
         .hasCause(toThrow);
   }
@@ -91,12 +94,13 @@ public class ClusterInfoTest {
     doNothing().when(update).clearParameters();
 
     // Act
-    clusterInfo.update(CLUSTER_ID, TARGET_IPS, KEYSPACES);
+    clusterInfo.update(CLUSTER_ID, TARGET_IPS, KEYSPACES, DATA_DIR);
 
     // Assert
     verify(update).setString(1, String.join(",", TARGET_IPS));
     verify(update).setString(2, String.join(",", KEYSPACES));
-    verify(update).setString(4, CLUSTER_ID);
+    verify(update).setString(3, DATA_DIR);
+    verify(update).setString(5, CLUSTER_ID);
     verify(update).executeUpdate();
     verify(update).clearParameters();
   }
@@ -109,7 +113,7 @@ public class ClusterInfoTest {
     doNothing().when(update).clearParameters();
 
     // Act Assert
-    assertThatThrownBy(() -> clusterInfo.update(CLUSTER_ID, TARGET_IPS, KEYSPACES))
+    assertThatThrownBy(() -> clusterInfo.update(CLUSTER_ID, TARGET_IPS, KEYSPACES, DATA_DIR))
         .isInstanceOf(DatabaseException.class)
         .hasCause(toThrow);
   }
@@ -123,11 +127,12 @@ public class ClusterInfoTest {
     when(resultSet.getString(CLUSTER_ID_ATTR)).thenReturn(CLUSTER_ID);
     when(resultSet.getString(TARGET_IPS_ATTR)).thenReturn(String.join(",", TARGET_IPS));
     when(resultSet.getString(KEYSPACES_ATTR)).thenReturn(String.join(",", KEYSPACES));
+    when(resultSet.getString(DATA_DIR_ATTR)).thenReturn(DATA_DIR);
     when(resultSet.getLong(anyString())).thenReturn(TIMESTAMP);
     when(resultSet.next()).thenReturn(true).thenReturn(false);
 
     // Act
-    ClusterInfoRecord record = clusterInfo.selectByClusterId(CLUSTER_ID);
+    ClusterInfoRecord record = clusterInfo.selectByClusterId(CLUSTER_ID).get();
 
     // Assert
     verify(selectByCluster).clearParameters();
@@ -136,6 +141,7 @@ public class ClusterInfoTest {
     assertThat(record.getClusterId()).isEqualTo(CLUSTER_ID);
     assertThat(record.getTargetIps()).isEqualTo(TARGET_IPS);
     assertThat(record.getKeyspaces()).isEqualTo(KEYSPACES);
+    assertThat(record.getDataDir()).isEqualTo(DATA_DIR);
     assertThat(record.getCreatedAt()).isEqualTo(TIMESTAMP);
     assertThat(record.getUpdatedAt()).isEqualTo(TIMESTAMP);
   }
@@ -161,6 +167,7 @@ public class ClusterInfoTest {
     when(resultSet.getString(CLUSTER_ID_ATTR)).thenReturn(CLUSTER_ID);
     when(resultSet.getString(TARGET_IPS_ATTR)).thenReturn(String.join(",", TARGET_IPS));
     when(resultSet.getString(KEYSPACES_ATTR)).thenReturn(String.join(",", KEYSPACES));
+    when(resultSet.getString(DATA_DIR_ATTR)).thenReturn(DATA_DIR);
     when(resultSet.getLong(anyString())).thenReturn(TIMESTAMP);
     when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
 
@@ -176,6 +183,7 @@ public class ClusterInfoTest {
           assertThat(r.getClusterId()).isEqualTo(CLUSTER_ID);
           assertThat(r.getTargetIps()).isEqualTo(TARGET_IPS);
           assertThat(r.getKeyspaces()).isEqualTo(KEYSPACES);
+          assertThat(r.getDataDir()).isEqualTo(DATA_DIR);
           assertThat(r.getCreatedAt()).isEqualTo(TIMESTAMP);
           assertThat(r.getUpdatedAt()).isEqualTo(TIMESTAMP);
         });

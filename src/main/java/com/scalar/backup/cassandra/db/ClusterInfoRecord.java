@@ -11,6 +11,7 @@ public final class ClusterInfoRecord {
   private final String clusterId;
   private final List<String> targetIps;
   private final List<String> keyspaces;
+  private final String dataDir;
   private final long createdAt;
   private final long updatedAt;
 
@@ -18,6 +19,7 @@ public final class ClusterInfoRecord {
     this.clusterId = builder.clusterId;
     this.targetIps = builder.targetIps;
     this.keyspaces = builder.keyspaces;
+    this.dataDir = builder.dataDir;
     this.createdAt = builder.createdAt;
     this.updatedAt = builder.updatedAt;
   }
@@ -32,6 +34,10 @@ public final class ClusterInfoRecord {
 
   public List<String> getKeyspaces() {
     return ImmutableList.copyOf(keyspaces);
+  }
+
+  public String getDataDir() {
+    return dataDir;
   }
 
   public long getCreatedAt() {
@@ -50,6 +56,7 @@ public final class ClusterInfoRecord {
     private String clusterId;
     private List<String> targetIps;
     private List<String> keyspaces;
+    private String dataDir;
     private long createdAt;
     private long updatedAt;
 
@@ -71,6 +78,12 @@ public final class ClusterInfoRecord {
       return this;
     }
 
+    public Builder dataDir(String dataDir) {
+      checkArgument(dataDir != null);
+      this.dataDir = dataDir;
+      return this;
+    }
+
     public Builder createdAt(long createdAt) {
       checkArgument(createdAt != 0L);
       this.createdAt = createdAt;
@@ -87,6 +100,7 @@ public final class ClusterInfoRecord {
       if (clusterId == null
           || targetIps == null
           || keyspaces == null
+          || dataDir == null
           || createdAt == 0L
           || updatedAt == 0L) {
         throw new IllegalArgumentException("Required fields are not given.");

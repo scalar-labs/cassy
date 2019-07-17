@@ -54,4 +54,14 @@ public interface ClusterRegistrationResponseOrBuilder extends
    */
   com.google.protobuf.ByteString
       getKeyspacesBytes(int index);
+
+  /**
+   * <code>string data_dir = 4;</code>
+   */
+  java.lang.String getDataDir();
+  /**
+   * <code>string data_dir = 4;</code>
+   */
+  com.google.protobuf.ByteString
+      getDataDirBytes();
 }

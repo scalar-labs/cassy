@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS cluster_info (
     cluster_id VARCHAR(255) NOT NULL,
     target_ips TEXT NOT NULL,
     keyspaces TEXT NOT NULL,
+    data_dir TEXT NOT NULL,
     created_at BIGINT NOT NULL,
     updated_at BIGINT,
     PRIMARY KEY (cluster_id)

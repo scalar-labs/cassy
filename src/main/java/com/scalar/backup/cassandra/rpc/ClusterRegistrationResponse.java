@@ -19,6 +19,7 @@ private static final long serialVersionUID = 0L;
     clusterId_ = "";
     targetIps_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    dataDir_ = "";
   }
 
   @java.lang.Override
@@ -67,6 +68,12 @@ private static final long serialVersionUID = 0L;
               mutable_bitField0_ |= 0x00000004;
             }
             keyspaces_.add(s);
+            break;
+          }
+          case 34: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            dataDir_ = s;
             break;
           }
           default: {
@@ -200,6 +207,40 @@ private static final long serialVersionUID = 0L;
     return keyspaces_.getByteString(index);
   }
 
+  public static final int DATA_DIR_FIELD_NUMBER = 4;
+  private volatile java.lang.Object dataDir_;
+  /**
+   * <code>string data_dir = 4;</code>
+   */
+  public java.lang.String getDataDir() {
+    java.lang.Object ref = dataDir_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      dataDir_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string data_dir = 4;</code>
+   */
+  public com.google.protobuf.ByteString
+      getDataDirBytes() {
+    java.lang.Object ref = dataDir_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      dataDir_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -222,6 +263,9 @@ private static final long serialVersionUID = 0L;
     }
     for (int i = 0; i < keyspaces_.size(); i++) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, keyspaces_.getRaw(i));
+    }
+    if (!getDataDirBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, dataDir_);
     }
     unknownFields.writeTo(output);
   }
@@ -251,6 +295,9 @@ private static final long serialVersionUID = 0L;
       size += dataSize;
       size += 1 * getKeyspacesList().size();
     }
+    if (!getDataDirBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, dataDir_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -273,6 +320,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getTargetIpsList());
     result = result && getKeyspacesList()
         .equals(other.getKeyspacesList());
+    result = result && getDataDir()
+        .equals(other.getDataDir());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -294,6 +343,8 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + KEYSPACES_FIELD_NUMBER;
       hash = (53 * hash) + getKeyspacesList().hashCode();
     }
+    hash = (37 * hash) + DATA_DIR_FIELD_NUMBER;
+    hash = (53 * hash) + getDataDir().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -433,6 +484,8 @@ private static final long serialVersionUID = 0L;
       bitField0_ = (bitField0_ & ~0x00000002);
       keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       bitField0_ = (bitField0_ & ~0x00000004);
+      dataDir_ = "";
+
       return this;
     }
 
@@ -472,6 +525,7 @@ private static final long serialVersionUID = 0L;
         bitField0_ = (bitField0_ & ~0x00000004);
       }
       result.keyspaces_ = keyspaces_;
+      result.dataDir_ = dataDir_;
       result.bitField0_ = to_bitField0_;
       onBuilt();
       return result;
@@ -543,6 +597,10 @@ private static final long serialVersionUID = 0L;
           ensureKeyspacesIsMutable();
           keyspaces_.addAll(other.keyspaces_);
         }
+        onChanged();
+      }
+      if (!other.getDataDir().isEmpty()) {
+        dataDir_ = other.dataDir_;
         onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
@@ -828,6 +886,75 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       ensureKeyspacesIsMutable();
       keyspaces_.add(value);
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object dataDir_ = "";
+    /**
+     * <code>string data_dir = 4;</code>
+     */
+    public java.lang.String getDataDir() {
+      java.lang.Object ref = dataDir_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        dataDir_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string data_dir = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDataDirBytes() {
+      java.lang.Object ref = dataDir_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        dataDir_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string data_dir = 4;</code>
+     */
+    public Builder setDataDir(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      dataDir_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string data_dir = 4;</code>
+     */
+    public Builder clearDataDir() {
+      
+      dataDir_ = getDefaultInstance().getDataDir();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string data_dir = 4;</code>
+     */
+    public Builder setDataDirBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      dataDir_ = value;
       onChanged();
       return this;
     }
