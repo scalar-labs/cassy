@@ -204,7 +204,8 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     final String snapshotId =
         request.getSnapshotId().isEmpty() ? UUID.randomUUID().toString() : request.getSnapshotId();
     final long incrementalId = request.getSnapshotId().isEmpty() ? 0L : System.currentTimeMillis();
-    List<BackupKey> backupKeys = getBackupKeys(snapshotId, incrementalId, clusterInfo.get());
+    List<BackupKey> backupKeys =
+        getBackupKeys(snapshotId, incrementalId, request.getTargetIpsList(), clusterInfo.get());
     BackupType type = BackupType.getByType(request.getBackupType());
     BackupResponse.Builder builder =
         BackupResponse.newBuilder().setSnapshotId(snapshotId).setIncrementalId(incrementalId);
@@ -244,6 +245,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
         getBackupKeys(
             request.getSnapshotId(),
             request.getSnapshotOnly() ? 0L : Long.MAX_VALUE,
+            request.getTargetIpsList(),
             clusterInfo.get());
     RestoreResponse.Builder builder = RestoreResponse.newBuilder();
     RemoteCommandExecutor executor = new RemoteCommandExecutor();
@@ -266,20 +268,23 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
   }
 
   private List<BackupKey> getBackupKeys(
-      String snapshotId, long incrementalId, ClusterInfoRecord record) {
+      String snapshotId, long incrementalId, List<String> targets, ClusterInfoRecord record) {
     List<BackupKey> backupKeys = new ArrayList<>();
-    record
-        .getTargetIps()
-        .forEach(
-            ip -> {
-              BackupKey.Builder keyBuilder =
-                  BackupKey.newBuilder()
-                      .snapshotId(snapshotId)
-                      .incrementalId(incrementalId)
-                      .clusterId(record.getClusterId())
-                      .targetIp(ip);
-              backupKeys.add(keyBuilder.build());
-            });
+
+    if (targets.isEmpty()) {
+      targets = record.getTargetIps();
+    }
+
+    targets.forEach(
+        ip -> {
+          BackupKey.Builder keyBuilder =
+              BackupKey.newBuilder()
+                  .snapshotId(snapshotId)
+                  .incrementalId(incrementalId)
+                  .clusterId(record.getClusterId())
+                  .targetIp(ip);
+          backupKeys.add(keyBuilder.build());
+        });
 
     return backupKeys;
   }

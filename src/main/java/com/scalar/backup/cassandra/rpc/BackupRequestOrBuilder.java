@@ -22,18 +22,35 @@ public interface BackupRequestOrBuilder extends
    * optional
    * </pre>
    *
-   * <code>string target_ip = 2;</code>
+   * <code>repeated string target_ips = 2;</code>
    */
-  java.lang.String getTargetIp();
+  java.util.List<java.lang.String>
+      getTargetIpsList();
   /**
    * <pre>
    * optional
    * </pre>
    *
-   * <code>string target_ip = 2;</code>
+   * <code>repeated string target_ips = 2;</code>
+   */
+  int getTargetIpsCount();
+  /**
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>repeated string target_ips = 2;</code>
+   */
+  java.lang.String getTargetIps(int index);
+  /**
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>repeated string target_ips = 2;</code>
    */
   com.google.protobuf.ByteString
-      getTargetIpBytes();
+      getTargetIpsBytes(int index);
 
   /**
    * <pre>
