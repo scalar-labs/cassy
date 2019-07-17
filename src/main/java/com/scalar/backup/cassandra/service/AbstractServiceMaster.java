@@ -2,6 +2,7 @@ package com.scalar.backup.cassandra.service;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.scalar.backup.cassandra.config.BackupServerConfig;
+import com.scalar.backup.cassandra.db.ClusterInfoRecord;
 import com.scalar.backup.cassandra.exception.BackupException;
 import com.scalar.backup.cassandra.exception.TimeoutException;
 import com.scalar.backup.cassandra.jmx.JmxManager;
@@ -17,25 +18,14 @@ public abstract class AbstractServiceMaster {
   protected final String STORE_BASE_URI_OPTION = "--store-base-uri=";
   protected final String KEYSPACES_OPTION = "--keyspaces=";
   protected final BackupServerConfig config;
-  protected final JmxManager jmx;
+  protected final ClusterInfoRecord clusterInfo;
   protected final RemoteCommandExecutor executor;
 
   public AbstractServiceMaster(
-      BackupServerConfig config, JmxManager jmx, RemoteCommandExecutor executor) {
+      BackupServerConfig config, ClusterInfoRecord clusterInfo, RemoteCommandExecutor executor) {
     this.config = config;
-    this.jmx = jmx;
+    this.clusterInfo = clusterInfo;
     this.executor = executor;
-  }
-
-  protected boolean areAllNodesAlive() {
-    if (jmx.getJoiningNodes().isEmpty()
-        && jmx.getMovingNodes().isEmpty()
-        && jmx.getLeavingNodes().isEmpty()
-        && jmx.getUnreachableNodes().isEmpty()
-        && jmx.getLiveNodes().size() > 0) {
-      return true;
-    }
-    return false;
   }
 
   protected void awaitTermination(ExecutorService executor, String tag) {

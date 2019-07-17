@@ -6,8 +6,9 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
 
+// Not final for mocking
 @Immutable
-public final class ClusterInfoRecord {
+public class ClusterInfoRecord {
   private final String clusterId;
   private final List<String> targetIps;
   private final List<String> keyspaces;

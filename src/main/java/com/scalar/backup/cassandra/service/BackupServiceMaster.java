@@ -1,10 +1,9 @@
 package com.scalar.backup.cassandra.service;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
 import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.config.BackupType;
-import com.scalar.backup.cassandra.exception.RemoteExecutionException;
+import com.scalar.backup.cassandra.db.ClusterInfoRecord;
 import com.scalar.backup.cassandra.jmx.JmxManager;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommand;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandContext;
@@ -25,16 +24,11 @@ public class BackupServiceMaster extends AbstractServiceMaster {
   public static final String BACKUP_COMMAND = "cassandra-backup";
 
   public BackupServiceMaster(
-      BackupServerConfig config, JmxManager jmx, RemoteCommandExecutor executor) {
-    super(config, jmx, executor);
+      BackupServerConfig config, ClusterInfoRecord clusterInfo, RemoteCommandExecutor executor) {
+    super(config, clusterInfo, executor);
   }
 
   public List<RemoteCommandContext> takeBackup(List<BackupKey> backupKeys, BackupType type) {
-    if (!areAllNodesAlive()) {
-      throw new RemoteExecutionException(
-          "This operation is allowed only when all the nodes are alive at the moment.");
-    }
-
     switch (type) {
       case CLUSTER_SNAPSHOT:
         return takeClusterSnapshots(backupKeys, type);
@@ -70,7 +64,7 @@ public class BackupServiceMaster extends AbstractServiceMaster {
   }
 
   private void takeNodesSnapshots(List<BackupKey> backupKeys, BackupType type) {
-    String[] keyspaces = jmx.getKeyspaces().toArray(new String[0]);
+    String[] keyspaces = clusterInfo.getKeyspaces().toArray(new String[0]);
 
     ExecutorService executor = Executors.newCachedThreadPool();
     backupKeys.forEach(
@@ -112,12 +106,12 @@ public class BackupServiceMaster extends AbstractServiceMaster {
   RemoteCommandContext uploadNodeBackups(BackupKey backupKey, BackupType type) {
     List<String> arguments =
         Arrays.asList(
-            CLUSTER_ID_OPTION + jmx.getClusterName(),
+            CLUSTER_ID_OPTION + clusterInfo.getClusterId(),
             BACKUP_ID_OPTION + backupKey.getSnapshotId(),
             TARGET_IP_OPTION + backupKey.getTargetIp(),
-            DATA_DIR_OPTION + jmx.getAllDataFileLocations().get(0),
+            DATA_DIR_OPTION + clusterInfo.getDataDir(),
             STORE_BASE_URI_OPTION + config.getStorageBaseUri(),
-            KEYSPACES_OPTION + Joiner.on(',').join(jmx.getKeyspaces()),
+            KEYSPACES_OPTION + String.join(",", clusterInfo.getKeyspaces()),
             BACKUP_TYPE_OPTION + type.get());
 
     RemoteCommand command =
