@@ -20,8 +20,8 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
   public static final String RESTORE_COMMAND = "cassandra-restore";
 
   public RestoreServiceMaster(
-      BackupServerConfig config, ClusterInfoRecord record, RemoteCommandExecutor executor) {
-    super(config, record, executor);
+      BackupServerConfig config, ClusterInfoRecord clusterInfo, RemoteCommandExecutor executor) {
+    super(config, clusterInfo, executor);
   }
 
   public List<RemoteCommandContext> restoreBackup(List<BackupKey> backupKeys, RestoreType type) {
