@@ -59,7 +59,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     if (request.getCassandraHost().isEmpty() || request.getJmxPort() == 0) {
       responseObserver.onError(
           Status.INVALID_ARGUMENT
-              .withDescription("Please cassandra_host or jmx_port properly.")
+              .withDescription("cassandra_host or jmx_port is not set correctly.")
               .asRuntimeException());
       return;
     }
