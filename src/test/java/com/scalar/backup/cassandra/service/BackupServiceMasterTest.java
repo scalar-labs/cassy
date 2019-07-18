@@ -30,7 +30,7 @@ import org.mockito.Spy;
 public class BackupServiceMasterTest {
   private static final String CLUSTER_ID = "cluster_id";
   private static final String SNAPSHOT_ID = "snapshot_id";
-  private static final long INCREMENTAL_ID = 0L;
+  private static final long CREATED_AT = 1L;
   private static final int JMX_PORT = 7199;
   private static final String NODE1 = "192.168.1.1";
   private static final String NODE2 = "192.168.1.2";
@@ -51,7 +51,7 @@ public class BackupServiceMasterTest {
   }
 
   private List<BackupKey> prepareBackupKeys(
-      String clusterId, List<String> nodes, String snaphotId, long incrementalId) {
+      String clusterId, List<String> nodes, String snaphotId, long createdAt) {
     List<BackupKey> backupKeys = new ArrayList<>();
     nodes.forEach(
         n ->
@@ -60,7 +60,7 @@ public class BackupServiceMasterTest {
                     .clusterId(clusterId)
                     .targetIp(n)
                     .snapshotId(snaphotId)
-                    .incrementalId(incrementalId)
+                    .createdAt(createdAt)
                     .build()));
     return backupKeys;
   }
@@ -70,7 +70,7 @@ public class BackupServiceMasterTest {
     // Arrange
     when(config.getJmxPort()).thenReturn(JMX_PORT);
     when(clusterInfo.getKeyspaces()).thenReturn(keyspaces);
-    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, CREATED_AT);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
     doReturn(mock(RemoteCommandContext.class))
@@ -95,7 +95,7 @@ public class BackupServiceMasterTest {
     // Arrange
     when(config.getJmxPort()).thenReturn(JMX_PORT);
     when(clusterInfo.getKeyspaces()).thenReturn(keyspaces);
-    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, CREATED_AT);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
     doReturn(mock(RemoteCommandContext.class))
@@ -121,7 +121,7 @@ public class BackupServiceMasterTest {
     when(config.getJmxPort()).thenReturn(JMX_PORT);
     when(clusterInfo.getKeyspaces()).thenReturn(keyspaces);
     List<String> someNodes = Arrays.asList(nodes.get(0));
-    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, INCREMENTAL_ID);
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, CREATED_AT);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
     doReturn(mock(RemoteCommandContext.class))
@@ -145,7 +145,7 @@ public class BackupServiceMasterTest {
   public void takeBackup_NodeIncrementalTypeGiven_UploadOnEveryNode() {
     // Arrange
     when(clusterInfo.getKeyspaces()).thenReturn(keyspaces);
-    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, CREATED_AT);
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
         .uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
@@ -164,7 +164,7 @@ public class BackupServiceMasterTest {
     // Arrange
     when(clusterInfo.getKeyspaces()).thenReturn(keyspaces);
     List<String> someNodes = Arrays.asList(nodes.get(0));
-    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, INCREMENTAL_ID);
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, CREATED_AT);
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
         .uploadNodeBackups(any(BackupKey.class), any(BackupType.class));

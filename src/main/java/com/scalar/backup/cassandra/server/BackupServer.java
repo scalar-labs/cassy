@@ -4,6 +4,7 @@ import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.db.BackupHistory;
 import com.scalar.backup.cassandra.db.ClusterInfo;
 import com.scalar.backup.cassandra.db.DatabaseAccessor;
+import com.scalar.backup.cassandra.db.RestoreHistory;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandContext;
 import com.scalar.backup.cassandra.rpc.CassandraBackupGrpc;
 import io.grpc.ServerBuilder;
@@ -36,7 +37,10 @@ public final class BackupServer extends CassandraBackupGrpc.CassandraBackupImplB
   private void start() throws IOException, SQLException {
     connection = DriverManager.getConnection(config.getDbUrl());
     DatabaseAccessor database =
-        new DatabaseAccessor(new BackupHistory(connection), new ClusterInfo(connection));
+        new DatabaseAccessor(
+            new BackupHistory(connection),
+            new RestoreHistory(connection),
+            new ClusterInfo(connection));
     BlockingQueue futureQueue = new LinkedBlockingQueue<RemoteCommandContext>();
     handlerService = Executors.newFixedThreadPool(1);
     handlerService.submit(new RemoteCommandHandler(futureQueue, database));

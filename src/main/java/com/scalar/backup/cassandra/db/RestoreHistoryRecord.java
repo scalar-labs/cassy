@@ -2,25 +2,25 @@ package com.scalar.backup.cassandra.db;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.scalar.backup.cassandra.config.BackupType;
+import com.scalar.backup.cassandra.config.RestoreType;
 import com.scalar.backup.cassandra.rpc.OperationStatus;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public final class BackupHistoryRecord {
+public final class RestoreHistoryRecord {
   private final String snapshotId;
   private final String clusterId;
   private final String targetIp;
-  private final BackupType backupType;
+  private final RestoreType restoreType;
   private final long createdAt;
   private final long updatedAt;
   private final OperationStatus status;
 
-  private BackupHistoryRecord(Builder builder) {
+  private RestoreHistoryRecord(Builder builder) {
     this.snapshotId = builder.snapshotId;
     this.clusterId = builder.clusterId;
     this.targetIp = builder.targetIp;
-    this.backupType = builder.backupType;
+    this.restoreType = builder.restoreType;
     this.createdAt = builder.createdAt;
     this.updatedAt = builder.updatedAt;
     this.status = builder.status;
@@ -38,8 +38,8 @@ public final class BackupHistoryRecord {
     return targetIp;
   }
 
-  public BackupType getBackupType() {
-    return backupType;
+  public RestoreType getRestoreType() {
+    return restoreType;
   }
 
   public long getCreatedAt() {
@@ -62,7 +62,7 @@ public final class BackupHistoryRecord {
     private String snapshotId;
     private String clusterId;
     private String targetIp;
-    private BackupType backupType;
+    private RestoreType restoreType;
     private long createdAt;
     private long updatedAt;
     private OperationStatus status;
@@ -85,9 +85,9 @@ public final class BackupHistoryRecord {
       return this;
     }
 
-    public Builder backupType(BackupType backupType) {
-      checkArgument(backupType != null);
-      this.backupType = backupType;
+    public Builder restoreType(RestoreType restoreType) {
+      checkArgument(restoreType != null);
+      this.restoreType = restoreType;
       return this;
     }
 
@@ -109,17 +109,17 @@ public final class BackupHistoryRecord {
       return this;
     }
 
-    public BackupHistoryRecord build() {
+    public RestoreHistoryRecord build() {
       if (snapshotId == null
           || clusterId == null
           || targetIp == null
-          || backupType == null
+          || restoreType == null
           || createdAt == 0L
           || updatedAt == 0L
           || status == null) {
         throw new IllegalArgumentException("Required fields are not given.");
       }
-      return new BackupHistoryRecord(this);
+      return new RestoreHistoryRecord(this);
     }
   }
 }

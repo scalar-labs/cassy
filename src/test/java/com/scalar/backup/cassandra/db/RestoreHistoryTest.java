@@ -9,10 +9,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.scalar.backup.cassandra.config.BackupType;
+import com.scalar.backup.cassandra.config.RestoreType;
 import com.scalar.backup.cassandra.exception.DatabaseException;
-import com.scalar.backup.cassandra.rpc.BackupListingRequest;
 import com.scalar.backup.cassandra.rpc.OperationStatus;
+import com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest;
 import com.scalar.backup.cassandra.service.BackupKey;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,13 +24,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class BackupHistoryTest {
+public class RestoreHistoryTest {
   private final String CLUSTER_ID = "cluster_id";
   private final String TARGET_IP = "127.0.0.1";
-  private final BackupType BACKUP_TYPE = BackupType.NODE_SNAPSHOT;
+  private final RestoreType RESTORE_TYPE = RestoreType.NODE;
   private final String SNAPSHOT_ID = "snapshot_id";
   private final long CREATED_AT = 1L;
-  private final OperationStatus BACKUP_STATUS = OperationStatus.COMPLETED;
+  private final OperationStatus RESTORE_STATUS = OperationStatus.COMPLETED;
   private final int N = 3;
   @Mock private Connection connection;
   @Mock private PreparedStatement insert;
@@ -38,19 +38,19 @@ public class BackupHistoryTest {
   @Mock private PreparedStatement selectRecentByCluster;
   @Mock private PreparedStatement selectRecentByHost;
   @Mock private PreparedStatement selectBySnapshot;
-  private BackupHistory history;
+  private RestoreHistory history;
 
   @Before
   public void setUp() throws SQLException {
     MockitoAnnotations.initMocks(this);
 
-    when(connection.prepareStatement(BackupHistory.INSERT)).thenReturn(insert);
-    when(connection.prepareStatement(BackupHistory.UPDATE)).thenReturn(update);
-    when(connection.prepareStatement(BackupHistory.SELECT_RECENT_SNAPSHOTS_BY_CLUSTER))
+    when(connection.prepareStatement(RestoreHistory.INSERT)).thenReturn(insert);
+    when(connection.prepareStatement(RestoreHistory.UPDATE)).thenReturn(update);
+    when(connection.prepareStatement(RestoreHistory.SELECT_RECENT_BY_CLUSTER))
         .thenReturn(selectRecentByCluster);
-    when(connection.prepareStatement(BackupHistory.SELECT_RECENT_SNAPSHOTS_BY_HOST))
+    when(connection.prepareStatement(RestoreHistory.SELECT_RECENT_BY_HOST))
         .thenReturn(selectRecentByHost);
-    when(connection.prepareStatement(BackupHistory.SELECT_BY_SNAPSHOT_ID))
+    when(connection.prepareStatement(RestoreHistory.SELECT_BY_SNAPSHOT_ID))
         .thenReturn(selectBySnapshot);
     doNothing().when(insert).setQueryTimeout(anyInt());
     doNothing().when(update).setQueryTimeout(anyInt());
@@ -59,7 +59,7 @@ public class BackupHistoryTest {
     doNothing().when(selectBySnapshot).setQueryTimeout(anyInt());
 
     // InjectMocks fails due to some dependency issue
-    history = new BackupHistory(connection);
+    history = new RestoreHistory(connection);
   }
 
   @Test
@@ -76,15 +76,15 @@ public class BackupHistoryTest {
             .build();
 
     // Act
-    history.insert(key, BACKUP_TYPE, BACKUP_STATUS);
+    history.insert(key, RESTORE_TYPE, RESTORE_STATUS);
 
     // Assert
     verify(insert).setString(1, SNAPSHOT_ID);
     verify(insert).setString(2, CLUSTER_ID);
     verify(insert).setString(3, TARGET_IP);
-    verify(insert).setInt(4, BACKUP_TYPE.get());
+    verify(insert).setInt(4, RESTORE_TYPE.get());
     verify(insert).setLong(5, CREATED_AT);
-    verify(insert).setInt(7, BACKUP_STATUS.getNumber());
+    verify(insert).setInt(7, RESTORE_STATUS.getNumber());
     verify(insert).executeUpdate();
     verify(insert).clearParameters();
   }
@@ -106,7 +106,7 @@ public class BackupHistoryTest {
     // Act Assert
     assertThatThrownBy(
             () -> {
-              history.insert(key, BACKUP_TYPE, BACKUP_STATUS);
+              history.insert(key, RESTORE_TYPE, RESTORE_STATUS);
             })
         .isInstanceOf(DatabaseException.class)
         .hasCause(toThrow);
@@ -115,9 +115,9 @@ public class BackupHistoryTest {
     verify(insert).setString(1, SNAPSHOT_ID);
     verify(insert).setString(2, CLUSTER_ID);
     verify(insert).setString(3, TARGET_IP);
-    verify(insert).setInt(4, BACKUP_TYPE.get());
+    verify(insert).setInt(4, RESTORE_TYPE.get());
     verify(insert).setLong(5, CREATED_AT);
-    verify(insert).setInt(7, BACKUP_STATUS.getNumber());
+    verify(insert).setInt(7, RESTORE_STATUS.getNumber());
     verify(insert).executeUpdate();
     verify(insert).clearParameters();
   }
@@ -136,10 +136,10 @@ public class BackupHistoryTest {
             .build();
 
     // Act
-    history.update(key, BACKUP_STATUS);
+    history.update(key, RESTORE_STATUS);
 
     // Assert
-    verify(update).setInt(1, BACKUP_STATUS.getNumber());
+    verify(update).setInt(1, RESTORE_STATUS.getNumber());
     verify(update).setString(3, SNAPSHOT_ID);
     verify(update).setString(4, CLUSTER_ID);
     verify(update).setString(5, TARGET_IP);
@@ -165,13 +165,13 @@ public class BackupHistoryTest {
     // Act Assert
     assertThatThrownBy(
             () -> {
-              history.update(key, BACKUP_STATUS);
+              history.update(key, RESTORE_STATUS);
             })
         .isInstanceOf(DatabaseException.class)
         .hasCause(toThrow);
 
     // Assert
-    verify(update).setInt(1, BACKUP_STATUS.getNumber());
+    verify(update).setInt(1, RESTORE_STATUS.getNumber());
     verify(update).setString(3, SNAPSHOT_ID);
     verify(update).setString(4, CLUSTER_ID);
     verify(update).setString(5, TARGET_IP);
@@ -181,36 +181,32 @@ public class BackupHistoryTest {
   }
 
   @Test
-  public void
-      selectRecentSnapshots_BackupListingRequestWithClusterGiven_ShouldReturnSnapshotsProperly()
-          throws SQLException {
+  public void selectRecent_RestoreStatusListingRequestWithClusterGiven_ShouldReturnStatusProperly()
+      throws SQLException {
     // Arrange
-    BackupListingRequest request =
-        BackupListingRequest.newBuilder().setClusterId(CLUSTER_ID).setN(N).build();
+    RestoreStatusListingRequest request =
+        RestoreStatusListingRequest.newBuilder().setClusterId(CLUSTER_ID).build();
     ResultSet resultSet = mock(ResultSet.class);
     when(selectRecentByCluster.executeQuery()).thenReturn(resultSet);
     when(resultSet.getString(anyString())).thenReturn("anyString");
     when(resultSet.getLong(anyString())).thenReturn(1L);
     when(resultSet.getInt(anyString())).thenReturn(1);
-    when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
+    when(resultSet.next()).thenReturn(true).thenReturn(false);
 
     // Act
-    List<BackupHistoryRecord> records = history.selectRecentSnapshots(request);
+    history.selectRecent(request);
 
     // Assert
     verify(selectRecentByCluster).clearParameters();
     verify(selectRecentByCluster).setString(1, CLUSTER_ID);
-    verify(selectRecentByCluster).setInt(2, N);
     verify(selectRecentByCluster).executeQuery();
-    assertThat(records.size()).isEqualTo(N);
   }
 
   @Test
-  public void selectRecentSnapshots_SQLExceptionThrown_ShouldThrowDatabaseException()
-      throws SQLException {
+  public void selectRecent_SQLExceptionThrown_ShouldThrowDatabaseException() throws SQLException {
     // Arrange
-    BackupListingRequest request =
-        BackupListingRequest.newBuilder().setClusterId(CLUSTER_ID).setN(N).build();
+    RestoreStatusListingRequest request =
+        RestoreStatusListingRequest.newBuilder().setClusterId(CLUSTER_ID).build();
     SQLException toThrow = mock(SQLException.class);
     when(selectRecentByCluster.executeQuery()).thenThrow(toThrow);
     doNothing().when(selectRecentByCluster).clearParameters();
@@ -218,7 +214,7 @@ public class BackupHistoryTest {
     // Act
     assertThatThrownBy(
             () -> {
-              history.selectRecentSnapshots(request);
+              history.selectRecent(request);
             })
         .isInstanceOf(DatabaseException.class)
         .hasCause(toThrow);
@@ -226,17 +222,15 @@ public class BackupHistoryTest {
     // Assert
     verify(selectRecentByCluster).clearParameters();
     verify(selectRecentByCluster).setString(1, CLUSTER_ID);
-    verify(selectRecentByCluster).setInt(2, N);
     verify(selectRecentByCluster).executeQuery();
   }
 
   @Test
-  public void
-      selectRecentSnapshots_BackupListingRequestWithTargetIpGiven_ShouldReturnSnapshotsProperly()
-          throws SQLException {
+  public void selectRecent_RestoreStatusListingRequestWithTargetIpGiven_ShouldReturnStatusProperly()
+      throws SQLException {
     // Arrange
-    BackupListingRequest request =
-        BackupListingRequest.newBuilder()
+    RestoreStatusListingRequest request =
+        RestoreStatusListingRequest.newBuilder()
             .setClusterId(CLUSTER_ID)
             .setTargetIp(TARGET_IP)
             .setN(N)
@@ -249,7 +243,7 @@ public class BackupHistoryTest {
     when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
 
     // Act
-    List<BackupHistoryRecord> records = history.selectRecentSnapshots(request);
+    List<RestoreHistoryRecord> records = history.selectRecent(request);
 
     // Assert
     verify(selectRecentByHost).clearParameters();
@@ -272,7 +266,7 @@ public class BackupHistoryTest {
     when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
 
     // Act
-    List<BackupHistoryRecord> records = history.selectBySnapshotId(SNAPSHOT_ID);
+    List<RestoreHistoryRecord> records = history.selectBySnapshotId(SNAPSHOT_ID);
 
     // Assert
     verify(selectBySnapshot).setString(1, SNAPSHOT_ID);

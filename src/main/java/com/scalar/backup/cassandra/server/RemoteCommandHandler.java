@@ -7,6 +7,7 @@ import com.scalar.backup.cassandra.remotecommand.RemoteCommandContext;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandResult;
 import com.scalar.backup.cassandra.rpc.OperationStatus;
 import com.scalar.backup.cassandra.service.BackupServiceMaster;
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,17 +34,29 @@ public class RemoteCommandHandler implements Runnable {
           throw new RemoteExecutionException(
               future.getCommand().getCommand() + " failed for some reason");
         }
-        if (future.getCommand().getName().equals(BackupServiceMaster.BACKUP_COMMAND)) {
-          database.getBackupHistory().update(future.getBackupKey(), OperationStatus.COMPLETED);
-        } else {
-          // TODO: coming in a later PR
-        }
+        updateStatus(future);
       } catch (Exception e) {
         logger.warn(e.getMessage(), e);
         if (future != null) {
-          database.getBackupHistory().update(future.getBackupKey(), OperationStatus.FAILED);
+          updateStatus(future);
+        }
+      } finally {
+        if (future != null) {
+          try {
+            future.getFuture().close();
+          } catch (IOException e) {
+            // ignore
+          }
         }
       }
+    }
+  }
+
+  private void updateStatus(RemoteCommandContext future) {
+    if (future.getCommand().getName().equals(BackupServiceMaster.BACKUP_COMMAND)) {
+      database.getBackupHistory().update(future.getBackupKey(), OperationStatus.COMPLETED);
+    } else {
+      database.getRestoreHistory().update(future.getBackupKey(), OperationStatus.COMPLETED);
     }
   }
 }

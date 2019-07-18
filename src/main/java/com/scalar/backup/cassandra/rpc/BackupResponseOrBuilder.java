@@ -37,7 +37,7 @@ public interface BackupResponseOrBuilder extends
       getSnapshotIdBytes();
 
   /**
-   * <code>int64 incremental_id = 4;</code>
+   * <code>uint64 created_at = 4;</code>
    */
-  long getIncrementalId();
+  long getCreatedAt();
 }
