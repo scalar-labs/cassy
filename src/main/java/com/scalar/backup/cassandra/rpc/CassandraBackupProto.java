@@ -111,37 +111,37 @@ public final class CassandraBackupProto {
       "(\t\022\023\n\013snapshot_id\030\003 \001(\t\022\026\n\016incremental_i" +
       "d\030\004 \001(\003\022\023\n\013backup_type\030\005 \001(\r\022$\n\006status\030\006" +
       " \001(\0162\024.rpc.OperationStatus\022\021\n\ttimestamp\030" +
-      "\007 \001(\004\"`\n\rBackupRequest\022\022\n\ncluster_id\030\001 \001" +
-      "(\t\022\021\n\ttarget_ip\030\002 \001(\t\022\023\n\013snapshot_id\030\003 \001" +
-      "(\t\022\023\n\013backup_type\030\004 \001(\r\"t\n\016BackupRespons" +
-      "e\022$\n\006status\030\001 \001(\0162\024.rpc.OperationStatus\022" +
-      "\017\n\007message\030\002 \001(\t\022\023\n\013snapshot_id\030\003 \001(\t\022\026\n" +
-      "\016incremental_id\030\004 \001(\003\"z\n\016RestoreRequest\022" +
-      "\022\n\ncluster_id\030\001 \001(\t\022\022\n\ntarget_ips\030\002 \003(\t\022" +
-      "\023\n\013snapshot_id\030\003 \001(\t\022\024\n\014restore_type\030\004 \001" +
-      "(\r\022\025\n\rsnapshot_only\030\005 \001(\010\"H\n\017RestoreResp" +
-      "onse\022$\n\006status\030\001 \001(\0162\024.rpc.OperationStat" +
-      "us\022\017\n\007message\030\002 \001(\t*W\n\017OperationStatus\022\013" +
-      "\n\007UNKNOWN\020\000\022\017\n\013INITIALIZED\020\001\022\013\n\007STARTED\020" +
-      "\002\022\r\n\tCOMPLETED\020\003\022\n\n\006FAILED\020\0042\211\005\n\017Cassand" +
-      "raBackup\022m\n\017registerCluster\022\037.rpc.Cluste" +
-      "rRegistrationRequest\032 .rpc.ClusterRegist" +
-      "rationResponse\"\027\202\323\344\223\002\021\"\014/v1/clusters:\001*\022" +
-      "Y\n\014ShowClusters\022\026.google.protobuf.Empty\032" +
-      "\033.rpc.ClusterListingResponse\"\024\202\323\344\223\002\016\022\014/v" +
-      "1/clusters\022a\n\tListNodes\022\027.rpc.NodeListin" +
-      "gRequest\032\030.rpc.NodeListingResponse\"!\202\323\344\223" +
-      "\002\033\022\031/v1/clusters/{cluster_id}\022o\n\013ListBac" +
-      "kups\022\031.rpc.BackupListingRequest\032\032.rpc.Ba" +
-      "ckupListingResponse\")\202\323\344\223\002#\022!/v1/cluster" +
-      "s/{cluster_id}/backups\022c\n\nTakeBackup\022\022.r" +
-      "pc.BackupRequest\032\023.rpc.BackupResponse\",\202" +
-      "\323\344\223\002&\"!/v1/clusters/{cluster_id}/backups" +
-      ":\001*\022s\n\rRestoreBackup\022\023.rpc.RestoreReques" +
-      "t\032\024.rpc.RestoreResponse\"7\202\323\344\223\0021\032,/v1/clu" +
-      "sters/{cluster_id}/data/{snapshot_id}:\001*" +
-      "B9\n\037com.scalar.backup.cassandra.rpcB\024Cas" +
-      "sandraBackupProtoP\001b\006proto3"
+      "\007 \001(\004\"a\n\rBackupRequest\022\022\n\ncluster_id\030\001 \001" +
+      "(\t\022\022\n\ntarget_ips\030\002 \003(\t\022\023\n\013snapshot_id\030\003 " +
+      "\001(\t\022\023\n\013backup_type\030\004 \001(\r\"t\n\016BackupRespon" +
+      "se\022$\n\006status\030\001 \001(\0162\024.rpc.OperationStatus" +
+      "\022\017\n\007message\030\002 \001(\t\022\023\n\013snapshot_id\030\003 \001(\t\022\026" +
+      "\n\016incremental_id\030\004 \001(\003\"z\n\016RestoreRequest" +
+      "\022\022\n\ncluster_id\030\001 \001(\t\022\022\n\ntarget_ips\030\002 \003(\t" +
+      "\022\023\n\013snapshot_id\030\003 \001(\t\022\024\n\014restore_type\030\004 " +
+      "\001(\r\022\025\n\rsnapshot_only\030\005 \001(\010\"H\n\017RestoreRes" +
+      "ponse\022$\n\006status\030\001 \001(\0162\024.rpc.OperationSta" +
+      "tus\022\017\n\007message\030\002 \001(\t*W\n\017OperationStatus\022" +
+      "\013\n\007UNKNOWN\020\000\022\017\n\013INITIALIZED\020\001\022\013\n\007STARTED" +
+      "\020\002\022\r\n\tCOMPLETED\020\003\022\n\n\006FAILED\020\0042\211\005\n\017Cassan" +
+      "draBackup\022m\n\017registerCluster\022\037.rpc.Clust" +
+      "erRegistrationRequest\032 .rpc.ClusterRegis" +
+      "trationResponse\"\027\202\323\344\223\002\021\"\014/v1/clusters:\001*" +
+      "\022Y\n\014ShowClusters\022\026.google.protobuf.Empty" +
+      "\032\033.rpc.ClusterListingResponse\"\024\202\323\344\223\002\016\022\014/" +
+      "v1/clusters\022a\n\tListNodes\022\027.rpc.NodeListi" +
+      "ngRequest\032\030.rpc.NodeListingResponse\"!\202\323\344" +
+      "\223\002\033\022\031/v1/clusters/{cluster_id}\022o\n\013ListBa" +
+      "ckups\022\031.rpc.BackupListingRequest\032\032.rpc.B" +
+      "ackupListingResponse\")\202\323\344\223\002#\022!/v1/cluste" +
+      "rs/{cluster_id}/backups\022c\n\nTakeBackup\022\022." +
+      "rpc.BackupRequest\032\023.rpc.BackupResponse\"," +
+      "\202\323\344\223\002&\"!/v1/clusters/{cluster_id}/backup" +
+      "s:\001*\022s\n\rRestoreBackup\022\023.rpc.RestoreReque" +
+      "st\032\024.rpc.RestoreResponse\"7\202\323\344\223\0021\032,/v1/cl" +
+      "usters/{cluster_id}/data/{snapshot_id}:\001" +
+      "*B9\n\037com.scalar.backup.cassandra.rpcB\024Ca" +
+      "ssandraBackupProtoP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -216,7 +216,7 @@ public final class CassandraBackupProto {
     internal_static_rpc_BackupRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_rpc_BackupRequest_descriptor,
-        new java.lang.String[] { "ClusterId", "TargetIp", "SnapshotId", "BackupType", });
+        new java.lang.String[] { "ClusterId", "TargetIps", "SnapshotId", "BackupType", });
     internal_static_rpc_BackupResponse_descriptor =
       getDescriptor().getMessageTypes().get(8);
     internal_static_rpc_BackupResponse_fieldAccessorTable = new

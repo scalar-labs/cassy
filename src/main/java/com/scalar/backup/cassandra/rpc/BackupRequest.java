@@ -17,7 +17,7 @@ private static final long serialVersionUID = 0L;
   }
   private BackupRequest() {
     clusterId_ = "";
-    targetIp_ = "";
+    targetIps_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     snapshotId_ = "";
     backupType_ = 0;
   }
@@ -54,8 +54,11 @@ private static final long serialVersionUID = 0L;
           }
           case 18: {
             java.lang.String s = input.readStringRequireUtf8();
-
-            targetIp_ = s;
+            if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              targetIps_ = new com.google.protobuf.LazyStringArrayList();
+              mutable_bitField0_ |= 0x00000002;
+            }
+            targetIps_.add(s);
             break;
           }
           case 26: {
@@ -84,6 +87,9 @@ private static final long serialVersionUID = 0L;
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
+      if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+        targetIps_ = targetIps_.getUnmodifiableView();
+      }
       this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
@@ -101,6 +107,7 @@ private static final long serialVersionUID = 0L;
             com.scalar.backup.cassandra.rpc.BackupRequest.class, com.scalar.backup.cassandra.rpc.BackupRequest.Builder.class);
   }
 
+  private int bitField0_;
   public static final int CLUSTER_ID_FIELD_NUMBER = 1;
   private volatile java.lang.Object clusterId_;
   /**
@@ -135,46 +142,49 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int TARGET_IP_FIELD_NUMBER = 2;
-  private volatile java.lang.Object targetIp_;
+  public static final int TARGET_IPS_FIELD_NUMBER = 2;
+  private com.google.protobuf.LazyStringList targetIps_;
   /**
    * <pre>
    * optional
    * </pre>
    *
-   * <code>string target_ip = 2;</code>
+   * <code>repeated string target_ips = 2;</code>
    */
-  public java.lang.String getTargetIp() {
-    java.lang.Object ref = targetIp_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      targetIp_ = s;
-      return s;
-    }
+  public com.google.protobuf.ProtocolStringList
+      getTargetIpsList() {
+    return targetIps_;
   }
   /**
    * <pre>
    * optional
    * </pre>
    *
-   * <code>string target_ip = 2;</code>
+   * <code>repeated string target_ips = 2;</code>
+   */
+  public int getTargetIpsCount() {
+    return targetIps_.size();
+  }
+  /**
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>repeated string target_ips = 2;</code>
+   */
+  public java.lang.String getTargetIps(int index) {
+    return targetIps_.get(index);
+  }
+  /**
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>repeated string target_ips = 2;</code>
    */
   public com.google.protobuf.ByteString
-      getTargetIpBytes() {
-    java.lang.Object ref = targetIp_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      targetIp_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+      getTargetIpsBytes(int index) {
+    return targetIps_.getByteString(index);
   }
 
   public static final int SNAPSHOT_ID_FIELD_NUMBER = 3;
@@ -245,8 +255,8 @@ private static final long serialVersionUID = 0L;
     if (!getClusterIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, clusterId_);
     }
-    if (!getTargetIpBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, targetIp_);
+    for (int i = 0; i < targetIps_.size(); i++) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, targetIps_.getRaw(i));
     }
     if (!getSnapshotIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, snapshotId_);
@@ -266,8 +276,13 @@ private static final long serialVersionUID = 0L;
     if (!getClusterIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, clusterId_);
     }
-    if (!getTargetIpBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, targetIp_);
+    {
+      int dataSize = 0;
+      for (int i = 0; i < targetIps_.size(); i++) {
+        dataSize += computeStringSizeNoTag(targetIps_.getRaw(i));
+      }
+      size += dataSize;
+      size += 1 * getTargetIpsList().size();
     }
     if (!getSnapshotIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, snapshotId_);
@@ -294,8 +309,8 @@ private static final long serialVersionUID = 0L;
     boolean result = true;
     result = result && getClusterId()
         .equals(other.getClusterId());
-    result = result && getTargetIp()
-        .equals(other.getTargetIp());
+    result = result && getTargetIpsList()
+        .equals(other.getTargetIpsList());
     result = result && getSnapshotId()
         .equals(other.getSnapshotId());
     result = result && (getBackupType()
@@ -313,8 +328,10 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + CLUSTER_ID_FIELD_NUMBER;
     hash = (53 * hash) + getClusterId().hashCode();
-    hash = (37 * hash) + TARGET_IP_FIELD_NUMBER;
-    hash = (53 * hash) + getTargetIp().hashCode();
+    if (getTargetIpsCount() > 0) {
+      hash = (37 * hash) + TARGET_IPS_FIELD_NUMBER;
+      hash = (53 * hash) + getTargetIpsList().hashCode();
+    }
     hash = (37 * hash) + SNAPSHOT_ID_FIELD_NUMBER;
     hash = (53 * hash) + getSnapshotId().hashCode();
     hash = (37 * hash) + BACKUP_TYPE_FIELD_NUMBER;
@@ -454,8 +471,8 @@ private static final long serialVersionUID = 0L;
       super.clear();
       clusterId_ = "";
 
-      targetIp_ = "";
-
+      targetIps_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000002);
       snapshotId_ = "";
 
       backupType_ = 0;
@@ -486,10 +503,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.scalar.backup.cassandra.rpc.BackupRequest buildPartial() {
       com.scalar.backup.cassandra.rpc.BackupRequest result = new com.scalar.backup.cassandra.rpc.BackupRequest(this);
+      int from_bitField0_ = bitField0_;
+      int to_bitField0_ = 0;
       result.clusterId_ = clusterId_;
-      result.targetIp_ = targetIp_;
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        targetIps_ = targetIps_.getUnmodifiableView();
+        bitField0_ = (bitField0_ & ~0x00000002);
+      }
+      result.targetIps_ = targetIps_;
       result.snapshotId_ = snapshotId_;
       result.backupType_ = backupType_;
+      result.bitField0_ = to_bitField0_;
       onBuilt();
       return result;
     }
@@ -542,8 +566,14 @@ private static final long serialVersionUID = 0L;
         clusterId_ = other.clusterId_;
         onChanged();
       }
-      if (!other.getTargetIp().isEmpty()) {
-        targetIp_ = other.targetIp_;
+      if (!other.targetIps_.isEmpty()) {
+        if (targetIps_.isEmpty()) {
+          targetIps_ = other.targetIps_;
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          ensureTargetIpsIsMutable();
+          targetIps_.addAll(other.targetIps_);
+        }
         onChanged();
       }
       if (!other.getSnapshotId().isEmpty()) {
@@ -581,6 +611,7 @@ private static final long serialVersionUID = 0L;
       }
       return this;
     }
+    private int bitField0_;
 
     private java.lang.Object clusterId_ = "";
     /**
@@ -651,60 +682,86 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private java.lang.Object targetIp_ = "";
-    /**
-     * <pre>
-     * optional
-     * </pre>
-     *
-     * <code>string target_ip = 2;</code>
-     */
-    public java.lang.String getTargetIp() {
-      java.lang.Object ref = targetIp_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        targetIp_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
+    private com.google.protobuf.LazyStringList targetIps_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    private void ensureTargetIpsIsMutable() {
+      if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        targetIps_ = new com.google.protobuf.LazyStringArrayList(targetIps_);
+        bitField0_ |= 0x00000002;
+       }
     }
     /**
      * <pre>
      * optional
      * </pre>
      *
-     * <code>string target_ip = 2;</code>
+     * <code>repeated string target_ips = 2;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getTargetIpsList() {
+      return targetIps_.getUnmodifiableView();
+    }
+    /**
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>repeated string target_ips = 2;</code>
+     */
+    public int getTargetIpsCount() {
+      return targetIps_.size();
+    }
+    /**
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>repeated string target_ips = 2;</code>
+     */
+    public java.lang.String getTargetIps(int index) {
+      return targetIps_.get(index);
+    }
+    /**
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>repeated string target_ips = 2;</code>
      */
     public com.google.protobuf.ByteString
-        getTargetIpBytes() {
-      java.lang.Object ref = targetIp_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        targetIp_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+        getTargetIpsBytes(int index) {
+      return targetIps_.getByteString(index);
     }
     /**
      * <pre>
      * optional
      * </pre>
      *
-     * <code>string target_ip = 2;</code>
+     * <code>repeated string target_ips = 2;</code>
      */
-    public Builder setTargetIp(
+    public Builder setTargetIps(
+        int index, java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTargetIpsIsMutable();
+      targetIps_.set(index, value);
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>repeated string target_ips = 2;</code>
+     */
+    public Builder addTargetIps(
         java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
-  
-      targetIp_ = value;
+  ensureTargetIpsIsMutable();
+      targetIps_.add(value);
       onChanged();
       return this;
     }
@@ -713,11 +770,13 @@ private static final long serialVersionUID = 0L;
      * optional
      * </pre>
      *
-     * <code>string target_ip = 2;</code>
+     * <code>repeated string target_ips = 2;</code>
      */
-    public Builder clearTargetIp() {
-      
-      targetIp_ = getDefaultInstance().getTargetIp();
+    public Builder addAllTargetIps(
+        java.lang.Iterable<java.lang.String> values) {
+      ensureTargetIpsIsMutable();
+      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+          values, targetIps_);
       onChanged();
       return this;
     }
@@ -726,16 +785,29 @@ private static final long serialVersionUID = 0L;
      * optional
      * </pre>
      *
-     * <code>string target_ip = 2;</code>
+     * <code>repeated string target_ips = 2;</code>
      */
-    public Builder setTargetIpBytes(
+    public Builder clearTargetIps() {
+      targetIps_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000002);
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>repeated string target_ips = 2;</code>
+     */
+    public Builder addTargetIpsBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-      
-      targetIp_ = value;
+      ensureTargetIpsIsMutable();
+      targetIps_.add(value);
       onChanged();
       return this;
     }

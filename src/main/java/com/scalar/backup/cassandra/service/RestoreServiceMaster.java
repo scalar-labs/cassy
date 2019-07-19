@@ -1,11 +1,9 @@
 package com.scalar.backup.cassandra.service;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
 import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.config.RestoreType;
-import com.scalar.backup.cassandra.exception.RemoteExecutionException;
-import com.scalar.backup.cassandra.jmx.JmxManager;
+import com.scalar.backup.cassandra.db.ClusterInfoRecord;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommand;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandContext;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandExecutor;
@@ -22,16 +20,11 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
   public static final String RESTORE_COMMAND = "cassandra-restore";
 
   public RestoreServiceMaster(
-      BackupServerConfig config, JmxManager jmx, RemoteCommandExecutor executor) {
-    super(config, jmx, executor);
+      BackupServerConfig config, ClusterInfoRecord clusterInfo, RemoteCommandExecutor executor) {
+    super(config, clusterInfo, executor);
   }
 
   public List<RemoteCommandContext> restoreBackup(List<BackupKey> backupKeys, RestoreType type) {
-    if (!areAllNodesAlive()) {
-      throw new RemoteExecutionException(
-          "This operation is allowed only when all the nodes are alive at the moment.");
-    }
-
     if (type != RestoreType.CLUSTER && type != RestoreType.NODE) {
       throw new IllegalArgumentException("Unsupported restore type.");
     }
@@ -58,12 +51,12 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
   RemoteCommandContext downloadNodeBackups(BackupKey backupKey, RestoreType type) {
     List<String> arguments =
         Arrays.asList(
-            CLUSTER_ID_OPTION + jmx.getClusterName(),
+            CLUSTER_ID_OPTION + backupKey.getClusterId(),
             BACKUP_ID_OPTION + backupKey.getSnapshotId(),
             TARGET_IP_OPTION + backupKey.getTargetIp(),
-            DATA_DIR_OPTION + jmx.getAllDataFileLocations().get(0),
+            DATA_DIR_OPTION + clusterInfo.getDataDir(),
             STORE_BASE_URI_OPTION + config.getStorageBaseUri(),
-            KEYSPACES_OPTION + Joiner.on(',').join(jmx.getKeyspaces()),
+            KEYSPACES_OPTION + String.join(",", clusterInfo.getKeyspaces()),
             RESTORE_TYPE_OPTION + type.get());
 
     RemoteCommand command =

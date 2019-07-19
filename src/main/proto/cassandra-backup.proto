@@ -110,7 +110,7 @@ enum OperationStatus {
 
 message BackupRequest {
     string cluster_id = 1;
-    string target_ip = 2; // optional
+    repeated string target_ips = 2; // optional
     string snapshot_id = 3; // optional
     uint32 backup_type = 4;
 }

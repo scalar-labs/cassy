@@ -13,13 +13,13 @@ import static org.mockito.Mockito.when;
 
 import com.scalar.backup.cassandra.config.BackupServerConfig;
 import com.scalar.backup.cassandra.config.BackupType;
+import com.scalar.backup.cassandra.db.ClusterInfoRecord;
 import com.scalar.backup.cassandra.jmx.JmxManager;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandContext;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandExecutor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -41,21 +41,13 @@ public class BackupServiceMasterTest {
   private static final String KEYSPACE3 = "keyspace3";
   private static final List<String> keyspaces = Arrays.asList(KEYSPACE1, KEYSPACE2, KEYSPACE3);
   @Mock private BackupServerConfig config;
-  @Mock private JmxManager jmx;
+  @Mock private ClusterInfoRecord clusterInfo;
   @Mock private RemoteCommandExecutor executor;
   @Spy @InjectMocks private BackupServiceMaster master;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-  }
-
-  private void prepareNodes(JmxManager mockJmx, List<String> nodes) {
-    when(mockJmx.getLiveNodes()).thenReturn(nodes);
-    when(mockJmx.getJoiningNodes()).thenReturn(Lists.emptyList());
-    when(mockJmx.getMovingNodes()).thenReturn(Lists.emptyList());
-    when(mockJmx.getLeavingNodes()).thenReturn(Lists.emptyList());
-    when(mockJmx.getUnreachableNodes()).thenReturn(Lists.emptyList());
   }
 
   private List<BackupKey> prepareBackupKeys(
@@ -77,8 +69,7 @@ public class BackupServiceMasterTest {
   public void takeBackup_ClusterSnapshotTypeGiven_takeSnapshotsAndUploadOnEveryNode() {
     // Arrange
     when(config.getJmxPort()).thenReturn(JMX_PORT);
-    when(jmx.getKeyspaces()).thenReturn(keyspaces);
-    prepareNodes(jmx, nodes);
+    when(clusterInfo.getKeyspaces()).thenReturn(keyspaces);
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
@@ -103,8 +94,7 @@ public class BackupServiceMasterTest {
   public void takeBackup_NodeSnapshotTypeGiven_takeSnapshotsAndUploadOnEveryNode() {
     // Arrange
     when(config.getJmxPort()).thenReturn(JMX_PORT);
-    when(jmx.getKeyspaces()).thenReturn(keyspaces);
-    prepareNodes(jmx, nodes);
+    when(clusterInfo.getKeyspaces()).thenReturn(keyspaces);
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
@@ -129,9 +119,8 @@ public class BackupServiceMasterTest {
   public void takeBackup_NodeSnapshotTypeAndNodesGiven_takeSnapshotsAndUploadOnTheNodes() {
     // Arrange
     when(config.getJmxPort()).thenReturn(JMX_PORT);
-    when(jmx.getKeyspaces()).thenReturn(keyspaces);
+    when(clusterInfo.getKeyspaces()).thenReturn(keyspaces);
     List<String> someNodes = Arrays.asList(nodes.get(0));
-    prepareNodes(jmx, someNodes);
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, INCREMENTAL_ID);
     JmxManager eachJmx = mock(JmxManager.class);
     doReturn(eachJmx).when(master).getJmx(anyString(), anyInt());
@@ -155,8 +144,7 @@ public class BackupServiceMasterTest {
   @Test
   public void takeBackup_NodeIncrementalTypeGiven_UploadOnEveryNode() {
     // Arrange
-    when(jmx.getKeyspaces()).thenReturn(keyspaces);
-    prepareNodes(jmx, nodes);
+    when(clusterInfo.getKeyspaces()).thenReturn(keyspaces);
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
@@ -174,9 +162,8 @@ public class BackupServiceMasterTest {
   @Test
   public void takeBackup_NodeIncrementalTypeAndNodesGiven_UploadOnEveryTheNodes() {
     // Arrange
-    when(jmx.getKeyspaces()).thenReturn(keyspaces);
+    when(clusterInfo.getKeyspaces()).thenReturn(keyspaces);
     List<String> someNodes = Arrays.asList(nodes.get(0));
-    prepareNodes(jmx, someNodes);
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, INCREMENTAL_ID);
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
