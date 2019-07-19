@@ -293,7 +293,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     } catch (Exception e) {
       builder.setMessage(e.getMessage());
       builder.setStatus(OperationStatus.FAILED);
-      updateRestoreStatus(backupKeys, type, OperationStatus.STARTED);
+      updateRestoreStatus(backupKeys, type, OperationStatus.FAILED);
     }
 
     builder.setStatus(OperationStatus.STARTED);
