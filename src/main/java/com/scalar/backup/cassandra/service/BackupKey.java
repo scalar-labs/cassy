@@ -63,7 +63,7 @@ public class BackupKey {
     }
 
     public Builder createdAt(long createdAt) {
-      checkArgument(createdAt >= 0);
+      checkArgument(createdAt > 0);
       this.createdAt = createdAt;
       return this;
     }
