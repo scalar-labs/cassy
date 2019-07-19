@@ -50,7 +50,7 @@ public class RestoreHistoryTest {
         .thenReturn(selectRecentByCluster);
     when(connection.prepareStatement(RestoreHistory.SELECT_RECENT_BY_HOST))
         .thenReturn(selectRecentByHost);
-    when(connection.prepareStatement(RestoreHistory.SELECT_BY_SNAPSHOT_ID))
+    when(connection.prepareStatement(RestoreHistory.SELECT_RECENT_BY_SNAPSHOT))
         .thenReturn(selectBySnapshot);
     doNothing().when(insert).setQueryTimeout(anyInt());
     doNothing().when(update).setQueryTimeout(anyInt());
@@ -255,9 +255,12 @@ public class RestoreHistoryTest {
   }
 
   @Test
-  public void selectBySnapshotId_SnapshotIdGiven_ShouldReturnSnapshotsProperly()
-      throws SQLException {
+  public void
+      selectRecent_RestoreStatusListingRequestWithSnapshotIdGiven_ShouldReturnSnapshotsProperly()
+          throws SQLException {
     // Arrange
+    RestoreStatusListingRequest request =
+        RestoreStatusListingRequest.newBuilder().setSnapshotId(SNAPSHOT_ID).setN(N).build();
     ResultSet resultSet = mock(ResultSet.class);
     when(selectBySnapshot.executeQuery()).thenReturn(resultSet);
     when(resultSet.getString(anyString())).thenReturn("anyString");
@@ -266,31 +269,11 @@ public class RestoreHistoryTest {
     when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
 
     // Act
-    List<RestoreHistoryRecord> records = history.selectBySnapshotId(SNAPSHOT_ID);
+    List<RestoreHistoryRecord> records = history.selectRecent(request);
 
     // Assert
     verify(selectBySnapshot).setString(1, SNAPSHOT_ID);
     verify(selectBySnapshot).executeQuery();
     assertThat(records.size()).isEqualTo(N);
-  }
-
-  @Test
-  public void selectBySnapshotId_SQLExceptionThrown_ShouldThrowDatabaseException()
-      throws SQLException {
-    // Arrange
-    SQLException toThrow = mock(SQLException.class);
-    when(selectBySnapshot.executeQuery()).thenThrow(toThrow);
-
-    // Act
-    assertThatThrownBy(
-            () -> {
-              history.selectBySnapshotId(SNAPSHOT_ID);
-            })
-        .isInstanceOf(DatabaseException.class)
-        .hasCause(toThrow);
-
-    // Assert
-    verify(selectBySnapshot).setString(1, SNAPSHOT_ID);
-    verify(selectBySnapshot).executeQuery();
   }
 }

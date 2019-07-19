@@ -29,14 +29,14 @@ public class RestoreHistory {
   static final String SELECT_RECENT_BY_HOST =
       "SELECT * FROM restore_history WHERE cluster_id = ? and target_ip = ? "
           + "ORDER BY created_at DESC limit ?";
-  static final String SELECT_BY_SNAPSHOT_ID =
+  static final String SELECT_RECENT_BY_SNAPSHOT =
       "SELECT * FROM restore_history WHERE snapshot_id = ? ORDER BY created_at DESC limit ?";
   private final Connection connection;
   private final PreparedStatement insert;
   private final PreparedStatement update;
   private final PreparedStatement selectRecentByCluster;
   private final PreparedStatement selectRecentByHost;
-  private final PreparedStatement selectBySnapshot;
+  private final PreparedStatement selectRecentBySnapshot;
 
   public RestoreHistory(Connection connection) {
     this.connection = connection;
@@ -45,12 +45,12 @@ public class RestoreHistory {
       update = connection.prepareStatement(UPDATE);
       selectRecentByCluster = connection.prepareStatement(SELECT_RECENT_BY_CLUSTER);
       selectRecentByHost = connection.prepareStatement(SELECT_RECENT_BY_HOST);
-      selectBySnapshot = connection.prepareStatement(SELECT_BY_SNAPSHOT_ID);
+      selectRecentBySnapshot = connection.prepareStatement(SELECT_RECENT_BY_SNAPSHOT);
       insert.setQueryTimeout(30);
       update.setQueryTimeout(30);
       selectRecentByCluster.setQueryTimeout(30);
       selectRecentByHost.setQueryTimeout(30);
-      selectBySnapshot.setQueryTimeout(30);
+      selectRecentBySnapshot.setQueryTimeout(30);
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
@@ -75,29 +75,20 @@ public class RestoreHistory {
   public List<RestoreHistoryRecord> selectRecent(RestoreStatusListingRequest request) {
     ResultSet resultSet;
     try {
-      if (request.getTargetIp().isEmpty()) {
+      if (!request.getTargetIp().isEmpty() && !request.getClusterId().isEmpty()) {
+        resultSet = selectRecentByHost(request);
+      } else if (!request.getSnapshotId().isEmpty()) {
+        resultSet = selectRecentBySnapshot(request);
+      } else if (!request.getClusterId().isEmpty()) {
         resultSet = selectRecentByCluster(request);
       } else {
-        resultSet = selectRecentByHost(request);
+        throw new IllegalArgumentException("Parameters are not set properly.");
       }
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
 
     return traverseResults(resultSet);
-  }
-
-  public List<RestoreHistoryRecord> selectBySnapshotId(String snapshotId) {
-    List<RestoreHistoryRecord> records;
-    try {
-      selectBySnapshot.setString(1, snapshotId);
-      ResultSet resultSet = selectBySnapshot.executeQuery();
-      records = traverseResults(resultSet);
-      selectBySnapshot.clearParameters();
-    } catch (SQLException e) {
-      throw new DatabaseException(e);
-    }
-    return records;
   }
 
   private void insertImpl(BackupKey backupKey, RestoreType type, OperationStatus status)
@@ -143,6 +134,14 @@ public class RestoreHistory {
     selectRecentByHost.setString(2, request.getTargetIp());
     selectRecentByHost.setInt(3, request.getN());
     ResultSet resultSet = selectRecentByHost.executeQuery();
+    return resultSet;
+  }
+
+  private ResultSet selectRecentBySnapshot(RestoreStatusListingRequest request)
+      throws SQLException {
+    selectRecentBySnapshot.setString(1, request.getSnapshotId());
+    selectRecentBySnapshot.setInt(2, request.getN());
+    ResultSet resultSet = selectRecentBySnapshot.executeQuery();
     return resultSet;
   }
 

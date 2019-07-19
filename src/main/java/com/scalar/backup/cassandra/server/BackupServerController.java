@@ -168,6 +168,10 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     List<RestoreHistoryRecord> records = null;
     try {
       records = database.getRestoreHistory().selectRecent(request);
+    } catch (IllegalArgumentException e) {
+      logger.error(e.getMessage(), e);
+      responseObserver.onError(Status.INVALID_ARGUMENT.withCause(e).asRuntimeException());
+      return;
     } catch (Exception e) {
       logger.error(e.getMessage(), e);
       responseObserver.onError(Status.INTERNAL.withCause(e).asRuntimeException());
