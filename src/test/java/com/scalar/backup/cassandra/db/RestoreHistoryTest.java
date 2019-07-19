@@ -273,6 +273,7 @@ public class RestoreHistoryTest {
 
     // Assert
     verify(selectBySnapshot).setString(1, SNAPSHOT_ID);
+    verify(selectBySnapshot).setInt(2, N);
     verify(selectBySnapshot).executeQuery();
     assertThat(records.size()).isEqualTo(N);
   }
