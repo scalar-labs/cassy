@@ -18,10 +18,12 @@ import java.nio.file.Paths;
 public class AwsS3BackupModule extends AbstractModule {
   private final BackupType type;
   private final String dataDir;
+  private final String snapshotId;
 
-  public AwsS3BackupModule(BackupType type, String dataDir) {
+  public AwsS3BackupModule(BackupType type, String dataDir, String snapshotId) {
     this.type = type;
     this.dataDir = dataDir;
+    this.snapshotId = snapshotId;
   }
 
   @Override
@@ -35,7 +37,7 @@ public class AwsS3BackupModule extends AbstractModule {
     if (type.equals(BackupType.NODE_INCREMENTAL)) {
       return new IncrementalBackupTraverser(Paths.get(dataDir));
     }
-    return new SnapshotTraverser(Paths.get(dataDir));
+    return new SnapshotTraverser(Paths.get(dataDir), snapshotId);
   }
 
   @Provides

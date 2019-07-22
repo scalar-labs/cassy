@@ -19,7 +19,6 @@ import com.google.common.base.Joiner;
 import com.scalar.backup.cassandra.config.BackupConfig;
 import com.scalar.backup.cassandra.config.BackupType;
 import com.scalar.backup.cassandra.exception.FileTransferException;
-import com.scalar.backup.cassandra.traverser.FileTraverser;
 import java.io.File;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -46,14 +45,14 @@ public class AwsS3FileUploaderTest {
   private static final String FILE1 = "file1";
   private static final String FILE2 = "file2";
   private static final String ANY_CLUSTER_ID = "cluster_id";
-  private static final String ANY_BACKUP_ID = "backup_id";
+  private static final String ANY_SNAPSHOT_ID = "snapshot_id";
   private static final String ANY_TARGET_IP = "target_ip";
   private static final String ANY_DATA_DIR = "data_dir";
   private static final String ANY_S3_URI = "s3://scalar";
   private static final Joiner joiner = Joiner.on("/").skipNulls();
   private static final FileSystem fs = FileSystems.getDefault();
   private AmazonS3URI s3Uri;
-  @Mock private FileTraverser traverser;
+  // @Mock private FileTraverser traverser;
   @Mock private TransferManager manager;
   @Mock private AmazonS3 s3;
   @Mock private Upload upload;
@@ -76,7 +75,7 @@ public class AwsS3FileUploaderTest {
   public Properties getProperties(BackupType type, String dataDir) {
     Properties props = new Properties();
     props.setProperty(BackupConfig.CLUSTER_ID, ANY_CLUSTER_ID);
-    props.setProperty(BackupConfig.BACKUP_ID, ANY_BACKUP_ID);
+    props.setProperty(BackupConfig.SNAPSHOT_ID, ANY_SNAPSHOT_ID);
     props.setProperty(BackupConfig.BACKUP_TYPE, Integer.toString(type.get()));
     props.setProperty(BackupConfig.TARGET_IP, ANY_TARGET_IP);
     props.setProperty(BackupConfig.DATA_DIR, dataDir);
@@ -94,10 +93,9 @@ public class AwsS3FileUploaderTest {
     when(manager.upload(anyString(), anyString(), any(File.class))).thenReturn(upload);
     doReturn(true).when(uploader).requiresUpload(anyString(), anyString(), any(Path.class));
     List<Path> paths = getListOfSnapshotFiles();
-    when(traverser.traverse(KEYSPACE_DIR)).thenReturn(paths);
 
     // Act
-    uploader.upload(config);
+    uploader.upload(paths, config);
 
     // Assert
     verify(manager)
@@ -122,10 +120,9 @@ public class AwsS3FileUploaderTest {
     when(manager.upload(anyString(), anyString(), any(File.class))).thenThrow(toThrow);
     doReturn(true).when(uploader).requiresUpload(anyString(), anyString(), any(Path.class));
     List<Path> paths = getListOfSnapshotFiles();
-    when(traverser.traverse(KEYSPACE_DIR)).thenReturn(paths);
 
     // Act
-    assertThatThrownBy(() -> uploader.upload(config))
+    assertThatThrownBy(() -> uploader.upload(paths, config))
         .isInstanceOf(FileTransferException.class)
         .hasCause(toThrow);
 

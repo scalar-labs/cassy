@@ -10,7 +10,6 @@ import com.google.inject.Inject;
 import com.scalar.backup.cassandra.config.BackupConfig;
 import com.scalar.backup.cassandra.exception.FileIOException;
 import com.scalar.backup.cassandra.exception.FileTransferException;
-import com.scalar.backup.cassandra.traverser.FileTraverser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,21 +21,18 @@ import org.slf4j.LoggerFactory;
 
 public class AwsS3FileUploader implements FileUploader {
   private static final Logger logger = LoggerFactory.getLogger(AwsS3FileUploader.class);
-  private final FileTraverser traverser;
   private final TransferManager manager;
   private final AmazonS3 s3;
 
   @Inject
-  public AwsS3FileUploader(FileTraverser traverser, TransferManager manager, AmazonS3 s3) {
-    this.traverser = traverser;
+  public AwsS3FileUploader(TransferManager manager, AmazonS3 s3) {
     this.manager = manager;
     this.s3 = s3;
   }
 
   @Override
-  public void upload(BackupConfig config) {
+  public void upload(List<Path> files, BackupConfig config) {
     AmazonS3URI s3Uri = new AmazonS3URI(config.getStoreBaseUri());
-    List<Path> files = traverser.traverse(config.getKeyspace());
 
     List<Upload> uploads = new ArrayList<>();
     files.forEach(

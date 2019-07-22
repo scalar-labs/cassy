@@ -19,7 +19,7 @@ public class Placer {
     Path toDir = Paths.get(config.getDataDir());
 
     place(
-        new SnapshotTraverser(fromDir).traverse(config.getKeyspace()),
+        new SnapshotTraverser(fromDir, config.getSnapshotId()).traverse(config.getKeyspace()),
         fromDir,
         toDir,
         SnapshotTraverser.DIR_TO_FILE_DISTANCE);

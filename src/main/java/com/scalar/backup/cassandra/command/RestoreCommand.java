@@ -26,7 +26,7 @@ public class RestoreCommand extends AbstractCommand {
   public Void call() throws Exception {
     Properties props = new Properties();
     props.setProperty(RestoreConfig.CLUSTER_ID, clusterId);
-    props.setProperty(RestoreConfig.BACKUP_ID, backupId);
+    props.setProperty(RestoreConfig.SNAPSHOT_ID, snapshotId);
     props.setProperty(RestoreConfig.TARGET_IP, targetIp);
     props.setProperty(RestoreConfig.DATA_DIR, dataDir);
     props.setProperty(RestoreConfig.STORE_BASE_URI, storeBaseUri);

@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractServiceMaster {
   protected final String CLUSTER_ID_OPTION = "--cluster-id=";
-  protected final String BACKUP_ID_OPTION = "--backup-id=";
+  protected final String SNAPSHOT_ID_OPTION = "--snapshot-id=";
   protected final String TARGET_IP_OPTION = "--target-ip=";
   protected final String DATA_DIR_OPTION = "--data-dir=";
   protected final String STORE_BASE_URI_OPTION = "--store-base-uri=";

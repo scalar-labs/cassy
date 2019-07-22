@@ -107,7 +107,7 @@ public class BackupServiceMaster extends AbstractServiceMaster {
     List<String> arguments =
         Arrays.asList(
             CLUSTER_ID_OPTION + clusterInfo.getClusterId(),
-            BACKUP_ID_OPTION + backupKey.getSnapshotId(),
+            SNAPSHOT_ID_OPTION + backupKey.getSnapshotId(),
             TARGET_IP_OPTION + backupKey.getTargetIp(),
             DATA_DIR_OPTION + clusterInfo.getDataDir(),
             STORE_BASE_URI_OPTION + config.getStorageBaseUri(),

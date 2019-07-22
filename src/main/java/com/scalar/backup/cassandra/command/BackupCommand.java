@@ -27,7 +27,7 @@ public class BackupCommand extends AbstractCommand {
   public Void call() throws Exception {
     Properties props = new Properties();
     props.setProperty(BackupConfig.CLUSTER_ID, clusterId);
-    props.setProperty(BackupConfig.BACKUP_ID, backupId);
+    props.setProperty(BackupConfig.SNAPSHOT_ID, snapshotId);
     props.setProperty(BackupConfig.TARGET_IP, targetIp);
     props.setProperty(BackupConfig.DATA_DIR, dataDir);
     props.setProperty(BackupConfig.STORE_BASE_URI, storeBaseUri);
@@ -35,7 +35,7 @@ public class BackupCommand extends AbstractCommand {
 
     BackupType type = BackupType.getByType(backupType);
     // TODO: switching modules depending on the specified store_type
-    Injector injector = Guice.createInjector(new AwsS3BackupModule(type, dataDir));
+    Injector injector = Guice.createInjector(new AwsS3BackupModule(type, dataDir, snapshotId));
 
     try (BackupService service = injector.getInstance(BackupService.class)) {
       Arrays.asList(keyspaces.split(","))
@@ -43,7 +43,6 @@ public class BackupCommand extends AbstractCommand {
               k -> {
                 props.setProperty(BackupConfig.KEYSPACE, k);
                 service.backup(new BackupConfig(props));
-                // TODO reporting
               });
     }
 

@@ -27,7 +27,7 @@ import org.mockito.MockitoAnnotations;
 public class AwsS3FileDownloaderTest {
   private static final String KEYSPACE_DIR = "keyspace1";
   private static final String ANY_CLUSTER_ID = "cluster_id";
-  private static final String ANY_BACKUP_ID = "backup_id";
+  private static final String ANY_SNAPSHOT_ID = "snapshot_id";
   private static final String ANY_TARGET_IP = "target_ip";
   private static final String ANY_TMP_DATA_DIR = "tmp_data_dir";
   private static final String ANY_S3_URI = "s3://scalar";
@@ -45,7 +45,7 @@ public class AwsS3FileDownloaderTest {
   public Properties getProperties(BackupType type, String dataDir) {
     Properties props = new Properties();
     props.setProperty(RestoreConfig.CLUSTER_ID, ANY_CLUSTER_ID);
-    props.setProperty(RestoreConfig.BACKUP_ID, ANY_BACKUP_ID);
+    props.setProperty(RestoreConfig.SNAPSHOT_ID, ANY_SNAPSHOT_ID);
     props.setProperty(RestoreConfig.RESTORE_TYPE, Integer.toString(type.get()));
     props.setProperty(RestoreConfig.TARGET_IP, ANY_TARGET_IP);
     props.setProperty(RestoreConfig.DATA_DIR, dataDir);
