@@ -26,7 +26,7 @@ public class SnapshotTraverserTest {
   private static final String TABLE_DIR_1 = "standard1-xxx";
   private static final String TABLE_DIR_2 = "standard2-xxx";
   private static final String SNAPSHOT_DIR = SnapshotTraverser.SNAPSHOT_DIRNAME;
-  private static final String SNAPSHOT_ID = "unique-snapshot-id";
+  private static final String SNAPSHOT_ID = "1";
   private static final String FILE1 = "file1";
   private static final String FILE2 = "file2";
   private static final Joiner joiner = Joiner.on("/").skipNulls();
@@ -77,7 +77,7 @@ public class SnapshotTraverserTest {
 
   @Before
   public void setUp() {
-    this.traverser = new SnapshotTraverser(FileSystems.getDefault().getPath(DATA_DIR), SNAPSHOT_ID);
+    this.traverser = new SnapshotTraverser(FileSystems.getDefault().getPath(DATA_DIR));
   }
 
   @Test
