@@ -79,6 +79,21 @@ public final class CassandraBackupProto {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_rpc_RestoreResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_rpc_RestoreStatusListingRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_rpc_RestoreStatusListingRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_rpc_RestoreStatusListingResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_rpc_RestoreStatusListingResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_rpc_RestoreStatusListingResponse_Entry_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_rpc_RestoreStatusListingResponse_Entry_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -104,44 +119,57 @@ public final class CassandraBackupProto {
       "atus\022\013\n\007UNKNOWN\020\000\022\010\n\004LIVE\020\001\022\013\n\007LEAVING\020\002" +
       "\022\n\n\006MOVING\020\003\022\013\n\007JOINING\020\004\022\017\n\013UNREACHABLE" +
       "\020\005\"H\n\024BackupListingRequest\022\022\n\ncluster_id" +
-      "\030\001 \001(\t\022\021\n\ttarget_ip\030\002 \001(\t\022\t\n\001n\030\003 \001(\r\"\366\001\n" +
+      "\030\001 \001(\t\022\021\n\ttarget_ip\030\002 \001(\t\022\t\n\001n\030\003 \001(\r\"\363\001\n" +
       "\025BackupListingResponse\0221\n\007entries\030\001 \003(\0132" +
-      " .rpc.BackupListingResponse.Entry\032\251\001\n\005En" +
+      " .rpc.BackupListingResponse.Entry\032\246\001\n\005En" +
       "try\022\022\n\ncluster_id\030\001 \001(\t\022\021\n\ttarget_ip\030\002 \001" +
-      "(\t\022\023\n\013snapshot_id\030\003 \001(\t\022\026\n\016incremental_i" +
-      "d\030\004 \001(\003\022\023\n\013backup_type\030\005 \001(\r\022$\n\006status\030\006" +
-      " \001(\0162\024.rpc.OperationStatus\022\021\n\ttimestamp\030" +
-      "\007 \001(\004\"a\n\rBackupRequest\022\022\n\ncluster_id\030\001 \001" +
-      "(\t\022\022\n\ntarget_ips\030\002 \003(\t\022\023\n\013snapshot_id\030\003 " +
-      "\001(\t\022\023\n\013backup_type\030\004 \001(\r\"t\n\016BackupRespon" +
-      "se\022$\n\006status\030\001 \001(\0162\024.rpc.OperationStatus" +
-      "\022\017\n\007message\030\002 \001(\t\022\023\n\013snapshot_id\030\003 \001(\t\022\026" +
-      "\n\016incremental_id\030\004 \001(\003\"z\n\016RestoreRequest" +
-      "\022\022\n\ncluster_id\030\001 \001(\t\022\022\n\ntarget_ips\030\002 \003(\t" +
-      "\022\023\n\013snapshot_id\030\003 \001(\t\022\024\n\014restore_type\030\004 " +
-      "\001(\r\022\025\n\rsnapshot_only\030\005 \001(\010\"H\n\017RestoreRes" +
-      "ponse\022$\n\006status\030\001 \001(\0162\024.rpc.OperationSta" +
-      "tus\022\017\n\007message\030\002 \001(\t*W\n\017OperationStatus\022" +
-      "\013\n\007UNKNOWN\020\000\022\017\n\013INITIALIZED\020\001\022\013\n\007STARTED" +
-      "\020\002\022\r\n\tCOMPLETED\020\003\022\n\n\006FAILED\020\0042\211\005\n\017Cassan" +
-      "draBackup\022m\n\017registerCluster\022\037.rpc.Clust" +
-      "erRegistrationRequest\032 .rpc.ClusterRegis" +
-      "trationResponse\"\027\202\323\344\223\002\021\"\014/v1/clusters:\001*" +
-      "\022Y\n\014ShowClusters\022\026.google.protobuf.Empty" +
-      "\032\033.rpc.ClusterListingResponse\"\024\202\323\344\223\002\016\022\014/" +
-      "v1/clusters\022a\n\tListNodes\022\027.rpc.NodeListi" +
-      "ngRequest\032\030.rpc.NodeListingResponse\"!\202\323\344" +
-      "\223\002\033\022\031/v1/clusters/{cluster_id}\022o\n\013ListBa" +
-      "ckups\022\031.rpc.BackupListingRequest\032\032.rpc.B" +
-      "ackupListingResponse\")\202\323\344\223\002#\022!/v1/cluste" +
-      "rs/{cluster_id}/backups\022c\n\nTakeBackup\022\022." +
-      "rpc.BackupRequest\032\023.rpc.BackupResponse\"," +
-      "\202\323\344\223\002&\"!/v1/clusters/{cluster_id}/backup" +
-      "s:\001*\022s\n\rRestoreBackup\022\023.rpc.RestoreReque" +
-      "st\032\024.rpc.RestoreResponse\"7\202\323\344\223\0021\032,/v1/cl" +
-      "usters/{cluster_id}/data/{snapshot_id}:\001" +
-      "*B9\n\037com.scalar.backup.cassandra.rpcB\024Ca" +
-      "ssandraBackupProtoP\001b\006proto3"
+      "(\t\022\023\n\013snapshot_id\030\003 \001(\t\022\022\n\ncreated_at\030\004 " +
+      "\001(\004\022\022\n\nupdated_at\030\005 \001(\004\022\023\n\013backup_type\030\006" +
+      " \001(\r\022$\n\006status\030\007 \001(\0162\024.rpc.OperationStat" +
+      "us\"a\n\rBackupRequest\022\022\n\ncluster_id\030\001 \001(\t\022" +
+      "\022\n\ntarget_ips\030\002 \003(\t\022\023\n\013snapshot_id\030\003 \001(\t" +
+      "\022\023\n\013backup_type\030\004 \001(\r\"p\n\016BackupResponse\022" +
+      "$\n\006status\030\001 \001(\0162\024.rpc.OperationStatus\022\017\n" +
+      "\007message\030\002 \001(\t\022\023\n\013snapshot_id\030\003 \001(\t\022\022\n\nc" +
+      "reated_at\030\004 \001(\004\"z\n\016RestoreRequest\022\022\n\nclu" +
+      "ster_id\030\001 \001(\t\022\022\n\ntarget_ips\030\002 \003(\t\022\023\n\013sna" +
+      "pshot_id\030\003 \001(\t\022\024\n\014restore_type\030\004 \001(\r\022\025\n\r" +
+      "snapshot_only\030\005 \001(\010\"H\n\017RestoreResponse\022$" +
+      "\n\006status\030\001 \001(\0162\024.rpc.OperationStatus\022\017\n\007" +
+      "message\030\002 \001(\t\"d\n\033RestoreStatusListingReq" +
+      "uest\022\022\n\ncluster_id\030\001 \001(\t\022\021\n\ttarget_ip\030\002 " +
+      "\001(\t\022\023\n\013snapshot_id\030\003 \001(\t\022\t\n\001n\030\004 \001(\r\"\202\002\n\034" +
+      "RestoreStatusListingResponse\022\022\n\ncluster_" +
+      "id\030\001 \001(\t\0228\n\007entries\030\003 \003(\0132\'.rpc.RestoreS" +
+      "tatusListingResponse.Entry\032\223\001\n\005Entry\022\021\n\t" +
+      "target_ip\030\001 \001(\t\022\023\n\013snapshot_id\030\002 \001(\t\022\022\n\n" +
+      "created_at\030\003 \001(\004\022\022\n\nupdated_at\030\004 \001(\004\022\024\n\014" +
+      "restore_type\030\005 \001(\r\022$\n\006status\030\006 \001(\0162\024.rpc" +
+      ".OperationStatus*W\n\017OperationStatus\022\013\n\007U" +
+      "NKNOWN\020\000\022\017\n\013INITIALIZED\020\001\022\013\n\007STARTED\020\002\022\r" +
+      "\n\tCOMPLETED\020\003\022\n\n\006FAILED\020\0042\234\006\n\017CassandraB" +
+      "ackup\022m\n\017registerCluster\022\037.rpc.ClusterRe" +
+      "gistrationRequest\032 .rpc.ClusterRegistrat" +
+      "ionResponse\"\027\202\323\344\223\002\021\"\014/v1/clusters:\001*\022Y\n\014" +
+      "ShowClusters\022\026.google.protobuf.Empty\032\033.r" +
+      "pc.ClusterListingResponse\"\024\202\323\344\223\002\016\022\014/v1/c" +
+      "lusters\022a\n\tListNodes\022\027.rpc.NodeListingRe" +
+      "quest\032\030.rpc.NodeListingResponse\"!\202\323\344\223\002\033\022" +
+      "\031/v1/clusters/{cluster_id}\022o\n\013ListBackup" +
+      "s\022\031.rpc.BackupListingRequest\032\032.rpc.Backu" +
+      "pListingResponse\")\202\323\344\223\002#\022!/v1/clusters/{" +
+      "cluster_id}/backups\022c\n\nTakeBackup\022\022.rpc." +
+      "BackupRequest\032\023.rpc.BackupResponse\",\202\323\344\223" +
+      "\002&\"!/v1/clusters/{cluster_id}/backups:\001*" +
+      "\022s\n\rRestoreBackup\022\023.rpc.RestoreRequest\032\024" +
+      ".rpc.RestoreResponse\"7\202\323\344\223\0021\032,/v1/cluste" +
+      "rs/{cluster_id}/data/{snapshot_id}:\001*\022\220\001" +
+      "\n\023ListRestoreStatuses\022 .rpc.RestoreStatu" +
+      "sListingRequest\032!.rpc.RestoreStatusListi" +
+      "ngResponse\"4\202\323\344\223\002.\022,/v1/clusters/{cluste" +
+      "r_id}/data/{snapshot_id}B9\n\037com.scalar.b" +
+      "ackup.cassandra.rpcB\024CassandraBackupProt" +
+      "oP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -210,7 +238,7 @@ public final class CassandraBackupProto {
     internal_static_rpc_BackupListingResponse_Entry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_rpc_BackupListingResponse_Entry_descriptor,
-        new java.lang.String[] { "ClusterId", "TargetIp", "SnapshotId", "IncrementalId", "BackupType", "Status", "Timestamp", });
+        new java.lang.String[] { "ClusterId", "TargetIp", "SnapshotId", "CreatedAt", "UpdatedAt", "BackupType", "Status", });
     internal_static_rpc_BackupRequest_descriptor =
       getDescriptor().getMessageTypes().get(7);
     internal_static_rpc_BackupRequest_fieldAccessorTable = new
@@ -222,7 +250,7 @@ public final class CassandraBackupProto {
     internal_static_rpc_BackupResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_rpc_BackupResponse_descriptor,
-        new java.lang.String[] { "Status", "Message", "SnapshotId", "IncrementalId", });
+        new java.lang.String[] { "Status", "Message", "SnapshotId", "CreatedAt", });
     internal_static_rpc_RestoreRequest_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_rpc_RestoreRequest_fieldAccessorTable = new
@@ -235,6 +263,24 @@ public final class CassandraBackupProto {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_rpc_RestoreResponse_descriptor,
         new java.lang.String[] { "Status", "Message", });
+    internal_static_rpc_RestoreStatusListingRequest_descriptor =
+      getDescriptor().getMessageTypes().get(11);
+    internal_static_rpc_RestoreStatusListingRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_rpc_RestoreStatusListingRequest_descriptor,
+        new java.lang.String[] { "ClusterId", "TargetIp", "SnapshotId", "N", });
+    internal_static_rpc_RestoreStatusListingResponse_descriptor =
+      getDescriptor().getMessageTypes().get(12);
+    internal_static_rpc_RestoreStatusListingResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_rpc_RestoreStatusListingResponse_descriptor,
+        new java.lang.String[] { "ClusterId", "Entries", });
+    internal_static_rpc_RestoreStatusListingResponse_Entry_descriptor =
+      internal_static_rpc_RestoreStatusListingResponse_descriptor.getNestedTypes().get(0);
+    internal_static_rpc_RestoreStatusListingResponse_Entry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_rpc_RestoreStatusListingResponse_Entry_descriptor,
+        new java.lang.String[] { "TargetIp", "SnapshotId", "CreatedAt", "UpdatedAt", "RestoreType", "Status", });
     com.google.protobuf.ExtensionRegistry registry =
         com.google.protobuf.ExtensionRegistry.newInstance();
     registry.add(com.google.api.AnnotationsProto.http);

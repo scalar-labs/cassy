@@ -1,9 +1,9 @@
 package com.scalar.backup.cassandra.db;
 
-import com.scalar.backup.cassandra.config.BackupType;
+import com.scalar.backup.cassandra.config.RestoreType;
 import com.scalar.backup.cassandra.exception.DatabaseException;
-import com.scalar.backup.cassandra.rpc.BackupListingRequest;
 import com.scalar.backup.cassandra.rpc.OperationStatus;
+import com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest;
 import com.scalar.backup.cassandra.service.BackupKey;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,48 +14,49 @@ import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public class BackupHistory {
+public class RestoreHistory {
   static final String INSERT =
-      "INSERT INTO backup_history "
-          + "(snapshot_id, cluster_id, target_ip, backup_type, created_at, updated_at, status) "
+      "INSERT INTO restore_history "
+          + "(snapshot_id, cluster_id, target_ip, restore_type, created_at, updated_at, status) "
           + "VALUES (?, ?, ?, ?, ?, ?, ?)";
   static final String UPDATE =
-      "UPDATE backup_history SET status = ?, updated_at = ? "
+      "UPDATE restore_history SET status = ?, updated_at = ? "
           + "WHERE snapshot_id = ? and cluster_id = ? and target_ip = ? and created_at = ?";
-  static final String SELECT_RECENT_SNAPSHOTS_BY_CLUSTER =
-      "SELECT * FROM backup_history WHERE cluster_id = ? "
-          + "GROUP BY snapshot_id ORDER BY created_at DESC limit ?";
-  static final String SELECT_RECENT_SNAPSHOTS_BY_HOST =
-      "SELECT * FROM backup_history WHERE cluster_id = ? and target_ip = ? "
-          + "GROUP BY snapshot_id ORDER BY created_at DESC limit ?";
-  static final String SELECT_BY_SNAPSHOT_ID =
-      "SELECT * FROM backup_history WHERE snapshot_id = ? ORDER BY created_at DESC";
+  static final String SELECT_RECENT_BY_CLUSTER =
+      "SELECT cluster_id, target_ip, snapshot_id, MAX(created_at) as created_at,"
+          + "updated_at, restore_type, status FROM restore_history "
+          + "WHERE cluster_id = ? GROUP BY target_ip ORDER BY created_at DESC";
+  static final String SELECT_RECENT_BY_HOST =
+      "SELECT * FROM restore_history WHERE cluster_id = ? and target_ip = ? "
+          + "ORDER BY created_at DESC limit ?";
+  static final String SELECT_RECENT_BY_SNAPSHOT =
+      "SELECT * FROM restore_history WHERE snapshot_id = ? ORDER BY created_at DESC limit ?";
   private final Connection connection;
   private final PreparedStatement insert;
   private final PreparedStatement update;
   private final PreparedStatement selectRecentByCluster;
   private final PreparedStatement selectRecentByHost;
-  private final PreparedStatement selectBySnapshot;
+  private final PreparedStatement selectRecentBySnapshot;
 
-  public BackupHistory(Connection connection) {
+  public RestoreHistory(Connection connection) {
     this.connection = connection;
     try {
       insert = connection.prepareStatement(INSERT);
       update = connection.prepareStatement(UPDATE);
-      selectRecentByCluster = connection.prepareStatement(SELECT_RECENT_SNAPSHOTS_BY_CLUSTER);
-      selectRecentByHost = connection.prepareStatement(SELECT_RECENT_SNAPSHOTS_BY_HOST);
-      selectBySnapshot = connection.prepareStatement(SELECT_BY_SNAPSHOT_ID);
+      selectRecentByCluster = connection.prepareStatement(SELECT_RECENT_BY_CLUSTER);
+      selectRecentByHost = connection.prepareStatement(SELECT_RECENT_BY_HOST);
+      selectRecentBySnapshot = connection.prepareStatement(SELECT_RECENT_BY_SNAPSHOT);
       insert.setQueryTimeout(30);
       update.setQueryTimeout(30);
       selectRecentByCluster.setQueryTimeout(30);
       selectRecentByHost.setQueryTimeout(30);
-      selectBySnapshot.setQueryTimeout(30);
+      selectRecentBySnapshot.setQueryTimeout(30);
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
   }
 
-  public void insert(BackupKey backupKey, BackupType type, OperationStatus status) {
+  public void insert(BackupKey backupKey, RestoreType type, OperationStatus status) {
     try {
       insertImpl(backupKey, type, status);
     } catch (SQLException e) {
@@ -71,13 +72,17 @@ public class BackupHistory {
     }
   }
 
-  public List<BackupHistoryRecord> selectRecentSnapshots(BackupListingRequest request) {
+  public List<RestoreHistoryRecord> selectRecent(RestoreStatusListingRequest request) {
     ResultSet resultSet;
     try {
-      if (request.getTargetIp().isEmpty()) {
-        resultSet = selectRecentSnapshotsByCluster(request);
+      if (!request.getTargetIp().isEmpty() && !request.getClusterId().isEmpty()) {
+        resultSet = selectRecentByHost(request);
+      } else if (!request.getSnapshotId().isEmpty()) {
+        resultSet = selectRecentBySnapshot(request);
+      } else if (!request.getClusterId().isEmpty()) {
+        resultSet = selectRecentByCluster(request);
       } else {
-        resultSet = selectRecentSnapshotsByHost(request);
+        throw new IllegalArgumentException("Parameters are not set properly.");
       }
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -86,20 +91,7 @@ public class BackupHistory {
     return traverseResults(resultSet);
   }
 
-  public List<BackupHistoryRecord> selectBySnapshotId(String snapshotId) {
-    List<BackupHistoryRecord> records;
-    try {
-      selectBySnapshot.setString(1, snapshotId);
-      ResultSet resultSet = selectBySnapshot.executeQuery();
-      records = traverseResults(resultSet);
-      selectBySnapshot.clearParameters();
-    } catch (SQLException e) {
-      throw new DatabaseException(e);
-    }
-    return records;
-  }
-
-  private void insertImpl(BackupKey backupKey, BackupType type, OperationStatus status)
+  private void insertImpl(BackupKey backupKey, RestoreType type, OperationStatus status)
       throws SQLException {
     insert.clearParameters();
     long currentTimestamp = System.currentTimeMillis();
@@ -129,16 +121,14 @@ public class BackupHistory {
     }
   }
 
-  private ResultSet selectRecentSnapshotsByCluster(BackupListingRequest request)
-      throws SQLException {
+  private ResultSet selectRecentByCluster(RestoreStatusListingRequest request) throws SQLException {
     selectRecentByCluster.clearParameters();
     selectRecentByCluster.setString(1, request.getClusterId());
-    selectRecentByCluster.setInt(2, request.getN());
     ResultSet resultSet = selectRecentByCluster.executeQuery();
     return resultSet;
   }
 
-  private ResultSet selectRecentSnapshotsByHost(BackupListingRequest request) throws SQLException {
+  private ResultSet selectRecentByHost(RestoreStatusListingRequest request) throws SQLException {
     selectRecentByHost.clearParameters();
     selectRecentByHost.setString(1, request.getClusterId());
     selectRecentByHost.setString(2, request.getTargetIp());
@@ -147,15 +137,23 @@ public class BackupHistory {
     return resultSet;
   }
 
-  private List<BackupHistoryRecord> traverseResults(ResultSet resultSet) {
-    List<BackupHistoryRecord> records = new ArrayList<>();
+  private ResultSet selectRecentBySnapshot(RestoreStatusListingRequest request)
+      throws SQLException {
+    selectRecentBySnapshot.setString(1, request.getSnapshotId());
+    selectRecentBySnapshot.setInt(2, request.getN());
+    ResultSet resultSet = selectRecentBySnapshot.executeQuery();
+    return resultSet;
+  }
+
+  private List<RestoreHistoryRecord> traverseResults(ResultSet resultSet) {
+    List<RestoreHistoryRecord> records = new ArrayList<>();
     try {
       while (resultSet.next()) {
-        BackupHistoryRecord.Builder builder = BackupHistoryRecord.newBuilder();
+        RestoreHistoryRecord.Builder builder = RestoreHistoryRecord.newBuilder();
         builder.snapshotId(resultSet.getString("snapshot_id"));
         builder.clusterId(resultSet.getString("cluster_id"));
         builder.targetIp(resultSet.getString("target_ip"));
-        builder.backupType(BackupType.getByType(resultSet.getInt("backup_type")));
+        builder.restoreType(RestoreType.getByType(resultSet.getInt("restore_type")));
         builder.createdAt(resultSet.getLong("created_at"));
         builder.updatedAt(resultSet.getLong("updated_at"));
         builder.status(OperationStatus.forNumber(resultSet.getInt("status")));

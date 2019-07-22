@@ -43,6 +43,11 @@ service CassandraBackup {
             body: "*"
         };
     }
+    rpc ListRestoreStatuses (RestoreStatusListingRequest) returns (RestoreStatusListingResponse) {
+        option (google.api.http) = {
+            get: "/v1/clusters/{cluster_id}/data/{snapshot_id}"
+        };
+    }
 }
 
 message ClusterRegistrationRequest {
@@ -92,10 +97,10 @@ message BackupListingResponse {
         string cluster_id = 1;
         string target_ip = 2;
         string snapshot_id = 3;
-        int64 incremental_id = 4;
-        uint32 backup_type = 5;
-        OperationStatus status = 6;
-        uint64 timestamp = 7;
+        uint64 created_at = 4;
+        uint64 updated_at = 5;
+        uint32 backup_type = 6;
+        OperationStatus status = 7;
     }
     repeated Entry entries = 1;
 }
@@ -119,7 +124,7 @@ message BackupResponse {
     OperationStatus status = 1;
     string message = 2;
     string snapshot_id = 3;
-    int64 incremental_id = 4;
+    uint64 created_at = 4;
 }
 
 message RestoreRequest {
@@ -134,3 +139,24 @@ message RestoreResponse {
     OperationStatus status = 1;
     string message = 2;
 }
+
+message RestoreStatusListingRequest {
+    string cluster_id = 1;
+    string target_ip = 2; // optional
+    string snapshot_id = 3;
+    uint32 n = 4;
+}
+
+message RestoreStatusListingResponse {
+    message Entry {
+        string target_ip = 1;
+        string snapshot_id = 2;
+        uint64 created_at = 3;
+        uint64 updated_at = 4;
+        uint32 restore_type = 5;
+        OperationStatus status = 6;
+    }
+    string cluster_id = 1;
+    repeated Entry entries = 3;
+}
+

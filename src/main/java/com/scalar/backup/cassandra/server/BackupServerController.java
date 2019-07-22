@@ -7,6 +7,7 @@ import com.scalar.backup.cassandra.config.RestoreType;
 import com.scalar.backup.cassandra.db.BackupHistoryRecord;
 import com.scalar.backup.cassandra.db.ClusterInfoRecord;
 import com.scalar.backup.cassandra.db.DatabaseAccessor;
+import com.scalar.backup.cassandra.db.RestoreHistoryRecord;
 import com.scalar.backup.cassandra.jmx.JmxManager;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandContext;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandExecutor;
@@ -23,6 +24,8 @@ import com.scalar.backup.cassandra.rpc.NodeListingResponse;
 import com.scalar.backup.cassandra.rpc.OperationStatus;
 import com.scalar.backup.cassandra.rpc.RestoreRequest;
 import com.scalar.backup.cassandra.rpc.RestoreResponse;
+import com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest;
+import com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse;
 import com.scalar.backup.cassandra.service.BackupKey;
 import com.scalar.backup.cassandra.service.BackupServiceMaster;
 import com.scalar.backup.cassandra.service.RestoreServiceMaster;
@@ -145,16 +148,52 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
           BackupListingResponse.Entry entry =
               BackupListingResponse.Entry.newBuilder()
                   .setSnapshotId(r.getSnapshotId())
-                  .setIncrementalId(r.getIncrementalId())
                   .setClusterId(r.getClusterId())
                   .setTargetIp(r.getTargetIp())
+                  .setCreatedAt(r.getCreatedAt())
+                  .setUpdatedAt(r.getUpdatedAt())
                   .setBackupType(r.getBackupType().get())
                   .setStatus(OperationStatus.forNumber(r.getStatus().getNumber()))
-                  .setTimestamp(r.getUpdatedAt())
                   .build();
           builder.addEntries(entry);
         });
 
+    responseObserver.onNext(builder.build());
+    responseObserver.onCompleted();
+  }
+
+  public void listRestoreStatuses(
+      RestoreStatusListingRequest request,
+      StreamObserver<RestoreStatusListingResponse> responseObserver) {
+    List<RestoreHistoryRecord> records = null;
+    try {
+      records = database.getRestoreHistory().selectRecent(request);
+    } catch (IllegalArgumentException e) {
+      logger.error(e.getMessage(), e);
+      responseObserver.onError(Status.INVALID_ARGUMENT.withCause(e).asRuntimeException());
+      return;
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
+      responseObserver.onError(Status.INTERNAL.withCause(e).asRuntimeException());
+      return;
+    }
+
+    RestoreStatusListingResponse.Builder builder = RestoreStatusListingResponse.newBuilder();
+    records.forEach(
+        r -> {
+          RestoreStatusListingResponse.Entry entry =
+              RestoreStatusListingResponse.Entry.newBuilder()
+                  .setSnapshotId(r.getSnapshotId())
+                  .setTargetIp(r.getTargetIp())
+                  .setCreatedAt(r.getCreatedAt())
+                  .setUpdatedAt(r.getUpdatedAt())
+                  .setRestoreType(r.getRestoreType().get())
+                  .setStatus(OperationStatus.forNumber(r.getStatus().getNumber()))
+                  .build();
+          builder.addEntries(entry);
+        });
+
+    builder.setClusterId(request.getClusterId());
     responseObserver.onNext(builder.build());
     responseObserver.onCompleted();
   }
@@ -203,12 +242,10 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
 
     final String snapshotId =
         request.getSnapshotId().isEmpty() ? UUID.randomUUID().toString() : request.getSnapshotId();
-    final long incrementalId = request.getSnapshotId().isEmpty() ? 0L : System.currentTimeMillis();
     List<BackupKey> backupKeys =
-        getBackupKeys(snapshotId, incrementalId, request.getTargetIpsList(), clusterInfo.get());
+        getBackupKeys(snapshotId, request.getTargetIpsList(), clusterInfo.get());
     BackupType type = BackupType.getByType(request.getBackupType());
-    BackupResponse.Builder builder =
-        BackupResponse.newBuilder().setSnapshotId(snapshotId).setIncrementalId(incrementalId);
+    BackupResponse.Builder builder = BackupResponse.newBuilder().setSnapshotId(snapshotId);
 
     try {
       updateBackupStatus(backupKeys, type, OperationStatus.INITIALIZED);
@@ -242,24 +279,21 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     }
 
     List<BackupKey> backupKeys =
-        getBackupKeys(
-            request.getSnapshotId(),
-            request.getSnapshotOnly() ? 0L : Long.MAX_VALUE,
-            request.getTargetIpsList(),
-            clusterInfo.get());
-    RestoreResponse.Builder builder = RestoreResponse.newBuilder();
+        getBackupKeys(request.getSnapshotId(), request.getTargetIpsList(), clusterInfo.get());
     RemoteCommandExecutor executor = new RemoteCommandExecutor();
-
-    // TODO: restore history might be needed in the future
+    RestoreType type = RestoreType.getByType(request.getRestoreType());
+    RestoreResponse.Builder builder = RestoreResponse.newBuilder();
 
     try {
-      RestoreType type = RestoreType.getByType(request.getRestoreType());
+      updateRestoreStatus(backupKeys, type, OperationStatus.INITIALIZED);
       RestoreServiceMaster master = new RestoreServiceMaster(config, clusterInfo.get(), executor);
       List<RemoteCommandContext> futures = master.restoreBackup(backupKeys, type);
+      updateRestoreStatus(backupKeys, type, OperationStatus.STARTED);
       futureQueue.addAll(futures);
     } catch (Exception e) {
       builder.setMessage(e.getMessage());
       builder.setStatus(OperationStatus.FAILED);
+      updateRestoreStatus(backupKeys, type, OperationStatus.FAILED);
     }
 
     builder.setStatus(OperationStatus.STARTED);
@@ -268,8 +302,9 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
   }
 
   private List<BackupKey> getBackupKeys(
-      String snapshotId, long incrementalId, List<String> targets, ClusterInfoRecord record) {
+      String snapshotId, List<String> targets, ClusterInfoRecord record) {
     List<BackupKey> backupKeys = new ArrayList<>();
+    long currentTime = System.currentTimeMillis();
 
     if (targets.isEmpty()) {
       targets = record.getTargetIps();
@@ -280,9 +315,9 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
           BackupKey.Builder keyBuilder =
               BackupKey.newBuilder()
                   .snapshotId(snapshotId)
-                  .incrementalId(incrementalId)
                   .clusterId(record.getClusterId())
-                  .targetIp(ip);
+                  .targetIp(ip)
+                  .createdAt(currentTime);
           backupKeys.add(keyBuilder.build());
         });
 
@@ -295,6 +330,15 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
       backupKeys.forEach(backupKey -> database.getBackupHistory().insert(backupKey, type, status));
     } else {
       backupKeys.forEach(backupKey -> database.getBackupHistory().update(backupKey, status));
+    }
+  }
+
+  private void updateRestoreStatus(
+      List<BackupKey> backupKeys, RestoreType type, OperationStatus status) {
+    if (status == OperationStatus.INITIALIZED) {
+      backupKeys.forEach(backupKey -> database.getRestoreHistory().insert(backupKey, type, status));
+    } else {
+      backupKeys.forEach(backupKey -> database.getRestoreHistory().update(backupKey, status));
     }
   }
 

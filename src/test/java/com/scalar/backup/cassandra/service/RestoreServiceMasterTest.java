@@ -26,7 +26,7 @@ public class RestoreServiceMasterTest {
   private static final int JMX_PORT = 7199;
   private static final String CLUSTER_ID = "cluster_id";
   private static final String SNAPSHOT_ID = "snapshot_id";
-  private static final long INCREMENTAL_ID = 0L;
+  private static final long CREATED_AT = 1L;
   private static final String NODE1 = "192.168.1.1";
   private static final String NODE2 = "192.168.1.2";
   private static final String NODE3 = "192.168.1.3";
@@ -54,7 +54,7 @@ public class RestoreServiceMasterTest {
   }
 
   private List<BackupKey> prepareBackupKeys(
-      String clusterId, List<String> nodes, String snaphotId, long incrementalId) {
+      String clusterId, List<String> nodes, String snaphotId, long createdAt) {
     List<BackupKey> backupKeys = new ArrayList<>();
     nodes.forEach(
         n ->
@@ -63,7 +63,7 @@ public class RestoreServiceMasterTest {
                     .clusterId(clusterId)
                     .targetIp(n)
                     .snapshotId(snaphotId)
-                    .incrementalId(incrementalId)
+                    .createdAt(createdAt)
                     .build()));
     return backupKeys;
   }
@@ -74,7 +74,7 @@ public class RestoreServiceMasterTest {
     when(config.getJmxPort()).thenReturn(JMX_PORT);
     when(jmx.getKeyspaces()).thenReturn(keyspaces);
     prepareNodes(jmx, nodes);
-    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, INCREMENTAL_ID);
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, CREATED_AT);
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
         .downloadNodeBackups(any(BackupKey.class), any(RestoreType.class));
@@ -93,7 +93,7 @@ public class RestoreServiceMasterTest {
     when(jmx.getKeyspaces()).thenReturn(keyspaces);
     prepareNodes(jmx, nodes);
     List<String> someNodes = Arrays.asList(nodes.get(0));
-    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, INCREMENTAL_ID);
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, CREATED_AT);
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
         .downloadNodeBackups(any(BackupKey.class), any(RestoreType.class));

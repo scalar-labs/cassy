@@ -4,22 +4,22 @@
 package com.scalar.backup.cassandra.rpc;
 
 /**
- * Protobuf type {@code rpc.BackupResponse}
+ * Protobuf type {@code rpc.RestoreStatusListingRequest}
  */
-public  final class BackupResponse extends
+public  final class RestoreStatusListingRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rpc.BackupResponse)
-    BackupResponseOrBuilder {
+    // @@protoc_insertion_point(message_implements:rpc.RestoreStatusListingRequest)
+    RestoreStatusListingRequestOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use BackupResponse.newBuilder() to construct.
-  private BackupResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use RestoreStatusListingRequest.newBuilder() to construct.
+  private RestoreStatusListingRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private BackupResponse() {
-    status_ = 0;
-    message_ = "";
+  private RestoreStatusListingRequest() {
+    clusterId_ = "";
+    targetIp_ = "";
     snapshotId_ = "";
-    createdAt_ = 0L;
+    n_ = 0;
   }
 
   @java.lang.Override
@@ -27,7 +27,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private BackupResponse(
+  private RestoreStatusListingRequest(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -46,16 +46,16 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 8: {
-            int rawValue = input.readEnum();
+          case 10: {
+            java.lang.String s = input.readStringRequireUtf8();
 
-            status_ = rawValue;
+            clusterId_ = s;
             break;
           }
           case 18: {
             java.lang.String s = input.readStringRequireUtf8();
 
-            message_ = s;
+            targetIp_ = s;
             break;
           }
           case 26: {
@@ -66,7 +66,7 @@ private static final long serialVersionUID = 0L;
           }
           case 32: {
 
-            createdAt_ = input.readUInt64();
+            n_ = input.readUInt32();
             break;
           }
           default: {
@@ -90,62 +90,87 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupResponse_descriptor;
+    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingRequest_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupResponse_fieldAccessorTable
+    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            com.scalar.backup.cassandra.rpc.BackupResponse.class, com.scalar.backup.cassandra.rpc.BackupResponse.Builder.class);
+            com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest.class, com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest.Builder.class);
   }
 
-  public static final int STATUS_FIELD_NUMBER = 1;
-  private int status_;
+  public static final int CLUSTER_ID_FIELD_NUMBER = 1;
+  private volatile java.lang.Object clusterId_;
   /**
-   * <code>.rpc.OperationStatus status = 1;</code>
+   * <code>string cluster_id = 1;</code>
    */
-  public int getStatusValue() {
-    return status_;
-  }
-  /**
-   * <code>.rpc.OperationStatus status = 1;</code>
-   */
-  public com.scalar.backup.cassandra.rpc.OperationStatus getStatus() {
-    @SuppressWarnings("deprecation")
-    com.scalar.backup.cassandra.rpc.OperationStatus result = com.scalar.backup.cassandra.rpc.OperationStatus.valueOf(status_);
-    return result == null ? com.scalar.backup.cassandra.rpc.OperationStatus.UNRECOGNIZED : result;
-  }
-
-  public static final int MESSAGE_FIELD_NUMBER = 2;
-  private volatile java.lang.Object message_;
-  /**
-   * <code>string message = 2;</code>
-   */
-  public java.lang.String getMessage() {
-    java.lang.Object ref = message_;
+  public java.lang.String getClusterId() {
+    java.lang.Object ref = clusterId_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
-      message_ = s;
+      clusterId_ = s;
       return s;
     }
   }
   /**
-   * <code>string message = 2;</code>
+   * <code>string cluster_id = 1;</code>
    */
   public com.google.protobuf.ByteString
-      getMessageBytes() {
-    java.lang.Object ref = message_;
+      getClusterIdBytes() {
+    java.lang.Object ref = clusterId_;
     if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
-      message_ = b;
+      clusterId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int TARGET_IP_FIELD_NUMBER = 2;
+  private volatile java.lang.Object targetIp_;
+  /**
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>string target_ip = 2;</code>
+   */
+  public java.lang.String getTargetIp() {
+    java.lang.Object ref = targetIp_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      targetIp_ = s;
+      return s;
+    }
+  }
+  /**
+   * <pre>
+   * optional
+   * </pre>
+   *
+   * <code>string target_ip = 2;</code>
+   */
+  public com.google.protobuf.ByteString
+      getTargetIpBytes() {
+    java.lang.Object ref = targetIp_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      targetIp_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
@@ -186,13 +211,13 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int CREATED_AT_FIELD_NUMBER = 4;
-  private long createdAt_;
+  public static final int N_FIELD_NUMBER = 4;
+  private int n_;
   /**
-   * <code>uint64 created_at = 4;</code>
+   * <code>uint32 n = 4;</code>
    */
-  public long getCreatedAt() {
-    return createdAt_;
+  public int getN() {
+    return n_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -209,17 +234,17 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (status_ != com.scalar.backup.cassandra.rpc.OperationStatus.UNKNOWN.getNumber()) {
-      output.writeEnum(1, status_);
+    if (!getClusterIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, clusterId_);
     }
-    if (!getMessageBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, message_);
+    if (!getTargetIpBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, targetIp_);
     }
     if (!getSnapshotIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, snapshotId_);
     }
-    if (createdAt_ != 0L) {
-      output.writeUInt64(4, createdAt_);
+    if (n_ != 0) {
+      output.writeUInt32(4, n_);
     }
     unknownFields.writeTo(output);
   }
@@ -230,19 +255,18 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (status_ != com.scalar.backup.cassandra.rpc.OperationStatus.UNKNOWN.getNumber()) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeEnumSize(1, status_);
+    if (!getClusterIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, clusterId_);
     }
-    if (!getMessageBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, message_);
+    if (!getTargetIpBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, targetIp_);
     }
     if (!getSnapshotIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, snapshotId_);
     }
-    if (createdAt_ != 0L) {
+    if (n_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeUInt64Size(4, createdAt_);
+        .computeUInt32Size(4, n_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -254,19 +278,20 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof com.scalar.backup.cassandra.rpc.BackupResponse)) {
+    if (!(obj instanceof com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest)) {
       return super.equals(obj);
     }
-    com.scalar.backup.cassandra.rpc.BackupResponse other = (com.scalar.backup.cassandra.rpc.BackupResponse) obj;
+    com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest other = (com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest) obj;
 
     boolean result = true;
-    result = result && status_ == other.status_;
-    result = result && getMessage()
-        .equals(other.getMessage());
+    result = result && getClusterId()
+        .equals(other.getClusterId());
+    result = result && getTargetIp()
+        .equals(other.getTargetIp());
     result = result && getSnapshotId()
         .equals(other.getSnapshotId());
-    result = result && (getCreatedAt()
-        == other.getCreatedAt());
+    result = result && (getN()
+        == other.getN());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -278,83 +303,82 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + STATUS_FIELD_NUMBER;
-    hash = (53 * hash) + status_;
-    hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
-    hash = (53 * hash) + getMessage().hashCode();
+    hash = (37 * hash) + CLUSTER_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getClusterId().hashCode();
+    hash = (37 * hash) + TARGET_IP_FIELD_NUMBER;
+    hash = (53 * hash) + getTargetIp().hashCode();
     hash = (37 * hash) + SNAPSHOT_ID_FIELD_NUMBER;
     hash = (53 * hash) + getSnapshotId().hashCode();
-    hash = (37 * hash) + CREATED_AT_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        getCreatedAt());
+    hash = (37 * hash) + N_FIELD_NUMBER;
+    hash = (53 * hash) + getN();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseFrom(byte[] data)
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseFrom(java.io.InputStream input)
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseDelimitedFrom(java.io.InputStream input)
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseDelimitedFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -367,7 +391,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(com.scalar.backup.cassandra.rpc.BackupResponse prototype) {
+  public static Builder newBuilder(com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -383,26 +407,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rpc.BackupResponse}
+   * Protobuf type {@code rpc.RestoreStatusListingRequest}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rpc.BackupResponse)
-      com.scalar.backup.cassandra.rpc.BackupResponseOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rpc.RestoreStatusListingRequest)
+      com.scalar.backup.cassandra.rpc.RestoreStatusListingRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupResponse_descriptor;
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupResponse_fieldAccessorTable
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.scalar.backup.cassandra.rpc.BackupResponse.class, com.scalar.backup.cassandra.rpc.BackupResponse.Builder.class);
+              com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest.class, com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest.Builder.class);
     }
 
-    // Construct using com.scalar.backup.cassandra.rpc.BackupResponse.newBuilder()
+    // Construct using com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -420,13 +444,13 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      status_ = 0;
+      clusterId_ = "";
 
-      message_ = "";
+      targetIp_ = "";
 
       snapshotId_ = "";
 
-      createdAt_ = 0L;
+      n_ = 0;
 
       return this;
     }
@@ -434,17 +458,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupResponse_descriptor;
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingRequest_descriptor;
     }
 
     @java.lang.Override
-    public com.scalar.backup.cassandra.rpc.BackupResponse getDefaultInstanceForType() {
-      return com.scalar.backup.cassandra.rpc.BackupResponse.getDefaultInstance();
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest getDefaultInstanceForType() {
+      return com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest.getDefaultInstance();
     }
 
     @java.lang.Override
-    public com.scalar.backup.cassandra.rpc.BackupResponse build() {
-      com.scalar.backup.cassandra.rpc.BackupResponse result = buildPartial();
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest build() {
+      com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -452,12 +476,12 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public com.scalar.backup.cassandra.rpc.BackupResponse buildPartial() {
-      com.scalar.backup.cassandra.rpc.BackupResponse result = new com.scalar.backup.cassandra.rpc.BackupResponse(this);
-      result.status_ = status_;
-      result.message_ = message_;
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest buildPartial() {
+      com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest result = new com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest(this);
+      result.clusterId_ = clusterId_;
+      result.targetIp_ = targetIp_;
       result.snapshotId_ = snapshotId_;
-      result.createdAt_ = createdAt_;
+      result.n_ = n_;
       onBuilt();
       return result;
     }
@@ -496,29 +520,30 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof com.scalar.backup.cassandra.rpc.BackupResponse) {
-        return mergeFrom((com.scalar.backup.cassandra.rpc.BackupResponse)other);
+      if (other instanceof com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest) {
+        return mergeFrom((com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(com.scalar.backup.cassandra.rpc.BackupResponse other) {
-      if (other == com.scalar.backup.cassandra.rpc.BackupResponse.getDefaultInstance()) return this;
-      if (other.status_ != 0) {
-        setStatusValue(other.getStatusValue());
+    public Builder mergeFrom(com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest other) {
+      if (other == com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest.getDefaultInstance()) return this;
+      if (!other.getClusterId().isEmpty()) {
+        clusterId_ = other.clusterId_;
+        onChanged();
       }
-      if (!other.getMessage().isEmpty()) {
-        message_ = other.message_;
+      if (!other.getTargetIp().isEmpty()) {
+        targetIp_ = other.targetIp_;
         onChanged();
       }
       if (!other.getSnapshotId().isEmpty()) {
         snapshotId_ = other.snapshotId_;
         onChanged();
       }
-      if (other.getCreatedAt() != 0L) {
-        setCreatedAt(other.getCreatedAt());
+      if (other.getN() != 0) {
+        setN(other.getN());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -535,11 +560,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      com.scalar.backup.cassandra.rpc.BackupResponse parsedMessage = null;
+      com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (com.scalar.backup.cassandra.rpc.BackupResponse) e.getUnfinishedMessage();
+        parsedMessage = (com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -549,116 +574,160 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int status_ = 0;
+    private java.lang.Object clusterId_ = "";
     /**
-     * <code>.rpc.OperationStatus status = 1;</code>
+     * <code>string cluster_id = 1;</code>
      */
-    public int getStatusValue() {
-      return status_;
-    }
-    /**
-     * <code>.rpc.OperationStatus status = 1;</code>
-     */
-    public Builder setStatusValue(int value) {
-      status_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.rpc.OperationStatus status = 1;</code>
-     */
-    public com.scalar.backup.cassandra.rpc.OperationStatus getStatus() {
-      @SuppressWarnings("deprecation")
-      com.scalar.backup.cassandra.rpc.OperationStatus result = com.scalar.backup.cassandra.rpc.OperationStatus.valueOf(status_);
-      return result == null ? com.scalar.backup.cassandra.rpc.OperationStatus.UNRECOGNIZED : result;
-    }
-    /**
-     * <code>.rpc.OperationStatus status = 1;</code>
-     */
-    public Builder setStatus(com.scalar.backup.cassandra.rpc.OperationStatus value) {
-      if (value == null) {
-        throw new NullPointerException();
-      }
-      
-      status_ = value.getNumber();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.rpc.OperationStatus status = 1;</code>
-     */
-    public Builder clearStatus() {
-      
-      status_ = 0;
-      onChanged();
-      return this;
-    }
-
-    private java.lang.Object message_ = "";
-    /**
-     * <code>string message = 2;</code>
-     */
-    public java.lang.String getMessage() {
-      java.lang.Object ref = message_;
+    public java.lang.String getClusterId() {
+      java.lang.Object ref = clusterId_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        message_ = s;
+        clusterId_ = s;
         return s;
       } else {
         return (java.lang.String) ref;
       }
     }
     /**
-     * <code>string message = 2;</code>
+     * <code>string cluster_id = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getMessageBytes() {
-      java.lang.Object ref = message_;
+        getClusterIdBytes() {
+      java.lang.Object ref = clusterId_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        message_ = b;
+        clusterId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     /**
-     * <code>string message = 2;</code>
+     * <code>string cluster_id = 1;</code>
      */
-    public Builder setMessage(
+    public Builder setClusterId(
         java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      message_ = value;
+      clusterId_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>string message = 2;</code>
+     * <code>string cluster_id = 1;</code>
      */
-    public Builder clearMessage() {
+    public Builder clearClusterId() {
       
-      message_ = getDefaultInstance().getMessage();
+      clusterId_ = getDefaultInstance().getClusterId();
       onChanged();
       return this;
     }
     /**
-     * <code>string message = 2;</code>
+     * <code>string cluster_id = 1;</code>
      */
-    public Builder setMessageBytes(
+    public Builder setClusterIdBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
-      message_ = value;
+      clusterId_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object targetIp_ = "";
+    /**
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string target_ip = 2;</code>
+     */
+    public java.lang.String getTargetIp() {
+      java.lang.Object ref = targetIp_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        targetIp_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string target_ip = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTargetIpBytes() {
+      java.lang.Object ref = targetIp_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        targetIp_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string target_ip = 2;</code>
+     */
+    public Builder setTargetIp(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      targetIp_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string target_ip = 2;</code>
+     */
+    public Builder clearTargetIp() {
+      
+      targetIp_ = getDefaultInstance().getTargetIp();
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * optional
+     * </pre>
+     *
+     * <code>string target_ip = 2;</code>
+     */
+    public Builder setTargetIpBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      targetIp_ = value;
       onChanged();
       return this;
     }
@@ -732,28 +801,28 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private long createdAt_ ;
+    private int n_ ;
     /**
-     * <code>uint64 created_at = 4;</code>
+     * <code>uint32 n = 4;</code>
      */
-    public long getCreatedAt() {
-      return createdAt_;
+    public int getN() {
+      return n_;
     }
     /**
-     * <code>uint64 created_at = 4;</code>
+     * <code>uint32 n = 4;</code>
      */
-    public Builder setCreatedAt(long value) {
+    public Builder setN(int value) {
       
-      createdAt_ = value;
+      n_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>uint64 created_at = 4;</code>
+     * <code>uint32 n = 4;</code>
      */
-    public Builder clearCreatedAt() {
+    public Builder clearN() {
       
-      createdAt_ = 0L;
+      n_ = 0;
       onChanged();
       return this;
     }
@@ -770,41 +839,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rpc.BackupResponse)
+    // @@protoc_insertion_point(builder_scope:rpc.RestoreStatusListingRequest)
   }
 
-  // @@protoc_insertion_point(class_scope:rpc.BackupResponse)
-  private static final com.scalar.backup.cassandra.rpc.BackupResponse DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rpc.RestoreStatusListingRequest)
+  private static final com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new com.scalar.backup.cassandra.rpc.BackupResponse();
+    DEFAULT_INSTANCE = new com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest();
   }
 
-  public static com.scalar.backup.cassandra.rpc.BackupResponse getDefaultInstance() {
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<BackupResponse>
-      PARSER = new com.google.protobuf.AbstractParser<BackupResponse>() {
+  private static final com.google.protobuf.Parser<RestoreStatusListingRequest>
+      PARSER = new com.google.protobuf.AbstractParser<RestoreStatusListingRequest>() {
     @java.lang.Override
-    public BackupResponse parsePartialFrom(
+    public RestoreStatusListingRequest parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new BackupResponse(input, extensionRegistry);
+      return new RestoreStatusListingRequest(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<BackupResponse> parser() {
+  public static com.google.protobuf.Parser<RestoreStatusListingRequest> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<BackupResponse> getParserForType() {
+  public com.google.protobuf.Parser<RestoreStatusListingRequest> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.scalar.backup.cassandra.rpc.BackupResponse getDefaultInstanceForType() {
+  public com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

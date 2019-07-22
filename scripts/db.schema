@@ -2,14 +2,25 @@ CREATE TABLE IF NOT EXISTS backup_history (
     cluster_id VARCHAR(255) NOT NULL,
     target_ip VARCHAR(255) NOT NULL,
     snapshot_id VARCHAR(255) NOT NULL,
-    incremental_id BIGINT NOT NULL,
-    backup_type TINYINT NOT NULL,
     created_at BIGINT NOT NULL,
     updated_at BIGINT, 
+    backup_type TINYINT NOT NULL,
     status TINYINT NOT NULL,
-    PRIMARY KEY (cluster_id, target_ip, snapshot_id, incremental_id)
+    PRIMARY KEY (cluster_id, target_ip, snapshot_id, created_at)
 );
-CREATE INDEX IF NOT EXISTS idx_snapshot_incremental ON backup_history (snapshot_id, incremental_id);
+CREATE INDEX IF NOT EXISTS idx_snapshot_created_backup ON backup_history (snapshot_id, created_at);
+
+CREATE TABLE IF NOT EXISTS restore_history (
+    cluster_id VARCHAR(255) NOT NULL,
+    target_ip VARCHAR(255) NOT NULL,
+    snapshot_id VARCHAR(255) NOT NULL,
+    created_at BIGINT NOT NULL,
+    updated_at BIGINT, 
+    restore_type TINYINT NOT NULL,
+    status TINYINT NOT NULL,
+    PRIMARY KEY (cluster_id, target_ip, snapshot_id, created_at)
+);
+CREATE INDEX IF NOT EXISTS idx_snapshot_created_restore ON restore_history (snapshot_id, created_at);
 
 CREATE TABLE IF NOT EXISTS cluster_info (
     cluster_id VARCHAR(255) NOT NULL,

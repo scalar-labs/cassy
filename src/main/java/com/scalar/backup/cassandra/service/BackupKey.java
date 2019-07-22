@@ -9,21 +9,17 @@ public class BackupKey {
   private final String snapshotId;
   private final String clusterId;
   private final String targetIp;
-  private final long incrementalId;
+  private final long createdAt;
 
   private BackupKey(Builder builder) {
     this.snapshotId = builder.snapshotId;
     this.clusterId = builder.clusterId;
     this.targetIp = builder.targetIp;
-    this.incrementalId = builder.incrementalId;
+    this.createdAt = builder.createdAt;
   }
 
   public String getSnapshotId() {
     return snapshotId;
-  }
-
-  public long getIncrementalId() {
-    return incrementalId;
   }
 
   public String getClusterId() {
@@ -34,6 +30,10 @@ public class BackupKey {
     return targetIp;
   }
 
+  public long getCreatedAt() {
+    return createdAt;
+  }
+
   public static Builder newBuilder() {
     return new Builder();
   }
@@ -42,7 +42,7 @@ public class BackupKey {
     private String snapshotId;
     private String clusterId;
     private String targetIp;
-    private long incrementalId;
+    private long createdAt;
 
     public Builder snapshotId(String snapshotId) {
       checkArgument(snapshotId != null);
@@ -62,14 +62,14 @@ public class BackupKey {
       return this;
     }
 
-    public Builder incrementalId(long incrementalId) {
-      checkArgument(incrementalId >= 0);
-      this.incrementalId = incrementalId;
+    public Builder createdAt(long createdAt) {
+      checkArgument(createdAt > 0);
+      this.createdAt = createdAt;
       return this;
     }
 
     public BackupKey build() {
-      if (snapshotId == null || clusterId == null || targetIp == null) {
+      if (snapshotId == null || clusterId == null || targetIp == null || createdAt == 0) {
         throw new IllegalArgumentException("Required fields are not given.");
       }
       return new BackupKey(this);

@@ -4,18 +4,19 @@
 package com.scalar.backup.cassandra.rpc;
 
 /**
- * Protobuf type {@code rpc.BackupListingResponse}
+ * Protobuf type {@code rpc.RestoreStatusListingResponse}
  */
-public  final class BackupListingResponse extends
+public  final class RestoreStatusListingResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rpc.BackupListingResponse)
-    BackupListingResponseOrBuilder {
+    // @@protoc_insertion_point(message_implements:rpc.RestoreStatusListingResponse)
+    RestoreStatusListingResponseOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use BackupListingResponse.newBuilder() to construct.
-  private BackupListingResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use RestoreStatusListingResponse.newBuilder() to construct.
+  private RestoreStatusListingResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private BackupListingResponse() {
+  private RestoreStatusListingResponse() {
+    clusterId_ = "";
     entries_ = java.util.Collections.emptyList();
   }
 
@@ -24,7 +25,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private BackupListingResponse(
+  private RestoreStatusListingResponse(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -44,12 +45,18 @@ private static final long serialVersionUID = 0L;
             done = true;
             break;
           case 10: {
-            if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-              entries_ = new java.util.ArrayList<com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry>();
-              mutable_bitField0_ |= 0x00000001;
+            java.lang.String s = input.readStringRequireUtf8();
+
+            clusterId_ = s;
+            break;
+          }
+          case 26: {
+            if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              entries_ = new java.util.ArrayList<com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry>();
+              mutable_bitField0_ |= 0x00000002;
             }
             entries_.add(
-                input.readMessage(com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.parser(), extensionRegistry));
+                input.readMessage(com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.parser(), extensionRegistry));
             break;
           }
           default: {
@@ -67,7 +74,7 @@ private static final long serialVersionUID = 0L;
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
-      if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+      if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
         entries_ = java.util.Collections.unmodifiableList(entries_);
       }
       this.unknownFields = unknownFields.build();
@@ -76,81 +83,71 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupListingResponse_descriptor;
+    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingResponse_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupListingResponse_fieldAccessorTable
+    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            com.scalar.backup.cassandra.rpc.BackupListingResponse.class, com.scalar.backup.cassandra.rpc.BackupListingResponse.Builder.class);
+            com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.class, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Builder.class);
   }
 
   public interface EntryOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:rpc.BackupListingResponse.Entry)
+      // @@protoc_insertion_point(interface_extends:rpc.RestoreStatusListingResponse.Entry)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string cluster_id = 1;</code>
-     */
-    java.lang.String getClusterId();
-    /**
-     * <code>string cluster_id = 1;</code>
-     */
-    com.google.protobuf.ByteString
-        getClusterIdBytes();
-
-    /**
-     * <code>string target_ip = 2;</code>
+     * <code>string target_ip = 1;</code>
      */
     java.lang.String getTargetIp();
     /**
-     * <code>string target_ip = 2;</code>
+     * <code>string target_ip = 1;</code>
      */
     com.google.protobuf.ByteString
         getTargetIpBytes();
 
     /**
-     * <code>string snapshot_id = 3;</code>
+     * <code>string snapshot_id = 2;</code>
      */
     java.lang.String getSnapshotId();
     /**
-     * <code>string snapshot_id = 3;</code>
+     * <code>string snapshot_id = 2;</code>
      */
     com.google.protobuf.ByteString
         getSnapshotIdBytes();
 
     /**
-     * <code>uint64 created_at = 4;</code>
+     * <code>uint64 created_at = 3;</code>
      */
     long getCreatedAt();
 
     /**
-     * <code>uint64 updated_at = 5;</code>
+     * <code>uint64 updated_at = 4;</code>
      */
     long getUpdatedAt();
 
     /**
-     * <code>uint32 backup_type = 6;</code>
+     * <code>uint32 restore_type = 5;</code>
      */
-    int getBackupType();
+    int getRestoreType();
 
     /**
-     * <code>.rpc.OperationStatus status = 7;</code>
+     * <code>.rpc.OperationStatus status = 6;</code>
      */
     int getStatusValue();
     /**
-     * <code>.rpc.OperationStatus status = 7;</code>
+     * <code>.rpc.OperationStatus status = 6;</code>
      */
     com.scalar.backup.cassandra.rpc.OperationStatus getStatus();
   }
   /**
-   * Protobuf type {@code rpc.BackupListingResponse.Entry}
+   * Protobuf type {@code rpc.RestoreStatusListingResponse.Entry}
    */
   public  static final class Entry extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:rpc.BackupListingResponse.Entry)
+      // @@protoc_insertion_point(message_implements:rpc.RestoreStatusListingResponse.Entry)
       EntryOrBuilder {
   private static final long serialVersionUID = 0L;
     // Use Entry.newBuilder() to construct.
@@ -158,12 +155,11 @@ private static final long serialVersionUID = 0L;
       super(builder);
     }
     private Entry() {
-      clusterId_ = "";
       targetIp_ = "";
       snapshotId_ = "";
       createdAt_ = 0L;
       updatedAt_ = 0L;
-      backupType_ = 0;
+      restoreType_ = 0;
       status_ = 0;
     }
 
@@ -194,37 +190,31 @@ private static final long serialVersionUID = 0L;
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              clusterId_ = s;
+              targetIp_ = s;
               break;
             }
             case 18: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              targetIp_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
               snapshotId_ = s;
               break;
             }
-            case 32: {
+            case 24: {
 
               createdAt_ = input.readUInt64();
               break;
             }
-            case 40: {
+            case 32: {
 
               updatedAt_ = input.readUInt64();
               break;
             }
-            case 48: {
+            case 40: {
 
-              backupType_ = input.readUInt32();
+              restoreType_ = input.readUInt32();
               break;
             }
-            case 56: {
+            case 48: {
               int rawValue = input.readEnum();
 
               status_ = rawValue;
@@ -251,55 +241,21 @@ private static final long serialVersionUID = 0L;
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupListingResponse_Entry_descriptor;
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingResponse_Entry_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupListingResponse_Entry_fieldAccessorTable
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingResponse_Entry_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.class, com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder.class);
+              com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.class, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder.class);
     }
 
-    public static final int CLUSTER_ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object clusterId_;
-    /**
-     * <code>string cluster_id = 1;</code>
-     */
-    public java.lang.String getClusterId() {
-      java.lang.Object ref = clusterId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        clusterId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string cluster_id = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getClusterIdBytes() {
-      java.lang.Object ref = clusterId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        clusterId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int TARGET_IP_FIELD_NUMBER = 2;
+    public static final int TARGET_IP_FIELD_NUMBER = 1;
     private volatile java.lang.Object targetIp_;
     /**
-     * <code>string target_ip = 2;</code>
+     * <code>string target_ip = 1;</code>
      */
     public java.lang.String getTargetIp() {
       java.lang.Object ref = targetIp_;
@@ -314,7 +270,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string target_ip = 2;</code>
+     * <code>string target_ip = 1;</code>
      */
     public com.google.protobuf.ByteString
         getTargetIpBytes() {
@@ -330,10 +286,10 @@ private static final long serialVersionUID = 0L;
       }
     }
 
-    public static final int SNAPSHOT_ID_FIELD_NUMBER = 3;
+    public static final int SNAPSHOT_ID_FIELD_NUMBER = 2;
     private volatile java.lang.Object snapshotId_;
     /**
-     * <code>string snapshot_id = 3;</code>
+     * <code>string snapshot_id = 2;</code>
      */
     public java.lang.String getSnapshotId() {
       java.lang.Object ref = snapshotId_;
@@ -348,7 +304,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string snapshot_id = 3;</code>
+     * <code>string snapshot_id = 2;</code>
      */
     public com.google.protobuf.ByteString
         getSnapshotIdBytes() {
@@ -364,43 +320,43 @@ private static final long serialVersionUID = 0L;
       }
     }
 
-    public static final int CREATED_AT_FIELD_NUMBER = 4;
+    public static final int CREATED_AT_FIELD_NUMBER = 3;
     private long createdAt_;
     /**
-     * <code>uint64 created_at = 4;</code>
+     * <code>uint64 created_at = 3;</code>
      */
     public long getCreatedAt() {
       return createdAt_;
     }
 
-    public static final int UPDATED_AT_FIELD_NUMBER = 5;
+    public static final int UPDATED_AT_FIELD_NUMBER = 4;
     private long updatedAt_;
     /**
-     * <code>uint64 updated_at = 5;</code>
+     * <code>uint64 updated_at = 4;</code>
      */
     public long getUpdatedAt() {
       return updatedAt_;
     }
 
-    public static final int BACKUP_TYPE_FIELD_NUMBER = 6;
-    private int backupType_;
+    public static final int RESTORE_TYPE_FIELD_NUMBER = 5;
+    private int restoreType_;
     /**
-     * <code>uint32 backup_type = 6;</code>
+     * <code>uint32 restore_type = 5;</code>
      */
-    public int getBackupType() {
-      return backupType_;
+    public int getRestoreType() {
+      return restoreType_;
     }
 
-    public static final int STATUS_FIELD_NUMBER = 7;
+    public static final int STATUS_FIELD_NUMBER = 6;
     private int status_;
     /**
-     * <code>.rpc.OperationStatus status = 7;</code>
+     * <code>.rpc.OperationStatus status = 6;</code>
      */
     public int getStatusValue() {
       return status_;
     }
     /**
-     * <code>.rpc.OperationStatus status = 7;</code>
+     * <code>.rpc.OperationStatus status = 6;</code>
      */
     public com.scalar.backup.cassandra.rpc.OperationStatus getStatus() {
       @SuppressWarnings("deprecation")
@@ -422,26 +378,23 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getClusterIdBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, clusterId_);
-      }
       if (!getTargetIpBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, targetIp_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, targetIp_);
       }
       if (!getSnapshotIdBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, snapshotId_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, snapshotId_);
       }
       if (createdAt_ != 0L) {
-        output.writeUInt64(4, createdAt_);
+        output.writeUInt64(3, createdAt_);
       }
       if (updatedAt_ != 0L) {
-        output.writeUInt64(5, updatedAt_);
+        output.writeUInt64(4, updatedAt_);
       }
-      if (backupType_ != 0) {
-        output.writeUInt32(6, backupType_);
+      if (restoreType_ != 0) {
+        output.writeUInt32(5, restoreType_);
       }
       if (status_ != com.scalar.backup.cassandra.rpc.OperationStatus.UNKNOWN.getNumber()) {
-        output.writeEnum(7, status_);
+        output.writeEnum(6, status_);
       }
       unknownFields.writeTo(output);
     }
@@ -452,30 +405,27 @@ private static final long serialVersionUID = 0L;
       if (size != -1) return size;
 
       size = 0;
-      if (!getClusterIdBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, clusterId_);
-      }
       if (!getTargetIpBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, targetIp_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, targetIp_);
       }
       if (!getSnapshotIdBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, snapshotId_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, snapshotId_);
       }
       if (createdAt_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(4, createdAt_);
+          .computeUInt64Size(3, createdAt_);
       }
       if (updatedAt_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(5, updatedAt_);
+          .computeUInt64Size(4, updatedAt_);
       }
-      if (backupType_ != 0) {
+      if (restoreType_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(6, backupType_);
+          .computeUInt32Size(5, restoreType_);
       }
       if (status_ != com.scalar.backup.cassandra.rpc.OperationStatus.UNKNOWN.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(7, status_);
+          .computeEnumSize(6, status_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -487,14 +437,12 @@ private static final long serialVersionUID = 0L;
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry)) {
+      if (!(obj instanceof com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry)) {
         return super.equals(obj);
       }
-      com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry other = (com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry) obj;
+      com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry other = (com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry) obj;
 
       boolean result = true;
-      result = result && getClusterId()
-          .equals(other.getClusterId());
       result = result && getTargetIp()
           .equals(other.getTargetIp());
       result = result && getSnapshotId()
@@ -503,8 +451,8 @@ private static final long serialVersionUID = 0L;
           == other.getCreatedAt());
       result = result && (getUpdatedAt()
           == other.getUpdatedAt());
-      result = result && (getBackupType()
-          == other.getBackupType());
+      result = result && (getRestoreType()
+          == other.getRestoreType());
       result = result && status_ == other.status_;
       result = result && unknownFields.equals(other.unknownFields);
       return result;
@@ -517,8 +465,6 @@ private static final long serialVersionUID = 0L;
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + CLUSTER_ID_FIELD_NUMBER;
-      hash = (53 * hash) + getClusterId().hashCode();
       hash = (37 * hash) + TARGET_IP_FIELD_NUMBER;
       hash = (53 * hash) + getTargetIp().hashCode();
       hash = (37 * hash) + SNAPSHOT_ID_FIELD_NUMBER;
@@ -529,8 +475,8 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + UPDATED_AT_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getUpdatedAt());
-      hash = (37 * hash) + BACKUP_TYPE_FIELD_NUMBER;
-      hash = (53 * hash) + getBackupType();
+      hash = (37 * hash) + RESTORE_TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getRestoreType();
       hash = (37 * hash) + STATUS_FIELD_NUMBER;
       hash = (53 * hash) + status_;
       hash = (29 * hash) + unknownFields.hashCode();
@@ -538,69 +484,69 @@ private static final long serialVersionUID = 0L;
       return hash;
     }
 
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseFrom(
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseFrom(
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseFrom(
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseFrom(
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseFrom(byte[] data)
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseFrom(
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseFrom(java.io.InputStream input)
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseFrom(
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseDelimitedFrom(java.io.InputStream input)
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseDelimitedFrom(
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseFrom(
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parseFrom(
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -613,7 +559,7 @@ private static final long serialVersionUID = 0L;
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry prototype) {
+    public static Builder newBuilder(com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -629,26 +575,26 @@ private static final long serialVersionUID = 0L;
       return builder;
     }
     /**
-     * Protobuf type {@code rpc.BackupListingResponse.Entry}
+     * Protobuf type {@code rpc.RestoreStatusListingResponse.Entry}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:rpc.BackupListingResponse.Entry)
-        com.scalar.backup.cassandra.rpc.BackupListingResponse.EntryOrBuilder {
+        // @@protoc_insertion_point(builder_implements:rpc.RestoreStatusListingResponse.Entry)
+        com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.EntryOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupListingResponse_Entry_descriptor;
+        return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingResponse_Entry_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupListingResponse_Entry_fieldAccessorTable
+        return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingResponse_Entry_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.class, com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder.class);
+                com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.class, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder.class);
       }
 
-      // Construct using com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.newBuilder()
+      // Construct using com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -666,8 +612,6 @@ private static final long serialVersionUID = 0L;
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        clusterId_ = "";
-
         targetIp_ = "";
 
         snapshotId_ = "";
@@ -676,7 +620,7 @@ private static final long serialVersionUID = 0L;
 
         updatedAt_ = 0L;
 
-        backupType_ = 0;
+        restoreType_ = 0;
 
         status_ = 0;
 
@@ -686,17 +630,17 @@ private static final long serialVersionUID = 0L;
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupListingResponse_Entry_descriptor;
+        return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingResponse_Entry_descriptor;
       }
 
       @java.lang.Override
-      public com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry getDefaultInstanceForType() {
-        return com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.getDefaultInstance();
+      public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry getDefaultInstanceForType() {
+        return com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.getDefaultInstance();
       }
 
       @java.lang.Override
-      public com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry build() {
-        com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry result = buildPartial();
+      public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry build() {
+        com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -704,14 +648,13 @@ private static final long serialVersionUID = 0L;
       }
 
       @java.lang.Override
-      public com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry buildPartial() {
-        com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry result = new com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry(this);
-        result.clusterId_ = clusterId_;
+      public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry buildPartial() {
+        com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry result = new com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry(this);
         result.targetIp_ = targetIp_;
         result.snapshotId_ = snapshotId_;
         result.createdAt_ = createdAt_;
         result.updatedAt_ = updatedAt_;
-        result.backupType_ = backupType_;
+        result.restoreType_ = restoreType_;
         result.status_ = status_;
         onBuilt();
         return result;
@@ -751,20 +694,16 @@ private static final long serialVersionUID = 0L;
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry) {
-          return mergeFrom((com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry)other);
+        if (other instanceof com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry) {
+          return mergeFrom((com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry other) {
-        if (other == com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.getDefaultInstance()) return this;
-        if (!other.getClusterId().isEmpty()) {
-          clusterId_ = other.clusterId_;
-          onChanged();
-        }
+      public Builder mergeFrom(com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry other) {
+        if (other == com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.getDefaultInstance()) return this;
         if (!other.getTargetIp().isEmpty()) {
           targetIp_ = other.targetIp_;
           onChanged();
@@ -779,8 +718,8 @@ private static final long serialVersionUID = 0L;
         if (other.getUpdatedAt() != 0L) {
           setUpdatedAt(other.getUpdatedAt());
         }
-        if (other.getBackupType() != 0) {
-          setBackupType(other.getBackupType());
+        if (other.getRestoreType() != 0) {
+          setRestoreType(other.getRestoreType());
         }
         if (other.status_ != 0) {
           setStatusValue(other.getStatusValue());
@@ -800,11 +739,11 @@ private static final long serialVersionUID = 0L;
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry parsedMessage = null;
+        com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry) e.getUnfinishedMessage();
+          parsedMessage = (com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -814,78 +753,9 @@ private static final long serialVersionUID = 0L;
         return this;
       }
 
-      private java.lang.Object clusterId_ = "";
-      /**
-       * <code>string cluster_id = 1;</code>
-       */
-      public java.lang.String getClusterId() {
-        java.lang.Object ref = clusterId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          clusterId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string cluster_id = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getClusterIdBytes() {
-        java.lang.Object ref = clusterId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          clusterId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string cluster_id = 1;</code>
-       */
-      public Builder setClusterId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        clusterId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string cluster_id = 1;</code>
-       */
-      public Builder clearClusterId() {
-        
-        clusterId_ = getDefaultInstance().getClusterId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string cluster_id = 1;</code>
-       */
-      public Builder setClusterIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        clusterId_ = value;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object targetIp_ = "";
       /**
-       * <code>string target_ip = 2;</code>
+       * <code>string target_ip = 1;</code>
        */
       public java.lang.String getTargetIp() {
         java.lang.Object ref = targetIp_;
@@ -900,7 +770,7 @@ private static final long serialVersionUID = 0L;
         }
       }
       /**
-       * <code>string target_ip = 2;</code>
+       * <code>string target_ip = 1;</code>
        */
       public com.google.protobuf.ByteString
           getTargetIpBytes() {
@@ -916,7 +786,7 @@ private static final long serialVersionUID = 0L;
         }
       }
       /**
-       * <code>string target_ip = 2;</code>
+       * <code>string target_ip = 1;</code>
        */
       public Builder setTargetIp(
           java.lang.String value) {
@@ -929,7 +799,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>string target_ip = 2;</code>
+       * <code>string target_ip = 1;</code>
        */
       public Builder clearTargetIp() {
         
@@ -938,7 +808,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>string target_ip = 2;</code>
+       * <code>string target_ip = 1;</code>
        */
       public Builder setTargetIpBytes(
           com.google.protobuf.ByteString value) {
@@ -954,7 +824,7 @@ private static final long serialVersionUID = 0L;
 
       private java.lang.Object snapshotId_ = "";
       /**
-       * <code>string snapshot_id = 3;</code>
+       * <code>string snapshot_id = 2;</code>
        */
       public java.lang.String getSnapshotId() {
         java.lang.Object ref = snapshotId_;
@@ -969,7 +839,7 @@ private static final long serialVersionUID = 0L;
         }
       }
       /**
-       * <code>string snapshot_id = 3;</code>
+       * <code>string snapshot_id = 2;</code>
        */
       public com.google.protobuf.ByteString
           getSnapshotIdBytes() {
@@ -985,7 +855,7 @@ private static final long serialVersionUID = 0L;
         }
       }
       /**
-       * <code>string snapshot_id = 3;</code>
+       * <code>string snapshot_id = 2;</code>
        */
       public Builder setSnapshotId(
           java.lang.String value) {
@@ -998,7 +868,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>string snapshot_id = 3;</code>
+       * <code>string snapshot_id = 2;</code>
        */
       public Builder clearSnapshotId() {
         
@@ -1007,7 +877,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>string snapshot_id = 3;</code>
+       * <code>string snapshot_id = 2;</code>
        */
       public Builder setSnapshotIdBytes(
           com.google.protobuf.ByteString value) {
@@ -1023,13 +893,13 @@ private static final long serialVersionUID = 0L;
 
       private long createdAt_ ;
       /**
-       * <code>uint64 created_at = 4;</code>
+       * <code>uint64 created_at = 3;</code>
        */
       public long getCreatedAt() {
         return createdAt_;
       }
       /**
-       * <code>uint64 created_at = 4;</code>
+       * <code>uint64 created_at = 3;</code>
        */
       public Builder setCreatedAt(long value) {
         
@@ -1038,7 +908,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>uint64 created_at = 4;</code>
+       * <code>uint64 created_at = 3;</code>
        */
       public Builder clearCreatedAt() {
         
@@ -1049,13 +919,13 @@ private static final long serialVersionUID = 0L;
 
       private long updatedAt_ ;
       /**
-       * <code>uint64 updated_at = 5;</code>
+       * <code>uint64 updated_at = 4;</code>
        */
       public long getUpdatedAt() {
         return updatedAt_;
       }
       /**
-       * <code>uint64 updated_at = 5;</code>
+       * <code>uint64 updated_at = 4;</code>
        */
       public Builder setUpdatedAt(long value) {
         
@@ -1064,7 +934,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>uint64 updated_at = 5;</code>
+       * <code>uint64 updated_at = 4;</code>
        */
       public Builder clearUpdatedAt() {
         
@@ -1073,41 +943,41 @@ private static final long serialVersionUID = 0L;
         return this;
       }
 
-      private int backupType_ ;
+      private int restoreType_ ;
       /**
-       * <code>uint32 backup_type = 6;</code>
+       * <code>uint32 restore_type = 5;</code>
        */
-      public int getBackupType() {
-        return backupType_;
+      public int getRestoreType() {
+        return restoreType_;
       }
       /**
-       * <code>uint32 backup_type = 6;</code>
+       * <code>uint32 restore_type = 5;</code>
        */
-      public Builder setBackupType(int value) {
+      public Builder setRestoreType(int value) {
         
-        backupType_ = value;
+        restoreType_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 backup_type = 6;</code>
+       * <code>uint32 restore_type = 5;</code>
        */
-      public Builder clearBackupType() {
+      public Builder clearRestoreType() {
         
-        backupType_ = 0;
+        restoreType_ = 0;
         onChanged();
         return this;
       }
 
       private int status_ = 0;
       /**
-       * <code>.rpc.OperationStatus status = 7;</code>
+       * <code>.rpc.OperationStatus status = 6;</code>
        */
       public int getStatusValue() {
         return status_;
       }
       /**
-       * <code>.rpc.OperationStatus status = 7;</code>
+       * <code>.rpc.OperationStatus status = 6;</code>
        */
       public Builder setStatusValue(int value) {
         status_ = value;
@@ -1115,7 +985,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>.rpc.OperationStatus status = 7;</code>
+       * <code>.rpc.OperationStatus status = 6;</code>
        */
       public com.scalar.backup.cassandra.rpc.OperationStatus getStatus() {
         @SuppressWarnings("deprecation")
@@ -1123,7 +993,7 @@ private static final long serialVersionUID = 0L;
         return result == null ? com.scalar.backup.cassandra.rpc.OperationStatus.UNRECOGNIZED : result;
       }
       /**
-       * <code>.rpc.OperationStatus status = 7;</code>
+       * <code>.rpc.OperationStatus status = 6;</code>
        */
       public Builder setStatus(com.scalar.backup.cassandra.rpc.OperationStatus value) {
         if (value == null) {
@@ -1135,7 +1005,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>.rpc.OperationStatus status = 7;</code>
+       * <code>.rpc.OperationStatus status = 6;</code>
        */
       public Builder clearStatus() {
         
@@ -1156,16 +1026,16 @@ private static final long serialVersionUID = 0L;
       }
 
 
-      // @@protoc_insertion_point(builder_scope:rpc.BackupListingResponse.Entry)
+      // @@protoc_insertion_point(builder_scope:rpc.RestoreStatusListingResponse.Entry)
     }
 
-    // @@protoc_insertion_point(class_scope:rpc.BackupListingResponse.Entry)
-    private static final com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:rpc.RestoreStatusListingResponse.Entry)
+    private static final com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry();
+      DEFAULT_INSTANCE = new com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry();
     }
 
-    public static com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry getDefaultInstance() {
+    public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1190,43 +1060,78 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry getDefaultInstanceForType() {
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public static final int ENTRIES_FIELD_NUMBER = 1;
-  private java.util.List<com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry> entries_;
+  private int bitField0_;
+  public static final int CLUSTER_ID_FIELD_NUMBER = 1;
+  private volatile java.lang.Object clusterId_;
   /**
-   * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+   * <code>string cluster_id = 1;</code>
    */
-  public java.util.List<com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry> getEntriesList() {
+  public java.lang.String getClusterId() {
+    java.lang.Object ref = clusterId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      clusterId_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string cluster_id = 1;</code>
+   */
+  public com.google.protobuf.ByteString
+      getClusterIdBytes() {
+    java.lang.Object ref = clusterId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      clusterId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int ENTRIES_FIELD_NUMBER = 3;
+  private java.util.List<com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry> entries_;
+  /**
+   * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
+   */
+  public java.util.List<com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry> getEntriesList() {
     return entries_;
   }
   /**
-   * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+   * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
    */
-  public java.util.List<? extends com.scalar.backup.cassandra.rpc.BackupListingResponse.EntryOrBuilder> 
+  public java.util.List<? extends com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.EntryOrBuilder> 
       getEntriesOrBuilderList() {
     return entries_;
   }
   /**
-   * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+   * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
    */
   public int getEntriesCount() {
     return entries_.size();
   }
   /**
-   * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+   * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
    */
-  public com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry getEntries(int index) {
+  public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry getEntries(int index) {
     return entries_.get(index);
   }
   /**
-   * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+   * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
    */
-  public com.scalar.backup.cassandra.rpc.BackupListingResponse.EntryOrBuilder getEntriesOrBuilder(
+  public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.EntryOrBuilder getEntriesOrBuilder(
       int index) {
     return entries_.get(index);
   }
@@ -1245,8 +1150,11 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
+    if (!getClusterIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, clusterId_);
+    }
     for (int i = 0; i < entries_.size(); i++) {
-      output.writeMessage(1, entries_.get(i));
+      output.writeMessage(3, entries_.get(i));
     }
     unknownFields.writeTo(output);
   }
@@ -1257,9 +1165,12 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
+    if (!getClusterIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, clusterId_);
+    }
     for (int i = 0; i < entries_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(1, entries_.get(i));
+        .computeMessageSize(3, entries_.get(i));
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -1271,12 +1182,14 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof com.scalar.backup.cassandra.rpc.BackupListingResponse)) {
+    if (!(obj instanceof com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse)) {
       return super.equals(obj);
     }
-    com.scalar.backup.cassandra.rpc.BackupListingResponse other = (com.scalar.backup.cassandra.rpc.BackupListingResponse) obj;
+    com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse other = (com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse) obj;
 
     boolean result = true;
+    result = result && getClusterId()
+        .equals(other.getClusterId());
     result = result && getEntriesList()
         .equals(other.getEntriesList());
     result = result && unknownFields.equals(other.unknownFields);
@@ -1290,6 +1203,8 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
+    hash = (37 * hash) + CLUSTER_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getClusterId().hashCode();
     if (getEntriesCount() > 0) {
       hash = (37 * hash) + ENTRIES_FIELD_NUMBER;
       hash = (53 * hash) + getEntriesList().hashCode();
@@ -1299,69 +1214,69 @@ private static final long serialVersionUID = 0L;
     return hash;
   }
 
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseFrom(byte[] data)
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseFrom(java.io.InputStream input)
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseDelimitedFrom(java.io.InputStream input)
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseDelimitedFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse parseFrom(
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -1374,7 +1289,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(com.scalar.backup.cassandra.rpc.BackupListingResponse prototype) {
+  public static Builder newBuilder(com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -1390,26 +1305,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rpc.BackupListingResponse}
+   * Protobuf type {@code rpc.RestoreStatusListingResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rpc.BackupListingResponse)
-      com.scalar.backup.cassandra.rpc.BackupListingResponseOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rpc.RestoreStatusListingResponse)
+      com.scalar.backup.cassandra.rpc.RestoreStatusListingResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupListingResponse_descriptor;
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupListingResponse_fieldAccessorTable
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.scalar.backup.cassandra.rpc.BackupListingResponse.class, com.scalar.backup.cassandra.rpc.BackupListingResponse.Builder.class);
+              com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.class, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Builder.class);
     }
 
-    // Construct using com.scalar.backup.cassandra.rpc.BackupListingResponse.newBuilder()
+    // Construct using com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -1428,9 +1343,11 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      clusterId_ = "";
+
       if (entriesBuilder_ == null) {
         entries_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
       } else {
         entriesBuilder_.clear();
       }
@@ -1440,17 +1357,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_BackupListingResponse_descriptor;
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_RestoreStatusListingResponse_descriptor;
     }
 
     @java.lang.Override
-    public com.scalar.backup.cassandra.rpc.BackupListingResponse getDefaultInstanceForType() {
-      return com.scalar.backup.cassandra.rpc.BackupListingResponse.getDefaultInstance();
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse getDefaultInstanceForType() {
+      return com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.getDefaultInstance();
     }
 
     @java.lang.Override
-    public com.scalar.backup.cassandra.rpc.BackupListingResponse build() {
-      com.scalar.backup.cassandra.rpc.BackupListingResponse result = buildPartial();
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse build() {
+      com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -1458,18 +1375,21 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public com.scalar.backup.cassandra.rpc.BackupListingResponse buildPartial() {
-      com.scalar.backup.cassandra.rpc.BackupListingResponse result = new com.scalar.backup.cassandra.rpc.BackupListingResponse(this);
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse buildPartial() {
+      com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse result = new com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse(this);
       int from_bitField0_ = bitField0_;
+      int to_bitField0_ = 0;
+      result.clusterId_ = clusterId_;
       if (entriesBuilder_ == null) {
-        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           entries_ = java.util.Collections.unmodifiableList(entries_);
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.entries_ = entries_;
       } else {
         result.entries_ = entriesBuilder_.build();
       }
+      result.bitField0_ = to_bitField0_;
       onBuilt();
       return result;
     }
@@ -1508,21 +1428,25 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof com.scalar.backup.cassandra.rpc.BackupListingResponse) {
-        return mergeFrom((com.scalar.backup.cassandra.rpc.BackupListingResponse)other);
+      if (other instanceof com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse) {
+        return mergeFrom((com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(com.scalar.backup.cassandra.rpc.BackupListingResponse other) {
-      if (other == com.scalar.backup.cassandra.rpc.BackupListingResponse.getDefaultInstance()) return this;
+    public Builder mergeFrom(com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse other) {
+      if (other == com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.getDefaultInstance()) return this;
+      if (!other.getClusterId().isEmpty()) {
+        clusterId_ = other.clusterId_;
+        onChanged();
+      }
       if (entriesBuilder_ == null) {
         if (!other.entries_.isEmpty()) {
           if (entries_.isEmpty()) {
             entries_ = other.entries_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureEntriesIsMutable();
             entries_.addAll(other.entries_);
@@ -1535,7 +1459,7 @@ private static final long serialVersionUID = 0L;
             entriesBuilder_.dispose();
             entriesBuilder_ = null;
             entries_ = other.entries_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
             entriesBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getEntriesFieldBuilder() : null;
@@ -1559,11 +1483,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      com.scalar.backup.cassandra.rpc.BackupListingResponse parsedMessage = null;
+      com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (com.scalar.backup.cassandra.rpc.BackupListingResponse) e.getUnfinishedMessage();
+        parsedMessage = (com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -1574,22 +1498,91 @@ private static final long serialVersionUID = 0L;
     }
     private int bitField0_;
 
-    private java.util.List<com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry> entries_ =
+    private java.lang.Object clusterId_ = "";
+    /**
+     * <code>string cluster_id = 1;</code>
+     */
+    public java.lang.String getClusterId() {
+      java.lang.Object ref = clusterId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        clusterId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string cluster_id = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getClusterIdBytes() {
+      java.lang.Object ref = clusterId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        clusterId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string cluster_id = 1;</code>
+     */
+    public Builder setClusterId(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      clusterId_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string cluster_id = 1;</code>
+     */
+    public Builder clearClusterId() {
+      
+      clusterId_ = getDefaultInstance().getClusterId();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string cluster_id = 1;</code>
+     */
+    public Builder setClusterIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      clusterId_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.util.List<com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry> entries_ =
       java.util.Collections.emptyList();
     private void ensureEntriesIsMutable() {
-      if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-        entries_ = new java.util.ArrayList<com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry>(entries_);
-        bitField0_ |= 0x00000001;
+      if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        entries_ = new java.util.ArrayList<com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry>(entries_);
+        bitField0_ |= 0x00000002;
        }
     }
 
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry, com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder, com.scalar.backup.cassandra.rpc.BackupListingResponse.EntryOrBuilder> entriesBuilder_;
+        com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.EntryOrBuilder> entriesBuilder_;
 
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
-    public java.util.List<com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry> getEntriesList() {
+    public java.util.List<com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry> getEntriesList() {
       if (entriesBuilder_ == null) {
         return java.util.Collections.unmodifiableList(entries_);
       } else {
@@ -1597,7 +1590,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
     public int getEntriesCount() {
       if (entriesBuilder_ == null) {
@@ -1607,9 +1600,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
-    public com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry getEntries(int index) {
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry getEntries(int index) {
       if (entriesBuilder_ == null) {
         return entries_.get(index);
       } else {
@@ -1617,10 +1610,10 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
     public Builder setEntries(
-        int index, com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry value) {
+        int index, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry value) {
       if (entriesBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1634,10 +1627,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
     public Builder setEntries(
-        int index, com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder builderForValue) {
+        int index, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder builderForValue) {
       if (entriesBuilder_ == null) {
         ensureEntriesIsMutable();
         entries_.set(index, builderForValue.build());
@@ -1648,9 +1641,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
-    public Builder addEntries(com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry value) {
+    public Builder addEntries(com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry value) {
       if (entriesBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1664,10 +1657,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
     public Builder addEntries(
-        int index, com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry value) {
+        int index, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry value) {
       if (entriesBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1681,10 +1674,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
     public Builder addEntries(
-        com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder builderForValue) {
+        com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder builderForValue) {
       if (entriesBuilder_ == null) {
         ensureEntriesIsMutable();
         entries_.add(builderForValue.build());
@@ -1695,10 +1688,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
     public Builder addEntries(
-        int index, com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder builderForValue) {
+        int index, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder builderForValue) {
       if (entriesBuilder_ == null) {
         ensureEntriesIsMutable();
         entries_.add(index, builderForValue.build());
@@ -1709,10 +1702,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
     public Builder addAllEntries(
-        java.lang.Iterable<? extends com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry> values) {
+        java.lang.Iterable<? extends com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry> values) {
       if (entriesBuilder_ == null) {
         ensureEntriesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1724,12 +1717,12 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
     public Builder clearEntries() {
       if (entriesBuilder_ == null) {
         entries_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
       } else {
         entriesBuilder_.clear();
@@ -1737,7 +1730,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
     public Builder removeEntries(int index) {
       if (entriesBuilder_ == null) {
@@ -1750,16 +1743,16 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
-    public com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder getEntriesBuilder(
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder getEntriesBuilder(
         int index) {
       return getEntriesFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
-    public com.scalar.backup.cassandra.rpc.BackupListingResponse.EntryOrBuilder getEntriesOrBuilder(
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.EntryOrBuilder getEntriesOrBuilder(
         int index) {
       if (entriesBuilder_ == null) {
         return entries_.get(index);  } else {
@@ -1767,9 +1760,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
-    public java.util.List<? extends com.scalar.backup.cassandra.rpc.BackupListingResponse.EntryOrBuilder> 
+    public java.util.List<? extends com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.EntryOrBuilder> 
          getEntriesOrBuilderList() {
       if (entriesBuilder_ != null) {
         return entriesBuilder_.getMessageOrBuilderList();
@@ -1778,35 +1771,35 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
-    public com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder addEntriesBuilder() {
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder addEntriesBuilder() {
       return getEntriesFieldBuilder().addBuilder(
-          com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.getDefaultInstance());
+          com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.getDefaultInstance());
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
-    public com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder addEntriesBuilder(
+    public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder addEntriesBuilder(
         int index) {
       return getEntriesFieldBuilder().addBuilder(
-          index, com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.getDefaultInstance());
+          index, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.getDefaultInstance());
     }
     /**
-     * <code>repeated .rpc.BackupListingResponse.Entry entries = 1;</code>
+     * <code>repeated .rpc.RestoreStatusListingResponse.Entry entries = 3;</code>
      */
-    public java.util.List<com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder> 
+    public java.util.List<com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder> 
          getEntriesBuilderList() {
       return getEntriesFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry, com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder, com.scalar.backup.cassandra.rpc.BackupListingResponse.EntryOrBuilder> 
+        com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.EntryOrBuilder> 
         getEntriesFieldBuilder() {
       if (entriesBuilder_ == null) {
         entriesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-            com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry, com.scalar.backup.cassandra.rpc.BackupListingResponse.Entry.Builder, com.scalar.backup.cassandra.rpc.BackupListingResponse.EntryOrBuilder>(
+            com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.Entry.Builder, com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse.EntryOrBuilder>(
                 entries_,
-                ((bitField0_ & 0x00000001) == 0x00000001),
+                ((bitField0_ & 0x00000002) == 0x00000002),
                 getParentForChildren(),
                 isClean());
         entries_ = null;
@@ -1826,41 +1819,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rpc.BackupListingResponse)
+    // @@protoc_insertion_point(builder_scope:rpc.RestoreStatusListingResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:rpc.BackupListingResponse)
-  private static final com.scalar.backup.cassandra.rpc.BackupListingResponse DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rpc.RestoreStatusListingResponse)
+  private static final com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new com.scalar.backup.cassandra.rpc.BackupListingResponse();
+    DEFAULT_INSTANCE = new com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse();
   }
 
-  public static com.scalar.backup.cassandra.rpc.BackupListingResponse getDefaultInstance() {
+  public static com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<BackupListingResponse>
-      PARSER = new com.google.protobuf.AbstractParser<BackupListingResponse>() {
+  private static final com.google.protobuf.Parser<RestoreStatusListingResponse>
+      PARSER = new com.google.protobuf.AbstractParser<RestoreStatusListingResponse>() {
     @java.lang.Override
-    public BackupListingResponse parsePartialFrom(
+    public RestoreStatusListingResponse parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new BackupListingResponse(input, extensionRegistry);
+      return new RestoreStatusListingResponse(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<BackupListingResponse> parser() {
+  public static com.google.protobuf.Parser<RestoreStatusListingResponse> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<BackupListingResponse> getParserForType() {
+  public com.google.protobuf.Parser<RestoreStatusListingResponse> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.scalar.backup.cassandra.rpc.BackupListingResponse getDefaultInstanceForType() {
+  public com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 
