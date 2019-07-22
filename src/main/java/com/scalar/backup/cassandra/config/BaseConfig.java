@@ -14,13 +14,13 @@ public class BaseConfig {
   private final Properties props;
   protected static final String PREFIX = "scalar.backup.cassandra.";
   public static final String CLUSTER_ID = PREFIX + "cluster_id";
-  public static final String BACKUP_ID = PREFIX + "backup_id";
+  public static final String SNAPSHOT_ID = PREFIX + "snapshot_id";
   public static final String TARGET_IP = PREFIX + "target_ip";
   public static final String DATA_DIR = PREFIX + "data_dir";
   public static final String STORE_BASE_URI = PREFIX + "store_base_uri";
   public static final String KEYSPACE = PREFIX + "keyspace";
   private String clusterId;
-  private String backupId;
+  private String snapshotId;
   private String targetIp;
   private String dataDir;
   private String storeBaseUri;
@@ -49,8 +49,8 @@ public class BaseConfig {
     return clusterId;
   }
 
-  public String getBackupId() {
-    return backupId;
+  public String getSnapshotId() {
+    return snapshotId;
   }
 
   public String getTargetIp() {
@@ -72,8 +72,8 @@ public class BaseConfig {
   private void load() {
     checkArgument(props.getProperty(CLUSTER_ID) != null);
     clusterId = props.getProperty(CLUSTER_ID);
-    checkArgument(props.getProperty(BACKUP_ID) != null);
-    backupId = props.getProperty(BACKUP_ID);
+    checkArgument(props.getProperty(SNAPSHOT_ID) != null);
+    snapshotId = props.getProperty(SNAPSHOT_ID);
     checkArgument(props.getProperty(TARGET_IP) != null);
     targetIp = props.getProperty(TARGET_IP);
     checkArgument(props.getProperty(DATA_DIR) != null);

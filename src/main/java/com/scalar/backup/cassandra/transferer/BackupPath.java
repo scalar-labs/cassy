@@ -28,7 +28,8 @@ public class BackupPath {
   }
 
   private static String create(String type, BaseConfig config, String path) {
-    return Paths.get(type, config.getClusterId(), config.getBackupId(), config.getTargetIp(), path)
+    return Paths.get(
+            type, config.getClusterId(), config.getSnapshotId(), config.getTargetIp(), path)
         .toString();
   }
 }

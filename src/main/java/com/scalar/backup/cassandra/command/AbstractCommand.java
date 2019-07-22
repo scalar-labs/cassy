@@ -13,11 +13,11 @@ public abstract class AbstractCommand implements Callable<Void> {
   protected String clusterId;
 
   @CommandLine.Option(
-      names = {"--backup-id"},
+      names = {"--snapshot-id"},
       required = true,
-      paramLabel = "BACKUP_ID",
-      description = "An ID of a backup to use")
-  protected String backupId;
+      paramLabel = "SNAPSHOT_ID",
+      description = "An ID of a snapshot to use")
+  protected String snapshotId;
 
   @CommandLine.Option(
       names = {"--target-ip"},
