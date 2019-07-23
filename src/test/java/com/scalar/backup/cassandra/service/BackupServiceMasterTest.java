@@ -3,7 +3,6 @@ package com.scalar.backup.cassandra.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -76,7 +75,6 @@ public class BackupServiceMasterTest {
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
         .uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
-    doNothing().when(master).removeIncremental(anyString());
 
     // Act
     master.takeBackup(keys, BackupType.CLUSTER_SNAPSHOT);
@@ -87,7 +85,6 @@ public class BackupServiceMasterTest {
     verify(eachJmx, times(nodes.size()))
         .takeSnapshot(SNAPSHOT_ID, keyspaces.toArray(new String[0]));
     keys.forEach(key -> verify(master).uploadNodeBackups(key, BackupType.CLUSTER_SNAPSHOT));
-    nodes.forEach(ip -> verify(master).removeIncremental(ip));
   }
 
   @Test
@@ -101,7 +98,6 @@ public class BackupServiceMasterTest {
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
         .uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
-    doNothing().when(master).removeIncremental(anyString());
 
     // Act
     master.takeBackup(keys, BackupType.NODE_SNAPSHOT);
@@ -112,7 +108,6 @@ public class BackupServiceMasterTest {
     verify(eachJmx, times(nodes.size()))
         .takeSnapshot(SNAPSHOT_ID, keyspaces.toArray(new String[0]));
     keys.forEach(key -> verify(master).uploadNodeBackups(key, BackupType.NODE_SNAPSHOT));
-    nodes.forEach(ip -> verify(master).removeIncremental(ip));
   }
 
   @Test
@@ -127,7 +122,6 @@ public class BackupServiceMasterTest {
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
         .uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
-    doNothing().when(master).removeIncremental(anyString());
 
     // Act
     master.takeBackup(keys, BackupType.NODE_SNAPSHOT);
@@ -138,7 +132,6 @@ public class BackupServiceMasterTest {
     verify(eachJmx, times(someNodes.size()))
         .takeSnapshot(SNAPSHOT_ID, keyspaces.toArray(new String[0]));
     keys.forEach(key -> verify(master).uploadNodeBackups(key, BackupType.NODE_SNAPSHOT));
-    someNodes.forEach(ip -> verify(master).removeIncremental(ip));
   }
 
   @Test
@@ -156,7 +149,6 @@ public class BackupServiceMasterTest {
     // Assert
     verify(master, never()).getJmx(anyString(), anyInt());
     keys.forEach(key -> verify(master).uploadNodeBackups(key, BackupType.NODE_INCREMENTAL));
-    verify(master, never()).removeIncremental(anyString());
   }
 
   @Test
@@ -175,6 +167,5 @@ public class BackupServiceMasterTest {
     // Assert
     verify(master, never()).getJmx(anyString(), anyInt());
     keys.forEach(key -> verify(master).uploadNodeBackups(key, BackupType.NODE_INCREMENTAL));
-    verify(master, never()).removeIncremental(anyString());
   }
 }

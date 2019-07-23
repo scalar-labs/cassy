@@ -85,21 +85,9 @@ public class BackupServiceMaster extends AbstractServiceMaster {
     // Parallel upload for now. It will be adjusted based on workload
     ExecutorService executor = Executors.newCachedThreadPool();
     backupKeys.forEach(
-        backupKey ->
-            executor.submit(
-                () -> {
-                  if (type != BackupType.NODE_INCREMENTAL) {
-                    removeIncremental(backupKey.getTargetIp());
-                  }
-                  futures.add(uploadNodeBackups(backupKey, type));
-                }));
+        backupKey -> executor.submit(() -> futures.add(uploadNodeBackups(backupKey, type))));
     awaitTermination(executor, "copyNodesBackups");
     return futures;
-  }
-
-  @VisibleForTesting
-  void removeIncremental(String ip) {
-    // TODO: remove incremental backups (coming in a later PR)
   }
 
   @VisibleForTesting
