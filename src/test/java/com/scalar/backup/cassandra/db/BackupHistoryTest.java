@@ -37,7 +37,7 @@ public class BackupHistoryTest {
   @Mock private PreparedStatement update;
   @Mock private PreparedStatement selectRecentByCluster;
   @Mock private PreparedStatement selectRecentByHost;
-  @Mock private PreparedStatement selectBySnapshot;
+  @Mock private PreparedStatement selectRecentBySnapshot;
   private BackupHistory history;
 
   @Before
@@ -50,13 +50,13 @@ public class BackupHistoryTest {
         .thenReturn(selectRecentByCluster);
     when(connection.prepareStatement(BackupHistory.SELECT_RECENT_SNAPSHOTS_BY_HOST))
         .thenReturn(selectRecentByHost);
-    when(connection.prepareStatement(BackupHistory.SELECT_BY_SNAPSHOT_ID))
-        .thenReturn(selectBySnapshot);
+    when(connection.prepareStatement(BackupHistory.SELECT_RECENT_BY_SNAPSHOT_ID))
+        .thenReturn(selectRecentBySnapshot);
     doNothing().when(insert).setQueryTimeout(anyInt());
     doNothing().when(update).setQueryTimeout(anyInt());
     doNothing().when(selectRecentByCluster).setQueryTimeout(anyInt());
     doNothing().when(selectRecentByHost).setQueryTimeout(anyInt());
-    doNothing().when(selectBySnapshot).setQueryTimeout(anyInt());
+    doNothing().when(selectRecentBySnapshot).setQueryTimeout(anyInt());
 
     // InjectMocks fails due to some dependency issue
     history = new BackupHistory(connection);
@@ -264,19 +264,21 @@ public class BackupHistoryTest {
   public void selectBySnapshotId_SnapshotIdGiven_ShouldReturnSnapshotsProperly()
       throws SQLException {
     // Arrange
+    BackupListingRequest request =
+        BackupListingRequest.newBuilder().setSnapshotId(SNAPSHOT_ID).build();
     ResultSet resultSet = mock(ResultSet.class);
-    when(selectBySnapshot.executeQuery()).thenReturn(resultSet);
+    when(selectRecentBySnapshot.executeQuery()).thenReturn(resultSet);
     when(resultSet.getString(anyString())).thenReturn("anyString");
     when(resultSet.getLong(anyString())).thenReturn(1L);
     when(resultSet.getInt(anyString())).thenReturn(1);
     when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
 
     // Act
-    List<BackupHistoryRecord> records = history.selectBySnapshotId(SNAPSHOT_ID);
+    List<BackupHistoryRecord> records = history.selectRecentSnapshots(request);
 
     // Assert
-    verify(selectBySnapshot).setString(1, SNAPSHOT_ID);
-    verify(selectBySnapshot).executeQuery();
+    verify(selectRecentBySnapshot).setString(1, SNAPSHOT_ID);
+    verify(selectRecentBySnapshot).executeQuery();
     assertThat(records.size()).isEqualTo(N);
   }
 
@@ -284,19 +286,21 @@ public class BackupHistoryTest {
   public void selectBySnapshotId_SQLExceptionThrown_ShouldThrowDatabaseException()
       throws SQLException {
     // Arrange
+    BackupListingRequest request =
+        BackupListingRequest.newBuilder().setSnapshotId(SNAPSHOT_ID).build();
     SQLException toThrow = mock(SQLException.class);
-    when(selectBySnapshot.executeQuery()).thenThrow(toThrow);
+    when(selectRecentBySnapshot.executeQuery()).thenThrow(toThrow);
 
     // Act
     assertThatThrownBy(
             () -> {
-              history.selectBySnapshotId(SNAPSHOT_ID);
+              history.selectRecentSnapshots(request);
             })
         .isInstanceOf(DatabaseException.class)
         .hasCause(toThrow);
 
     // Assert
-    verify(selectBySnapshot).setString(1, SNAPSHOT_ID);
-    verify(selectBySnapshot).executeQuery();
+    verify(selectRecentBySnapshot).setString(1, SNAPSHOT_ID);
+    verify(selectRecentBySnapshot).executeQuery();
   }
 }

@@ -27,7 +27,7 @@ public class BackupHistory {
   static final String SELECT_RECENT_SNAPSHOTS_BY_HOST =
       "SELECT * FROM backup_history WHERE cluster_id = ? and target_ip = ? "
           + "ORDER BY created_at DESC limit ?";
-  static final String SELECT_BY_SNAPSHOT_ID =
+  static final String SELECT_RECENT_BY_SNAPSHOT_ID =
       "SELECT * FROM backup_history WHERE snapshot_id = ? ORDER BY created_at DESC";
   private static final int DEFAULT_N = 10;
   private final Connection connection;
@@ -35,7 +35,7 @@ public class BackupHistory {
   private final PreparedStatement update;
   private final PreparedStatement selectRecentByCluster;
   private final PreparedStatement selectRecentByHost;
-  private final PreparedStatement selectBySnapshot;
+  private final PreparedStatement selectRecentBySnapshot;
 
   public BackupHistory(Connection connection) {
     this.connection = connection;
@@ -44,12 +44,12 @@ public class BackupHistory {
       update = connection.prepareStatement(UPDATE);
       selectRecentByCluster = connection.prepareStatement(SELECT_RECENT_SNAPSHOTS_BY_CLUSTER);
       selectRecentByHost = connection.prepareStatement(SELECT_RECENT_SNAPSHOTS_BY_HOST);
-      selectBySnapshot = connection.prepareStatement(SELECT_BY_SNAPSHOT_ID);
+      selectRecentBySnapshot = connection.prepareStatement(SELECT_RECENT_BY_SNAPSHOT_ID);
       insert.setQueryTimeout(30);
       update.setQueryTimeout(30);
       selectRecentByCluster.setQueryTimeout(30);
       selectRecentByHost.setQueryTimeout(30);
-      selectBySnapshot.setQueryTimeout(30);
+      selectRecentBySnapshot.setQueryTimeout(30);
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
@@ -121,8 +121,8 @@ public class BackupHistory {
   }
 
   private ResultSet selectBySnapshotId(String snapshotId) throws SQLException {
-    selectBySnapshot.setString(1, snapshotId);
-    ResultSet resultSet = selectBySnapshot.executeQuery();
+    selectRecentBySnapshot.setString(1, snapshotId);
+    ResultSet resultSet = selectRecentBySnapshot.executeQuery();
     return resultSet;
   }
 
