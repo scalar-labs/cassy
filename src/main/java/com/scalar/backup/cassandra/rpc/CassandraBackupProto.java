@@ -119,7 +119,7 @@ public final class CassandraBackupProto {
       "atus\022\013\n\007UNKNOWN\020\000\022\010\n\004LIVE\020\001\022\013\n\007LEAVING\020\002" +
       "\022\n\n\006MOVING\020\003\022\013\n\007JOINING\020\004\022\017\n\013UNREACHABLE" +
       "\020\005\"]\n\024BackupListingRequest\022\022\n\ncluster_id" +
-      "\030\001 \001(\t\022\021\n\ttarget_ip\030\002 \001(\t\022\t\n\001n\030\003 \001(\r\022\023\n\013" +
+      "\030\001 \001(\t\022\021\n\ttarget_ip\030\002 \001(\t\022\t\n\001n\030\003 \001(\005\022\023\n\013" +
       "snapshot_id\030\004 \001(\t\"\363\001\n\025BackupListingRespo" +
       "nse\0221\n\007entries\030\001 \003(\0132 .rpc.BackupListing" +
       "Response.Entry\032\246\001\n\005Entry\022\022\n\ncluster_id\030\001" +
@@ -139,7 +139,7 @@ public final class CassandraBackupProto {
       "c.OperationStatus\022\017\n\007message\030\002 \001(\t\"d\n\033Re" +
       "storeStatusListingRequest\022\022\n\ncluster_id\030" +
       "\001 \001(\t\022\021\n\ttarget_ip\030\002 \001(\t\022\023\n\013snapshot_id\030" +
-      "\003 \001(\t\022\t\n\001n\030\004 \001(\r\"\202\002\n\034RestoreStatusListin" +
+      "\003 \001(\t\022\t\n\001n\030\004 \001(\005\"\202\002\n\034RestoreStatusListin" +
       "gResponse\022\022\n\ncluster_id\030\001 \001(\t\0228\n\007entries" +
       "\030\003 \003(\0132\'.rpc.RestoreStatusListingRespons" +
       "e.Entry\032\223\001\n\005Entry\022\021\n\ttarget_ip\030\001 \001(\t\022\023\n\013" +

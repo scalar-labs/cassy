@@ -23,13 +23,13 @@ public class RestoreHistory {
       "UPDATE restore_history SET status = ?, updated_at = ? "
           + "WHERE snapshot_id = ? and cluster_id = ? and target_ip = ? and created_at = ?";
   static final String SELECT_RECENT_BY_CLUSTER =
-      "SELECT * FROM restore_history WHERE cluster_id = ? ORDER BY created_at DESC";
+      "SELECT * FROM restore_history WHERE cluster_id = ? ORDER BY created_at DESC limit ?";
   static final String SELECT_RECENT_BY_HOST =
       "SELECT * FROM restore_history WHERE cluster_id = ? and target_ip = ? "
           + "ORDER BY created_at DESC limit ?";
   static final String SELECT_RECENT_BY_SNAPSHOT =
       "SELECT * FROM restore_history WHERE snapshot_id = ? ORDER BY created_at DESC limit ?";
-  private static final int DEFAULT_N = 10;
+  private static final int DEFAULT_N = -1;
   private final Connection connection;
   private final PreparedStatement insert;
   private final PreparedStatement update;
@@ -123,6 +123,8 @@ public class RestoreHistory {
   private ResultSet selectRecentByCluster(RestoreStatusListingRequest request) throws SQLException {
     selectRecentByCluster.clearParameters();
     selectRecentByCluster.setString(1, request.getClusterId());
+    int n = request.getN() == 0 ? DEFAULT_N : request.getN();
+    selectRecentByCluster.setInt(2, n);
     ResultSet resultSet = selectRecentByCluster.executeQuery();
     return resultSet;
   }

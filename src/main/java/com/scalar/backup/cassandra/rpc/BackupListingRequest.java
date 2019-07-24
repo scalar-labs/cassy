@@ -60,7 +60,7 @@ private static final long serialVersionUID = 0L;
           }
           case 24: {
 
-            n_ = input.readUInt32();
+            n_ = input.readInt32();
             break;
           }
           case 34: {
@@ -172,7 +172,7 @@ private static final long serialVersionUID = 0L;
   public static final int N_FIELD_NUMBER = 3;
   private int n_;
   /**
-   * <code>uint32 n = 3;</code>
+   * <code>int32 n = 3;</code>
    */
   public int getN() {
     return n_;
@@ -233,7 +233,7 @@ private static final long serialVersionUID = 0L;
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, targetIp_);
     }
     if (n_ != 0) {
-      output.writeUInt32(3, n_);
+      output.writeInt32(3, n_);
     }
     if (!getSnapshotIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 4, snapshotId_);
@@ -255,7 +255,7 @@ private static final long serialVersionUID = 0L;
     }
     if (n_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeUInt32Size(3, n_);
+        .computeInt32Size(3, n_);
     }
     if (!getSnapshotIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, snapshotId_);
@@ -706,13 +706,13 @@ private static final long serialVersionUID = 0L;
 
     private int n_ ;
     /**
-     * <code>uint32 n = 3;</code>
+     * <code>int32 n = 3;</code>
      */
     public int getN() {
       return n_;
     }
     /**
-     * <code>uint32 n = 3;</code>
+     * <code>int32 n = 3;</code>
      */
     public Builder setN(int value) {
       
@@ -721,7 +721,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>uint32 n = 3;</code>
+     * <code>int32 n = 3;</code>
      */
     public Builder clearN() {
       

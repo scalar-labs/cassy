@@ -261,11 +261,11 @@ public class BackupHistoryTest {
   }
 
   @Test
-  public void selectBySnapshotId_SnapshotIdGiven_ShouldReturnSnapshotsProperly()
+  public void selectRecentSnapshots_SnapshotIdGiven_ShouldReturnSnapshotsProperly()
       throws SQLException {
     // Arrange
     BackupListingRequest request =
-        BackupListingRequest.newBuilder().setSnapshotId(SNAPSHOT_ID).build();
+        BackupListingRequest.newBuilder().setSnapshotId(SNAPSHOT_ID).setN(N).build();
     ResultSet resultSet = mock(ResultSet.class);
     when(selectRecentBySnapshot.executeQuery()).thenReturn(resultSet);
     when(resultSet.getString(anyString())).thenReturn("anyString");
@@ -278,13 +278,15 @@ public class BackupHistoryTest {
 
     // Assert
     verify(selectRecentBySnapshot).setString(1, SNAPSHOT_ID);
+    verify(selectRecentBySnapshot).setInt(2, N);
     verify(selectRecentBySnapshot).executeQuery();
     assertThat(records.size()).isEqualTo(N);
   }
 
   @Test
-  public void selectBySnapshotId_SQLExceptionThrown_ShouldThrowDatabaseException()
-      throws SQLException {
+  public void
+      selectRecentSnapshots_SnapshotIdGivenAndSQLExceptionThrown_ShouldThrowDatabaseException()
+          throws SQLException {
     // Arrange
     BackupListingRequest request =
         BackupListingRequest.newBuilder().setSnapshotId(SNAPSHOT_ID).build();

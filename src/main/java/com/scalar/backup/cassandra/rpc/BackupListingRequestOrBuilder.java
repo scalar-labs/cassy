@@ -28,7 +28,7 @@ public interface BackupListingRequestOrBuilder extends
       getTargetIpBytes();
 
   /**
-   * <code>uint32 n = 3;</code>
+   * <code>int32 n = 3;</code>
    */
   int getN();
 

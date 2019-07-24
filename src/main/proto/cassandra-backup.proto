@@ -89,7 +89,7 @@ message NodeListingResponse {
 message BackupListingRequest {
     string cluster_id = 1;
     string target_ip = 2;
-    uint32 n = 3;
+    int32 n = 3;
     string snapshot_id = 4;
 }
 
@@ -145,7 +145,7 @@ message RestoreStatusListingRequest {
     string cluster_id = 1;
     string target_ip = 2; // optional
     string snapshot_id = 3;
-    uint32 n = 4;
+    int32 n = 4;
 }
 
 message RestoreStatusListingResponse {

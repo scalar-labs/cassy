@@ -28,8 +28,8 @@ public class BackupHistory {
       "SELECT * FROM backup_history WHERE cluster_id = ? and target_ip = ? "
           + "ORDER BY created_at DESC limit ?";
   static final String SELECT_RECENT_BY_SNAPSHOT_ID =
-      "SELECT * FROM backup_history WHERE snapshot_id = ? ORDER BY created_at DESC";
-  private static final int DEFAULT_N = 10;
+      "SELECT * FROM backup_history WHERE snapshot_id = ? ORDER BY created_at DESC limit ?";
+  private static final int DEFAULT_N = -1;
   private final Connection connection;
   private final PreparedStatement insert;
   private final PreparedStatement update;
@@ -77,7 +77,7 @@ public class BackupHistory {
       if (!request.getTargetIp().isEmpty() && !request.getClusterId().isEmpty()) {
         resultSet = selectRecentSnapshotsByHost(request);
       } else if (!request.getSnapshotId().isEmpty()) {
-        resultSet = selectBySnapshotId(request.getSnapshotId());
+        resultSet = selectRecentBySnapshotId(request);
       } else if (!request.getClusterId().isEmpty()) {
         resultSet = selectRecentSnapshotsByCluster(request);
       } else {
@@ -120,8 +120,10 @@ public class BackupHistory {
     }
   }
 
-  private ResultSet selectBySnapshotId(String snapshotId) throws SQLException {
-    selectRecentBySnapshot.setString(1, snapshotId);
+  private ResultSet selectRecentBySnapshotId(BackupListingRequest request) throws SQLException {
+    selectRecentBySnapshot.setString(1, request.getSnapshotId());
+    int n = request.getN() == 0 ? DEFAULT_N : request.getN();
+    selectRecentBySnapshot.setInt(2, n);
     ResultSet resultSet = selectRecentBySnapshot.executeQuery();
     return resultSet;
   }

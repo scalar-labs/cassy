@@ -66,7 +66,7 @@ private static final long serialVersionUID = 0L;
           }
           case 32: {
 
-            n_ = input.readUInt32();
+            n_ = input.readInt32();
             break;
           }
           default: {
@@ -214,7 +214,7 @@ private static final long serialVersionUID = 0L;
   public static final int N_FIELD_NUMBER = 4;
   private int n_;
   /**
-   * <code>uint32 n = 4;</code>
+   * <code>int32 n = 4;</code>
    */
   public int getN() {
     return n_;
@@ -244,7 +244,7 @@ private static final long serialVersionUID = 0L;
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, snapshotId_);
     }
     if (n_ != 0) {
-      output.writeUInt32(4, n_);
+      output.writeInt32(4, n_);
     }
     unknownFields.writeTo(output);
   }
@@ -266,7 +266,7 @@ private static final long serialVersionUID = 0L;
     }
     if (n_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeUInt32Size(4, n_);
+        .computeInt32Size(4, n_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -803,13 +803,13 @@ private static final long serialVersionUID = 0L;
 
     private int n_ ;
     /**
-     * <code>uint32 n = 4;</code>
+     * <code>int32 n = 4;</code>
      */
     public int getN() {
       return n_;
     }
     /**
-     * <code>uint32 n = 4;</code>
+     * <code>int32 n = 4;</code>
      */
     public Builder setN(int value) {
       
@@ -818,7 +818,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>uint32 n = 4;</code>
+     * <code>int32 n = 4;</code>
      */
     public Builder clearN() {
       
