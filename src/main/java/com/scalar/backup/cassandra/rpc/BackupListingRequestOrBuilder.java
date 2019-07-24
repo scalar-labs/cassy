@@ -31,4 +31,14 @@ public interface BackupListingRequestOrBuilder extends
    * <code>uint32 n = 3;</code>
    */
   int getN();
+
+  /**
+   * <code>string snapshot_id = 4;</code>
+   */
+  java.lang.String getSnapshotId();
+  /**
+   * <code>string snapshot_id = 4;</code>
+   */
+  com.google.protobuf.ByteString
+      getSnapshotIdBytes();
 }

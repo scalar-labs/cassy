@@ -23,13 +23,13 @@ public class BackupHistory {
       "UPDATE backup_history SET status = ?, updated_at = ? "
           + "WHERE snapshot_id = ? and cluster_id = ? and target_ip = ? and created_at = ?";
   static final String SELECT_RECENT_SNAPSHOTS_BY_CLUSTER =
-      "SELECT * FROM backup_history WHERE cluster_id = ? "
-          + "GROUP BY snapshot_id ORDER BY created_at DESC limit ?";
+      "SELECT * FROM backup_history WHERE cluster_id = ? ORDER BY created_at DESC limit ?";
   static final String SELECT_RECENT_SNAPSHOTS_BY_HOST =
       "SELECT * FROM backup_history WHERE cluster_id = ? and target_ip = ? "
-          + "GROUP BY snapshot_id ORDER BY created_at DESC limit ?";
+          + "ORDER BY created_at DESC limit ?";
   static final String SELECT_BY_SNAPSHOT_ID =
       "SELECT * FROM backup_history WHERE snapshot_id = ? ORDER BY created_at DESC";
+  private static final int DEFAULT_N = 10;
   private final Connection connection;
   private final PreparedStatement insert;
   private final PreparedStatement update;
@@ -74,29 +74,20 @@ public class BackupHistory {
   public List<BackupHistoryRecord> selectRecentSnapshots(BackupListingRequest request) {
     ResultSet resultSet;
     try {
-      if (request.getTargetIp().isEmpty()) {
+      if (!request.getTargetIp().isEmpty() && !request.getClusterId().isEmpty()) {
+        resultSet = selectRecentSnapshotsByHost(request);
+      } else if (!request.getSnapshotId().isEmpty()) {
+        resultSet = selectBySnapshotId(request.getSnapshotId());
+      } else if (!request.getClusterId().isEmpty()) {
         resultSet = selectRecentSnapshotsByCluster(request);
       } else {
-        resultSet = selectRecentSnapshotsByHost(request);
+        throw new IllegalArgumentException("Parameters are not set properly.");
       }
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
 
     return traverseResults(resultSet);
-  }
-
-  public List<BackupHistoryRecord> selectBySnapshotId(String snapshotId) {
-    List<BackupHistoryRecord> records;
-    try {
-      selectBySnapshot.setString(1, snapshotId);
-      ResultSet resultSet = selectBySnapshot.executeQuery();
-      records = traverseResults(resultSet);
-      selectBySnapshot.clearParameters();
-    } catch (SQLException e) {
-      throw new DatabaseException(e);
-    }
-    return records;
   }
 
   private void insertImpl(BackupKey backupKey, BackupType type, OperationStatus status)
@@ -129,11 +120,18 @@ public class BackupHistory {
     }
   }
 
+  private ResultSet selectBySnapshotId(String snapshotId) throws SQLException {
+    selectBySnapshot.setString(1, snapshotId);
+    ResultSet resultSet = selectBySnapshot.executeQuery();
+    return resultSet;
+  }
+
   private ResultSet selectRecentSnapshotsByCluster(BackupListingRequest request)
       throws SQLException {
     selectRecentByCluster.clearParameters();
     selectRecentByCluster.setString(1, request.getClusterId());
-    selectRecentByCluster.setInt(2, request.getN());
+    int n = request.getN() == 0 ? DEFAULT_N : request.getN();
+    selectRecentByCluster.setInt(2, n);
     ResultSet resultSet = selectRecentByCluster.executeQuery();
     return resultSet;
   }
@@ -142,7 +140,8 @@ public class BackupHistory {
     selectRecentByHost.clearParameters();
     selectRecentByHost.setString(1, request.getClusterId());
     selectRecentByHost.setString(2, request.getTargetIp());
-    selectRecentByHost.setInt(3, request.getN());
+    int n = request.getN() == 0 ? DEFAULT_N : request.getN();
+    selectRecentByHost.setInt(3, n);
     ResultSet resultSet = selectRecentByHost.executeQuery();
     return resultSet;
   }

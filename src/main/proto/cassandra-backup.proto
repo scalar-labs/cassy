@@ -90,6 +90,7 @@ message BackupListingRequest {
     string cluster_id = 1;
     string target_ip = 2;
     uint32 n = 3;
+    string snapshot_id = 4;
 }
 
 message BackupListingResponse {
