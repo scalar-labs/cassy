@@ -19,6 +19,7 @@ private static final long serialVersionUID = 0L;
     clusterId_ = "";
     targetIp_ = "";
     n_ = 0;
+    snapshotId_ = "";
   }
 
   @java.lang.Override
@@ -59,7 +60,13 @@ private static final long serialVersionUID = 0L;
           }
           case 24: {
 
-            n_ = input.readUInt32();
+            n_ = input.readInt32();
+            break;
+          }
+          case 34: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            snapshotId_ = s;
             break;
           }
           default: {
@@ -165,10 +172,44 @@ private static final long serialVersionUID = 0L;
   public static final int N_FIELD_NUMBER = 3;
   private int n_;
   /**
-   * <code>uint32 n = 3;</code>
+   * <code>int32 n = 3;</code>
    */
   public int getN() {
     return n_;
+  }
+
+  public static final int SNAPSHOT_ID_FIELD_NUMBER = 4;
+  private volatile java.lang.Object snapshotId_;
+  /**
+   * <code>string snapshot_id = 4;</code>
+   */
+  public java.lang.String getSnapshotId() {
+    java.lang.Object ref = snapshotId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      snapshotId_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string snapshot_id = 4;</code>
+   */
+  public com.google.protobuf.ByteString
+      getSnapshotIdBytes() {
+    java.lang.Object ref = snapshotId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      snapshotId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   private byte memoizedIsInitialized = -1;
@@ -192,7 +233,10 @@ private static final long serialVersionUID = 0L;
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, targetIp_);
     }
     if (n_ != 0) {
-      output.writeUInt32(3, n_);
+      output.writeInt32(3, n_);
+    }
+    if (!getSnapshotIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, snapshotId_);
     }
     unknownFields.writeTo(output);
   }
@@ -211,7 +255,10 @@ private static final long serialVersionUID = 0L;
     }
     if (n_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeUInt32Size(3, n_);
+        .computeInt32Size(3, n_);
+    }
+    if (!getSnapshotIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, snapshotId_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -235,6 +282,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getTargetIp());
     result = result && (getN()
         == other.getN());
+    result = result && getSnapshotId()
+        .equals(other.getSnapshotId());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -252,6 +301,8 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getTargetIp().hashCode();
     hash = (37 * hash) + N_FIELD_NUMBER;
     hash = (53 * hash) + getN();
+    hash = (37 * hash) + SNAPSHOT_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getSnapshotId().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -391,6 +442,8 @@ private static final long serialVersionUID = 0L;
 
       n_ = 0;
 
+      snapshotId_ = "";
+
       return this;
     }
 
@@ -420,6 +473,7 @@ private static final long serialVersionUID = 0L;
       result.clusterId_ = clusterId_;
       result.targetIp_ = targetIp_;
       result.n_ = n_;
+      result.snapshotId_ = snapshotId_;
       onBuilt();
       return result;
     }
@@ -478,6 +532,10 @@ private static final long serialVersionUID = 0L;
       }
       if (other.getN() != 0) {
         setN(other.getN());
+      }
+      if (!other.getSnapshotId().isEmpty()) {
+        snapshotId_ = other.snapshotId_;
+        onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -648,13 +706,13 @@ private static final long serialVersionUID = 0L;
 
     private int n_ ;
     /**
-     * <code>uint32 n = 3;</code>
+     * <code>int32 n = 3;</code>
      */
     public int getN() {
       return n_;
     }
     /**
-     * <code>uint32 n = 3;</code>
+     * <code>int32 n = 3;</code>
      */
     public Builder setN(int value) {
       
@@ -663,11 +721,80 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>uint32 n = 3;</code>
+     * <code>int32 n = 3;</code>
      */
     public Builder clearN() {
       
       n_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object snapshotId_ = "";
+    /**
+     * <code>string snapshot_id = 4;</code>
+     */
+    public java.lang.String getSnapshotId() {
+      java.lang.Object ref = snapshotId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        snapshotId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string snapshot_id = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSnapshotIdBytes() {
+      java.lang.Object ref = snapshotId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        snapshotId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string snapshot_id = 4;</code>
+     */
+    public Builder setSnapshotId(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      snapshotId_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string snapshot_id = 4;</code>
+     */
+    public Builder clearSnapshotId() {
+      
+      snapshotId_ = getDefaultInstance().getSnapshotId();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string snapshot_id = 4;</code>
+     */
+    public Builder setSnapshotIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      snapshotId_ = value;
       onChanged();
       return this;
     }
