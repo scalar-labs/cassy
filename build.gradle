@@ -50,7 +50,7 @@ dependencies {
     compile group: 'com.google.inject', name: 'guice', version: '4.2.2'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.560'
-    compile group: 'info.picocli', name: 'picocli', version: '3.9.6'
+    compile group: 'info.picocli', name: 'picocli', version: '4.0.1'
     compile group: 'com.google.api.grpc', name: 'proto-google-common-protos', version: '1.0.0'
     compile group: 'com.google.api.grpc', name: 'googleapis-common-protos', version: '0.0.3'
     compile group: 'io.grpc', name: 'grpc-alts', version: "${grpcVersion}"

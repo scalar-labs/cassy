@@ -123,9 +123,11 @@ message BackupRequest {
 
 message BackupResponse {
     OperationStatus status = 1;
-    string message = 2;
-    string snapshot_id = 3;
-    uint64 created_at = 4;
+    string cluster_id = 2;
+    repeated string target_ips = 3;
+    string snapshot_id = 4;
+    uint64 created_at = 5;
+    uint32 backup_type = 6;
 }
 
 message RestoreRequest {
@@ -138,7 +140,11 @@ message RestoreRequest {
 
 message RestoreResponse {
     OperationStatus status = 1;
-    string message = 2;
+    string cluster_id = 2;
+    repeated string target_ips = 3;
+    string snapshot_id = 4;
+    uint32 restore_type = 5;
+    bool snapshot_only = 6;
 }
 
 message RestoreStatusListingRequest {
