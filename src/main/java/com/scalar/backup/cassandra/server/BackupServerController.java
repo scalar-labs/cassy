@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.stream.Collectors;
 import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -255,12 +256,17 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
       updateBackupStatus(backupKeys, type, OperationStatus.STARTED);
       futureQueue.addAll(futures);
     } catch (Exception e) {
-      builder.setMessage(e.getMessage());
       builder.setStatus(OperationStatus.FAILED);
       updateBackupStatus(backupKeys, type, OperationStatus.FAILED);
     }
 
-    builder.setStatus(OperationStatus.STARTED);
+    builder
+        .setStatus(OperationStatus.STARTED)
+        .setClusterId(backupKeys.get(0).getClusterId())
+        .addAllTargetIps(backupKeys.stream().map(k -> k.getTargetIp()).collect(Collectors.toList()))
+        .setSnapshotId(snapshotId)
+        .setCreatedAt(backupKeys.get(0).getCreatedAt())
+        .setBackupType(type.get());
     responseObserver.onNext(builder.build());
     responseObserver.onCompleted();
   }
@@ -291,12 +297,17 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
       updateRestoreStatus(backupKeys, type, OperationStatus.STARTED);
       futureQueue.addAll(futures);
     } catch (Exception e) {
-      builder.setMessage(e.getMessage());
       builder.setStatus(OperationStatus.FAILED);
       updateRestoreStatus(backupKeys, type, OperationStatus.FAILED);
     }
 
-    builder.setStatus(OperationStatus.STARTED);
+    builder
+        .setStatus(OperationStatus.STARTED)
+        .setClusterId(backupKeys.get(0).getClusterId())
+        .addAllTargetIps(backupKeys.stream().map(k -> k.getTargetIp()).collect(Collectors.toList()))
+        .setSnapshotId(request.getSnapshotId())
+        .setRestoreType(type.get())
+        .setSnapshotOnly(request.getSnapshotOnly());
     responseObserver.onNext(builder.build());
     responseObserver.onCompleted();
   }

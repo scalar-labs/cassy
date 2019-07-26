@@ -17,12 +17,51 @@ public interface RestoreResponseOrBuilder extends
   com.scalar.backup.cassandra.rpc.OperationStatus getStatus();
 
   /**
-   * <code>string message = 2;</code>
+   * <code>string cluster_id = 2;</code>
    */
-  java.lang.String getMessage();
+  java.lang.String getClusterId();
   /**
-   * <code>string message = 2;</code>
+   * <code>string cluster_id = 2;</code>
    */
   com.google.protobuf.ByteString
-      getMessageBytes();
+      getClusterIdBytes();
+
+  /**
+   * <code>repeated string target_ips = 3;</code>
+   */
+  java.util.List<java.lang.String>
+      getTargetIpsList();
+  /**
+   * <code>repeated string target_ips = 3;</code>
+   */
+  int getTargetIpsCount();
+  /**
+   * <code>repeated string target_ips = 3;</code>
+   */
+  java.lang.String getTargetIps(int index);
+  /**
+   * <code>repeated string target_ips = 3;</code>
+   */
+  com.google.protobuf.ByteString
+      getTargetIpsBytes(int index);
+
+  /**
+   * <code>string snapshot_id = 4;</code>
+   */
+  java.lang.String getSnapshotId();
+  /**
+   * <code>string snapshot_id = 4;</code>
+   */
+  com.google.protobuf.ByteString
+      getSnapshotIdBytes();
+
+  /**
+   * <code>uint32 restore_type = 5;</code>
+   */
+  int getRestoreType();
+
+  /**
+   * <code>bool snapshot_only = 6;</code>
+   */
+  boolean getSnapshotOnly();
 }
