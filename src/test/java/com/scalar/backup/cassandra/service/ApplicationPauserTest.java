@@ -47,11 +47,11 @@ public class ApplicationPauserTest {
     // Arrange
     List<SRVRecord> records = prepareSrvRecords();
     doReturn(records).when(pauser).getApplicationIps(SRV_SERVICE_URL);
-    ApplicationClient client1 = mock(ApplicationClient.class);
+    ApplicationPauseClient client1 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP1, PORT)).thenReturn(client1);
-    ApplicationClient client2 = mock(ApplicationClient.class);
+    ApplicationPauseClient client2 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP2, PORT)).thenReturn(client2);
-    ApplicationClient client3 = mock(ApplicationClient.class);
+    ApplicationPauseClient client3 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP3, PORT)).thenReturn(client3);
 
     // Act
@@ -71,13 +71,13 @@ public class ApplicationPauserTest {
     // Arrange
     List<SRVRecord> records = prepareSrvRecords();
     doReturn(records).when(pauser).getApplicationIps(SRV_SERVICE_URL);
-    ApplicationClient client1 = mock(ApplicationClient.class);
+    ApplicationPauseClient client1 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP1, PORT)).thenReturn(client1);
     RuntimeException toThrow = mock(RuntimeException.class);
     doThrow(toThrow).when(client1).pause();
-    ApplicationClient client2 = mock(ApplicationClient.class);
+    ApplicationPauseClient client2 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP2, PORT)).thenReturn(client2);
-    ApplicationClient client3 = mock(ApplicationClient.class);
+    ApplicationPauseClient client3 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP3, PORT)).thenReturn(client3);
 
     // Act Assert
@@ -91,11 +91,11 @@ public class ApplicationPauserTest {
     // Arrange
     List<SRVRecord> records = prepareSrvRecords();
     doReturn(records).when(pauser).getApplicationIps(SRV_SERVICE_URL);
-    ApplicationClient client1 = mock(ApplicationClient.class);
+    ApplicationPauseClient client1 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP1, PORT)).thenReturn(client1);
-    ApplicationClient client2 = mock(ApplicationClient.class);
+    ApplicationPauseClient client2 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP2, PORT)).thenReturn(client2);
-    ApplicationClient client3 = mock(ApplicationClient.class);
+    ApplicationPauseClient client3 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP3, PORT)).thenReturn(client3);
 
     // Act
@@ -115,13 +115,13 @@ public class ApplicationPauserTest {
     // Arrange
     List<SRVRecord> records = prepareSrvRecords();
     doReturn(records).when(pauser).getApplicationIps(SRV_SERVICE_URL);
-    ApplicationClient client1 = mock(ApplicationClient.class);
+    ApplicationPauseClient client1 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP1, PORT)).thenReturn(client1);
     RuntimeException toThrow = mock(RuntimeException.class);
     doThrow(toThrow).when(client1).unpause();
-    ApplicationClient client2 = mock(ApplicationClient.class);
+    ApplicationPauseClient client2 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP2, PORT)).thenReturn(client2);
-    ApplicationClient client3 = mock(ApplicationClient.class);
+    ApplicationPauseClient client3 = mock(ApplicationPauseClient.class);
     when(pauser.getClient(APP_IP3, PORT)).thenReturn(client3);
 
     // Act Assert

@@ -7,20 +7,18 @@ import com.scalar.backup.cassandra.rpc.PauseRequest;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GrpcApplicationClient implements ApplicationClient {
-  private static final Logger logger = LoggerFactory.getLogger(GrpcApplicationClient.class);
+@Immutable
+public class GrpcApplicationPauseClient implements ApplicationPauseClient {
+  private static final Logger logger = LoggerFactory.getLogger(GrpcApplicationPauseClient.class);
   private final ManagedChannel channel;
   private final AdminGrpc.AdminBlockingStub blockingStub;
 
-  public GrpcApplicationClient(String host, int port) {
-    this(ManagedChannelBuilder.forAddress(host, port).usePlaintext().build());
-  }
-
-  GrpcApplicationClient(ManagedChannel channel) {
-    this.channel = channel;
+  public GrpcApplicationPauseClient(String host, int port) {
+    this.channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
     this.blockingStub = AdminGrpc.newBlockingStub(channel);
   }
 

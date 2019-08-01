@@ -1,6 +1,6 @@
 package com.scalar.backup.cassandra.service;
 
-public interface ApplicationClient extends AutoCloseable {
+public interface ApplicationPauseClient extends AutoCloseable {
 
   void pause();
 

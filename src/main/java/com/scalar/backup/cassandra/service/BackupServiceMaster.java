@@ -47,13 +47,13 @@ public class BackupServiceMaster extends AbstractServiceMaster {
 
   private List<RemoteCommandContext> takeClusterSnapshots(
       List<BackupKey> backupKeys, BackupType type) {
-    // 1. pause Cassandra applications
+    // 1. pause C* applications
     pauser.pause();
 
-    // 2. take snapshots of all the nodes in a cluster
+    // 2. take snapshots of all the nodes in a C* cluster
     takeNodesSnapshots(backupKeys, type);
 
-    // 3. unpause Cassandra applications
+    // 3. unpause C* applications
     pauser.unpause();
 
     // 4. copy snapshots in parallel

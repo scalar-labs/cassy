@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.Lookup;
@@ -19,6 +20,7 @@ import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
+@Immutable
 public class ApplicationPauser {
   private static final Logger logger = LoggerFactory.getLogger(ApplicationPauser.class);
   private final String srvServiceUrl;
@@ -35,7 +37,7 @@ public class ApplicationPauser {
     run(client -> client.unpause());
   }
 
-  private void run(Consumer<ApplicationClient> consumer) {
+  private void run(Consumer<ApplicationPauseClient> consumer) {
     // Assume that the list of addresses for unpause is the same as the one for pause.
     List<SRVRecord> records = getApplicationIps(srvServiceUrl);
 
@@ -46,7 +48,7 @@ public class ApplicationPauser {
           // use Callable to propagate exceptions
           Callable<String> task =
               () -> {
-                try (ApplicationClient client =
+                try (ApplicationPauseClient client =
                     getClient(record.getTarget().toString(true), record.getPort())) {
                   consumer.accept(client);
                 } catch (Exception e) {
@@ -94,7 +96,7 @@ public class ApplicationPauser {
   }
 
   @VisibleForTesting
-  ApplicationClient getClient(String host, int port) {
-    return new GrpcApplicationClient(host, port);
+  ApplicationPauseClient getClient(String host, int port) {
+    return new GrpcApplicationPauseClient(host, port);
   }
 }
