@@ -26,6 +26,7 @@ import com.scalar.backup.cassandra.rpc.RestoreRequest;
 import com.scalar.backup.cassandra.rpc.RestoreResponse;
 import com.scalar.backup.cassandra.rpc.RestoreStatusListingRequest;
 import com.scalar.backup.cassandra.rpc.RestoreStatusListingResponse;
+import com.scalar.backup.cassandra.service.ApplicationPauser;
 import com.scalar.backup.cassandra.service.BackupKey;
 import com.scalar.backup.cassandra.service.BackupServiceMaster;
 import com.scalar.backup.cassandra.service.RestoreServiceMaster;
@@ -251,7 +252,11 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     try {
       updateBackupStatus(backupKeys, type, OperationStatus.INITIALIZED);
       BackupServiceMaster master =
-          new BackupServiceMaster(config, clusterInfo.get(), new RemoteCommandExecutor());
+          new BackupServiceMaster(
+              config,
+              clusterInfo.get(),
+              new RemoteCommandExecutor(),
+              new ApplicationPauser(config.getSrvServiceUrl()));
       List<RemoteCommandContext> futures = master.takeBackup(backupKeys, type);
       updateBackupStatus(backupKeys, type, OperationStatus.STARTED);
       futureQueue.addAll(futures);
