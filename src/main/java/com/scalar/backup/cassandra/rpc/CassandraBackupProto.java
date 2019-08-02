@@ -94,6 +94,16 @@ public final class CassandraBackupProto {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_rpc_RestoreStatusListingResponse_Entry_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_rpc_PauseRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_rpc_PauseRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_rpc_StatsResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_rpc_StatsResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -149,31 +159,37 @@ public final class CassandraBackupProto {
       "et_ip\030\001 \001(\t\022\023\n\013snapshot_id\030\002 \001(\t\022\022\n\ncrea" +
       "ted_at\030\003 \001(\004\022\022\n\nupdated_at\030\004 \001(\004\022\024\n\014rest" +
       "ore_type\030\005 \001(\r\022$\n\006status\030\006 \001(\0162\024.rpc.Ope" +
-      "rationStatus*W\n\017OperationStatus\022\013\n\007UNKNO" +
-      "WN\020\000\022\017\n\013INITIALIZED\020\001\022\013\n\007STARTED\020\002\022\r\n\tCO" +
-      "MPLETED\020\003\022\n\n\006FAILED\020\0042\234\006\n\017CassandraBacku" +
-      "p\022m\n\017registerCluster\022\037.rpc.ClusterRegist" +
-      "rationRequest\032 .rpc.ClusterRegistrationR" +
-      "esponse\"\027\202\323\344\223\002\021\"\014/v1/clusters:\001*\022Y\n\014Show" +
-      "Clusters\022\026.google.protobuf.Empty\032\033.rpc.C" +
-      "lusterListingResponse\"\024\202\323\344\223\002\016\022\014/v1/clust" +
-      "ers\022a\n\tListNodes\022\027.rpc.NodeListingReques" +
-      "t\032\030.rpc.NodeListingResponse\"!\202\323\344\223\002\033\022\031/v1" +
-      "/clusters/{cluster_id}\022o\n\013ListBackups\022\031." +
-      "rpc.BackupListingRequest\032\032.rpc.BackupLis" +
-      "tingResponse\")\202\323\344\223\002#\022!/v1/clusters/{clus" +
-      "ter_id}/backups\022c\n\nTakeBackup\022\022.rpc.Back" +
-      "upRequest\032\023.rpc.BackupResponse\",\202\323\344\223\002&\"!" +
-      "/v1/clusters/{cluster_id}/backups:\001*\022s\n\r" +
-      "RestoreBackup\022\023.rpc.RestoreRequest\032\024.rpc" +
-      ".RestoreResponse\"7\202\323\344\223\0021\032,/v1/clusters/{" +
-      "cluster_id}/data/{snapshot_id}:\001*\022\220\001\n\023Li" +
-      "stRestoreStatuses\022 .rpc.RestoreStatusLis" +
-      "tingRequest\032!.rpc.RestoreStatusListingRe" +
-      "sponse\"4\202\323\344\223\002.\022,/v1/clusters/{cluster_id" +
-      "}/data/{snapshot_id}B9\n\037com.scalar.backu" +
-      "p.cassandra.rpcB\024CassandraBackupProtoP\001b" +
-      "\006proto3"
+      "rationStatus\"(\n\014PauseRequest\022\030\n\020wait_out" +
+      "standing\030\001 \001(\010\"\036\n\rStatsResponse\022\r\n\005stats" +
+      "\030\001 \001(\t*W\n\017OperationStatus\022\013\n\007UNKNOWN\020\000\022\017" +
+      "\n\013INITIALIZED\020\001\022\013\n\007STARTED\020\002\022\r\n\tCOMPLETE" +
+      "D\020\003\022\n\n\006FAILED\020\0042\234\006\n\017CassandraBackup\022m\n\017r" +
+      "egisterCluster\022\037.rpc.ClusterRegistration" +
+      "Request\032 .rpc.ClusterRegistrationRespons" +
+      "e\"\027\202\323\344\223\002\021\"\014/v1/clusters:\001*\022Y\n\014ShowCluste" +
+      "rs\022\026.google.protobuf.Empty\032\033.rpc.Cluster" +
+      "ListingResponse\"\024\202\323\344\223\002\016\022\014/v1/clusters\022a\n" +
+      "\tListNodes\022\027.rpc.NodeListingRequest\032\030.rp" +
+      "c.NodeListingResponse\"!\202\323\344\223\002\033\022\031/v1/clust" +
+      "ers/{cluster_id}\022o\n\013ListBackups\022\031.rpc.Ba" +
+      "ckupListingRequest\032\032.rpc.BackupListingRe" +
+      "sponse\")\202\323\344\223\002#\022!/v1/clusters/{cluster_id" +
+      "}/backups\022c\n\nTakeBackup\022\022.rpc.BackupRequ" +
+      "est\032\023.rpc.BackupResponse\",\202\323\344\223\002&\"!/v1/cl" +
+      "usters/{cluster_id}/backups:\001*\022s\n\rRestor" +
+      "eBackup\022\023.rpc.RestoreRequest\032\024.rpc.Resto" +
+      "reResponse\"7\202\323\344\223\0021\032,/v1/clusters/{cluste" +
+      "r_id}/data/{snapshot_id}:\001*\022\220\001\n\023ListRest" +
+      "oreStatuses\022 .rpc.RestoreStatusListingRe" +
+      "quest\032!.rpc.RestoreStatusListingResponse" +
+      "\"4\202\323\344\223\002.\022,/v1/clusters/{cluster_id}/data" +
+      "/{snapshot_id}2\261\001\n\005Admin\0224\n\005Pause\022\021.rpc." +
+      "PauseRequest\032\026.google.protobuf.Empty\"\000\022;" +
+      "\n\007Unpause\022\026.google.protobuf.Empty\032\026.goog" +
+      "le.protobuf.Empty\"\000\0225\n\005Stats\022\026.google.pr" +
+      "otobuf.Empty\032\022.rpc.StatsResponse\"\000B9\n\037co" +
+      "m.scalar.backup.cassandra.rpcB\024Cassandra" +
+      "BackupProtoP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -285,6 +301,18 @@ public final class CassandraBackupProto {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_rpc_RestoreStatusListingResponse_Entry_descriptor,
         new java.lang.String[] { "TargetIp", "SnapshotId", "CreatedAt", "UpdatedAt", "RestoreType", "Status", });
+    internal_static_rpc_PauseRequest_descriptor =
+      getDescriptor().getMessageTypes().get(13);
+    internal_static_rpc_PauseRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_rpc_PauseRequest_descriptor,
+        new java.lang.String[] { "WaitOutstanding", });
+    internal_static_rpc_StatsResponse_descriptor =
+      getDescriptor().getMessageTypes().get(14);
+    internal_static_rpc_StatsResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_rpc_StatsResponse_descriptor,
+        new java.lang.String[] { "Stats", });
     com.google.protobuf.ExtensionRegistry registry =
         com.google.protobuf.ExtensionRegistry.newInstance();
     registry.add(com.google.api.AnnotationsProto.http);

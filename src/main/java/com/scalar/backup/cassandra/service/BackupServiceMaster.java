@@ -22,10 +22,15 @@ public class BackupServiceMaster extends AbstractServiceMaster {
   private static final Logger logger = LoggerFactory.getLogger(BackupServiceMaster.class.getName());
   private static final String BACKUP_TYPE_OPTION = "--backup-type=";
   public static final String BACKUP_COMMAND = "cassandra-backup";
+  private ApplicationPauser pauser;
 
   public BackupServiceMaster(
-      BackupServerConfig config, ClusterInfoRecord clusterInfo, RemoteCommandExecutor executor) {
+      BackupServerConfig config,
+      ClusterInfoRecord clusterInfo,
+      RemoteCommandExecutor executor,
+      ApplicationPauser pauser) {
     super(config, clusterInfo, executor);
+    this.pauser = pauser;
   }
 
   public List<RemoteCommandContext> takeBackup(List<BackupKey> backupKeys, BackupType type) {
@@ -42,12 +47,14 @@ public class BackupServiceMaster extends AbstractServiceMaster {
 
   private List<RemoteCommandContext> takeClusterSnapshots(
       List<BackupKey> backupKeys, BackupType type) {
-    // 1. TODO: stop DLs (coming in a later PR)
+    // 1. pause C* applications
+    pauser.pause();
 
-    // 2. take snapshots of all the nodes
+    // 2. take snapshots of all the nodes in a C* cluster
     takeNodesSnapshots(backupKeys, type);
 
-    // 3. TODO: start DLs (coming in a later PR)
+    // 3. unpause C* applications
+    pauser.unpause();
 
     // 4. copy snapshots in parallel
     return uploadNodesBackups(backupKeys, type);

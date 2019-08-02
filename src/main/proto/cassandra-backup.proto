@@ -167,3 +167,19 @@ message RestoreStatusListingResponse {
     repeated Entry entries = 3;
 }
 
+service Admin {
+    rpc Pause (PauseRequest) returns (google.protobuf.Empty) {
+    }
+    rpc Unpause (google.protobuf.Empty) returns (google.protobuf.Empty) {
+    }
+    rpc Stats (google.protobuf.Empty) returns (StatsResponse) {
+    }
+}
+
+message PauseRequest {
+    bool wait_outstanding = 1;
+}
+
+message StatsResponse {
+    string stats = 1; // json-formatted
+}

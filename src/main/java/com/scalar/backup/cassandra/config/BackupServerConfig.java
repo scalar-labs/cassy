@@ -22,6 +22,7 @@ public class BackupServerConfig {
   public static final String SLAVE_COMMAND_PATH = PREFIX + "slave_command_path";
   public static final String STORAGE_BASE_URI = PREFIX + "storage_base_uri";
   public static final String DB_URL = PREFIX + "db_url";
+  public static final String SRV_SERVICE_URL = PREFIX + "srv_service_url";
   private int port = 20051;
   private int jmxPort = 7199;
   private String userName;
@@ -31,6 +32,7 @@ public class BackupServerConfig {
   private String slaveCommandPath;
   private String storageBaseUri;
   private String dbUrl;
+  private String srvServiceUrl;
 
   public BackupServerConfig(File propertiesFile) throws IOException {
     this(new FileInputStream(propertiesFile));
@@ -87,6 +89,10 @@ public class BackupServerConfig {
     return dbUrl;
   }
 
+  public String getSrvServiceUrl() {
+    return srvServiceUrl;
+  }
+
   private void load() {
     if (props.getProperty(PORT) != null) {
       port = Integer.parseInt(props.getProperty(PORT));
@@ -108,5 +114,7 @@ public class BackupServerConfig {
     storageBaseUri = props.getProperty(STORAGE_BASE_URI);
     checkArgument(props.getProperty(DB_URL) != null);
     dbUrl = props.getProperty(DB_URL);
+    checkArgument(props.getProperty(SRV_SERVICE_URL) != null);
+    srvServiceUrl = props.getProperty(SRV_SERVICE_URL);
   }
 }

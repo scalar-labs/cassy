@@ -3,6 +3,7 @@ package com.scalar.backup.cassandra.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -42,6 +43,7 @@ public class BackupServiceMasterTest {
   @Mock private BackupServerConfig config;
   @Mock private ClusterInfoRecord clusterInfo;
   @Mock private RemoteCommandExecutor executor;
+  @Mock private ApplicationPauser pauser;
   @Spy @InjectMocks private BackupServiceMaster master;
 
   @Before
@@ -75,6 +77,8 @@ public class BackupServiceMasterTest {
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
         .uploadNodeBackups(any(BackupKey.class), any(BackupType.class));
+    doNothing().when(pauser).pause();
+    doNothing().when(pauser).unpause();
 
     // Act
     master.takeBackup(keys, BackupType.CLUSTER_SNAPSHOT);
