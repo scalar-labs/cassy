@@ -20,7 +20,8 @@ public class BackupCommand extends AbstractCommand {
   private int backupType;
 
   public static void main(String[] args) {
-    CommandLine.call(new BackupCommand(), args);
+    int exitCode = new CommandLine(new BackupCommand()).execute(args);
+    System.exit(exitCode);
   }
 
   @Override

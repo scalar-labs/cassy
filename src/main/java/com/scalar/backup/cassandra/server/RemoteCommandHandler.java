@@ -34,11 +34,11 @@ public class RemoteCommandHandler implements Runnable {
           throw new RemoteExecutionException(
               future.getCommand().getCommand() + " failed for some reason");
         }
-        updateStatus(future);
+        updateStatus(future, OperationStatus.COMPLETED);
       } catch (Exception e) {
         logger.warn(e.getMessage(), e);
         if (future != null) {
-          updateStatus(future);
+          updateStatus(future, OperationStatus.FAILED);
         }
       } finally {
         if (future != null) {
@@ -52,11 +52,11 @@ public class RemoteCommandHandler implements Runnable {
     }
   }
 
-  private void updateStatus(RemoteCommandContext future) {
+  private void updateStatus(RemoteCommandContext future, OperationStatus status) {
     if (future.getCommand().getName().equals(BackupServiceMaster.BACKUP_COMMAND)) {
-      database.getBackupHistory().update(future.getBackupKey(), OperationStatus.COMPLETED);
+      database.getBackupHistory().update(future.getBackupKey(), status);
     } else {
-      database.getRestoreHistory().update(future.getBackupKey(), OperationStatus.COMPLETED);
+      database.getRestoreHistory().update(future.getBackupKey(), status);
     }
   }
 }
