@@ -3,8 +3,8 @@
 
 package com.scalar.backup.cassandra.rpc;
 
-public interface NodeListingRequestOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:rpc.NodeListingRequest)
+public interface ClusterListingRequestOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:rpc.ClusterListingRequest)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -16,4 +16,9 @@ public interface NodeListingRequestOrBuilder extends
    */
   com.google.protobuf.ByteString
       getClusterIdBytes();
+
+  /**
+   * <code>int32 limit = 2;</code>
+   */
+  int getLimit();
 }

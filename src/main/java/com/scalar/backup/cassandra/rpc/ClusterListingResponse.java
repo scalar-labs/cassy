@@ -16,7 +16,7 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private ClusterListingResponse() {
-    clusterId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    entries_ = java.util.Collections.emptyList();
   }
 
   @java.lang.Override
@@ -44,12 +44,12 @@ private static final long serialVersionUID = 0L;
             done = true;
             break;
           case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
             if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-              clusterId_ = new com.google.protobuf.LazyStringArrayList();
+              entries_ = new java.util.ArrayList<com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry>();
               mutable_bitField0_ |= 0x00000001;
             }
-            clusterId_.add(s);
+            entries_.add(
+                input.readMessage(com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.parser(), extensionRegistry));
             break;
           }
           default: {
@@ -68,7 +68,7 @@ private static final long serialVersionUID = 0L;
           e).setUnfinishedMessage(this);
     } finally {
       if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-        clusterId_ = clusterId_.getUnmodifiableView();
+        entries_ = java.util.Collections.unmodifiableList(entries_);
       }
       this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
@@ -87,33 +87,1237 @@ private static final long serialVersionUID = 0L;
             com.scalar.backup.cassandra.rpc.ClusterListingResponse.class, com.scalar.backup.cassandra.rpc.ClusterListingResponse.Builder.class);
   }
 
-  public static final int CLUSTER_ID_FIELD_NUMBER = 1;
-  private com.google.protobuf.LazyStringList clusterId_;
-  /**
-   * <code>repeated string cluster_id = 1;</code>
-   */
-  public com.google.protobuf.ProtocolStringList
-      getClusterIdList() {
-    return clusterId_;
+  public interface EntryOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:rpc.ClusterListingResponse.Entry)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string cluster_id = 1;</code>
+     */
+    java.lang.String getClusterId();
+    /**
+     * <code>string cluster_id = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getClusterIdBytes();
+
+    /**
+     * <code>repeated string target_ips = 2;</code>
+     */
+    java.util.List<java.lang.String>
+        getTargetIpsList();
+    /**
+     * <code>repeated string target_ips = 2;</code>
+     */
+    int getTargetIpsCount();
+    /**
+     * <code>repeated string target_ips = 2;</code>
+     */
+    java.lang.String getTargetIps(int index);
+    /**
+     * <code>repeated string target_ips = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getTargetIpsBytes(int index);
+
+    /**
+     * <code>repeated string keyspaces = 3;</code>
+     */
+    java.util.List<java.lang.String>
+        getKeyspacesList();
+    /**
+     * <code>repeated string keyspaces = 3;</code>
+     */
+    int getKeyspacesCount();
+    /**
+     * <code>repeated string keyspaces = 3;</code>
+     */
+    java.lang.String getKeyspaces(int index);
+    /**
+     * <code>repeated string keyspaces = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getKeyspacesBytes(int index);
+
+    /**
+     * <code>string data_dir = 4;</code>
+     */
+    java.lang.String getDataDir();
+    /**
+     * <code>string data_dir = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getDataDirBytes();
+
+    /**
+     * <code>uint64 created_at = 5;</code>
+     */
+    long getCreatedAt();
+
+    /**
+     * <code>uint64 updated_at = 6;</code>
+     */
+    long getUpdatedAt();
   }
   /**
-   * <code>repeated string cluster_id = 1;</code>
+   * Protobuf type {@code rpc.ClusterListingResponse.Entry}
    */
-  public int getClusterIdCount() {
-    return clusterId_.size();
+  public  static final class Entry extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:rpc.ClusterListingResponse.Entry)
+      EntryOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Entry.newBuilder() to construct.
+    private Entry(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Entry() {
+      clusterId_ = "";
+      targetIps_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      dataDir_ = "";
+      createdAt_ = 0L;
+      updatedAt_ = 0L;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Entry(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              clusterId_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                targetIps_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              targetIps_.add(s);
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                keyspaces_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              keyspaces_.add(s);
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              dataDir_ = s;
+              break;
+            }
+            case 40: {
+
+              createdAt_ = input.readUInt64();
+              break;
+            }
+            case 48: {
+
+              updatedAt_ = input.readUInt64();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          targetIps_ = targetIps_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          keyspaces_ = keyspaces_.getUnmodifiableView();
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_ClusterListingResponse_Entry_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_ClusterListingResponse_Entry_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.class, com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int CLUSTER_ID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object clusterId_;
+    /**
+     * <code>string cluster_id = 1;</code>
+     */
+    public java.lang.String getClusterId() {
+      java.lang.Object ref = clusterId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        clusterId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string cluster_id = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getClusterIdBytes() {
+      java.lang.Object ref = clusterId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        clusterId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TARGET_IPS_FIELD_NUMBER = 2;
+    private com.google.protobuf.LazyStringList targetIps_;
+    /**
+     * <code>repeated string target_ips = 2;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getTargetIpsList() {
+      return targetIps_;
+    }
+    /**
+     * <code>repeated string target_ips = 2;</code>
+     */
+    public int getTargetIpsCount() {
+      return targetIps_.size();
+    }
+    /**
+     * <code>repeated string target_ips = 2;</code>
+     */
+    public java.lang.String getTargetIps(int index) {
+      return targetIps_.get(index);
+    }
+    /**
+     * <code>repeated string target_ips = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTargetIpsBytes(int index) {
+      return targetIps_.getByteString(index);
+    }
+
+    public static final int KEYSPACES_FIELD_NUMBER = 3;
+    private com.google.protobuf.LazyStringList keyspaces_;
+    /**
+     * <code>repeated string keyspaces = 3;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getKeyspacesList() {
+      return keyspaces_;
+    }
+    /**
+     * <code>repeated string keyspaces = 3;</code>
+     */
+    public int getKeyspacesCount() {
+      return keyspaces_.size();
+    }
+    /**
+     * <code>repeated string keyspaces = 3;</code>
+     */
+    public java.lang.String getKeyspaces(int index) {
+      return keyspaces_.get(index);
+    }
+    /**
+     * <code>repeated string keyspaces = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getKeyspacesBytes(int index) {
+      return keyspaces_.getByteString(index);
+    }
+
+    public static final int DATA_DIR_FIELD_NUMBER = 4;
+    private volatile java.lang.Object dataDir_;
+    /**
+     * <code>string data_dir = 4;</code>
+     */
+    public java.lang.String getDataDir() {
+      java.lang.Object ref = dataDir_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        dataDir_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string data_dir = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDataDirBytes() {
+      java.lang.Object ref = dataDir_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        dataDir_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int CREATED_AT_FIELD_NUMBER = 5;
+    private long createdAt_;
+    /**
+     * <code>uint64 created_at = 5;</code>
+     */
+    public long getCreatedAt() {
+      return createdAt_;
+    }
+
+    public static final int UPDATED_AT_FIELD_NUMBER = 6;
+    private long updatedAt_;
+    /**
+     * <code>uint64 updated_at = 6;</code>
+     */
+    public long getUpdatedAt() {
+      return updatedAt_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getClusterIdBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, clusterId_);
+      }
+      for (int i = 0; i < targetIps_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, targetIps_.getRaw(i));
+      }
+      for (int i = 0; i < keyspaces_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, keyspaces_.getRaw(i));
+      }
+      if (!getDataDirBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, dataDir_);
+      }
+      if (createdAt_ != 0L) {
+        output.writeUInt64(5, createdAt_);
+      }
+      if (updatedAt_ != 0L) {
+        output.writeUInt64(6, updatedAt_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getClusterIdBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, clusterId_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < targetIps_.size(); i++) {
+          dataSize += computeStringSizeNoTag(targetIps_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getTargetIpsList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < keyspaces_.size(); i++) {
+          dataSize += computeStringSizeNoTag(keyspaces_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getKeyspacesList().size();
+      }
+      if (!getDataDirBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, dataDir_);
+      }
+      if (createdAt_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(5, createdAt_);
+      }
+      if (updatedAt_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(6, updatedAt_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry)) {
+        return super.equals(obj);
+      }
+      com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry other = (com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry) obj;
+
+      boolean result = true;
+      result = result && getClusterId()
+          .equals(other.getClusterId());
+      result = result && getTargetIpsList()
+          .equals(other.getTargetIpsList());
+      result = result && getKeyspacesList()
+          .equals(other.getKeyspacesList());
+      result = result && getDataDir()
+          .equals(other.getDataDir());
+      result = result && (getCreatedAt()
+          == other.getCreatedAt());
+      result = result && (getUpdatedAt()
+          == other.getUpdatedAt());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + CLUSTER_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getClusterId().hashCode();
+      if (getTargetIpsCount() > 0) {
+        hash = (37 * hash) + TARGET_IPS_FIELD_NUMBER;
+        hash = (53 * hash) + getTargetIpsList().hashCode();
+      }
+      if (getKeyspacesCount() > 0) {
+        hash = (37 * hash) + KEYSPACES_FIELD_NUMBER;
+        hash = (53 * hash) + getKeyspacesList().hashCode();
+      }
+      hash = (37 * hash) + DATA_DIR_FIELD_NUMBER;
+      hash = (53 * hash) + getDataDir().hashCode();
+      hash = (37 * hash) + CREATED_AT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getCreatedAt());
+      hash = (37 * hash) + UPDATED_AT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getUpdatedAt());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code rpc.ClusterListingResponse.Entry}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:rpc.ClusterListingResponse.Entry)
+        com.scalar.backup.cassandra.rpc.ClusterListingResponse.EntryOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_ClusterListingResponse_Entry_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_ClusterListingResponse_Entry_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.class, com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder.class);
+      }
+
+      // Construct using com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        clusterId_ = "";
+
+        targetIps_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        dataDir_ = "";
+
+        createdAt_ = 0L;
+
+        updatedAt_ = 0L;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_ClusterListingResponse_Entry_descriptor;
+      }
+
+      @java.lang.Override
+      public com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry getDefaultInstanceForType() {
+        return com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry build() {
+        com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry buildPartial() {
+        com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry result = new com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        result.clusterId_ = clusterId_;
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          targetIps_ = targetIps_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        }
+        result.targetIps_ = targetIps_;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          keyspaces_ = keyspaces_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000004);
+        }
+        result.keyspaces_ = keyspaces_;
+        result.dataDir_ = dataDir_;
+        result.createdAt_ = createdAt_;
+        result.updatedAt_ = updatedAt_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry) {
+          return mergeFrom((com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry other) {
+        if (other == com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.getDefaultInstance()) return this;
+        if (!other.getClusterId().isEmpty()) {
+          clusterId_ = other.clusterId_;
+          onChanged();
+        }
+        if (!other.targetIps_.isEmpty()) {
+          if (targetIps_.isEmpty()) {
+            targetIps_ = other.targetIps_;
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            ensureTargetIpsIsMutable();
+            targetIps_.addAll(other.targetIps_);
+          }
+          onChanged();
+        }
+        if (!other.keyspaces_.isEmpty()) {
+          if (keyspaces_.isEmpty()) {
+            keyspaces_ = other.keyspaces_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureKeyspacesIsMutable();
+            keyspaces_.addAll(other.keyspaces_);
+          }
+          onChanged();
+        }
+        if (!other.getDataDir().isEmpty()) {
+          dataDir_ = other.dataDir_;
+          onChanged();
+        }
+        if (other.getCreatedAt() != 0L) {
+          setCreatedAt(other.getCreatedAt());
+        }
+        if (other.getUpdatedAt() != 0L) {
+          setUpdatedAt(other.getUpdatedAt());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object clusterId_ = "";
+      /**
+       * <code>string cluster_id = 1;</code>
+       */
+      public java.lang.String getClusterId() {
+        java.lang.Object ref = clusterId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          clusterId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string cluster_id = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getClusterIdBytes() {
+        java.lang.Object ref = clusterId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          clusterId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string cluster_id = 1;</code>
+       */
+      public Builder setClusterId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        clusterId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string cluster_id = 1;</code>
+       */
+      public Builder clearClusterId() {
+        
+        clusterId_ = getDefaultInstance().getClusterId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string cluster_id = 1;</code>
+       */
+      public Builder setClusterIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        clusterId_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList targetIps_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureTargetIpsIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          targetIps_ = new com.google.protobuf.LazyStringArrayList(targetIps_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      /**
+       * <code>repeated string target_ips = 2;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getTargetIpsList() {
+        return targetIps_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string target_ips = 2;</code>
+       */
+      public int getTargetIpsCount() {
+        return targetIps_.size();
+      }
+      /**
+       * <code>repeated string target_ips = 2;</code>
+       */
+      public java.lang.String getTargetIps(int index) {
+        return targetIps_.get(index);
+      }
+      /**
+       * <code>repeated string target_ips = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTargetIpsBytes(int index) {
+        return targetIps_.getByteString(index);
+      }
+      /**
+       * <code>repeated string target_ips = 2;</code>
+       */
+      public Builder setTargetIps(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTargetIpsIsMutable();
+        targetIps_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string target_ips = 2;</code>
+       */
+      public Builder addTargetIps(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTargetIpsIsMutable();
+        targetIps_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string target_ips = 2;</code>
+       */
+      public Builder addAllTargetIps(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureTargetIpsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, targetIps_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string target_ips = 2;</code>
+       */
+      public Builder clearTargetIps() {
+        targetIps_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string target_ips = 2;</code>
+       */
+      public Builder addTargetIpsBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        ensureTargetIpsIsMutable();
+        targetIps_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureKeyspacesIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          keyspaces_ = new com.google.protobuf.LazyStringArrayList(keyspaces_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      /**
+       * <code>repeated string keyspaces = 3;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getKeyspacesList() {
+        return keyspaces_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string keyspaces = 3;</code>
+       */
+      public int getKeyspacesCount() {
+        return keyspaces_.size();
+      }
+      /**
+       * <code>repeated string keyspaces = 3;</code>
+       */
+      public java.lang.String getKeyspaces(int index) {
+        return keyspaces_.get(index);
+      }
+      /**
+       * <code>repeated string keyspaces = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getKeyspacesBytes(int index) {
+        return keyspaces_.getByteString(index);
+      }
+      /**
+       * <code>repeated string keyspaces = 3;</code>
+       */
+      public Builder setKeyspaces(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureKeyspacesIsMutable();
+        keyspaces_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string keyspaces = 3;</code>
+       */
+      public Builder addKeyspaces(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureKeyspacesIsMutable();
+        keyspaces_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string keyspaces = 3;</code>
+       */
+      public Builder addAllKeyspaces(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureKeyspacesIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, keyspaces_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string keyspaces = 3;</code>
+       */
+      public Builder clearKeyspaces() {
+        keyspaces_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string keyspaces = 3;</code>
+       */
+      public Builder addKeyspacesBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        ensureKeyspacesIsMutable();
+        keyspaces_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object dataDir_ = "";
+      /**
+       * <code>string data_dir = 4;</code>
+       */
+      public java.lang.String getDataDir() {
+        java.lang.Object ref = dataDir_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          dataDir_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string data_dir = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDataDirBytes() {
+        java.lang.Object ref = dataDir_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          dataDir_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string data_dir = 4;</code>
+       */
+      public Builder setDataDir(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        dataDir_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string data_dir = 4;</code>
+       */
+      public Builder clearDataDir() {
+        
+        dataDir_ = getDefaultInstance().getDataDir();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string data_dir = 4;</code>
+       */
+      public Builder setDataDirBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        dataDir_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long createdAt_ ;
+      /**
+       * <code>uint64 created_at = 5;</code>
+       */
+      public long getCreatedAt() {
+        return createdAt_;
+      }
+      /**
+       * <code>uint64 created_at = 5;</code>
+       */
+      public Builder setCreatedAt(long value) {
+        
+        createdAt_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint64 created_at = 5;</code>
+       */
+      public Builder clearCreatedAt() {
+        
+        createdAt_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long updatedAt_ ;
+      /**
+       * <code>uint64 updated_at = 6;</code>
+       */
+      public long getUpdatedAt() {
+        return updatedAt_;
+      }
+      /**
+       * <code>uint64 updated_at = 6;</code>
+       */
+      public Builder setUpdatedAt(long value) {
+        
+        updatedAt_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint64 updated_at = 6;</code>
+       */
+      public Builder clearUpdatedAt() {
+        
+        updatedAt_ = 0L;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:rpc.ClusterListingResponse.Entry)
+    }
+
+    // @@protoc_insertion_point(class_scope:rpc.ClusterListingResponse.Entry)
+    private static final com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry();
+    }
+
+    public static com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Entry>
+        PARSER = new com.google.protobuf.AbstractParser<Entry>() {
+      @java.lang.Override
+      public Entry parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Entry(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Entry> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Entry> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public static final int ENTRIES_FIELD_NUMBER = 1;
+  private java.util.List<com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry> entries_;
+  /**
+   * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+   */
+  public java.util.List<com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry> getEntriesList() {
+    return entries_;
   }
   /**
-   * <code>repeated string cluster_id = 1;</code>
+   * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
    */
-  public java.lang.String getClusterId(int index) {
-    return clusterId_.get(index);
+  public java.util.List<? extends com.scalar.backup.cassandra.rpc.ClusterListingResponse.EntryOrBuilder> 
+      getEntriesOrBuilderList() {
+    return entries_;
   }
   /**
-   * <code>repeated string cluster_id = 1;</code>
+   * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
    */
-  public com.google.protobuf.ByteString
-      getClusterIdBytes(int index) {
-    return clusterId_.getByteString(index);
+  public int getEntriesCount() {
+    return entries_.size();
+  }
+  /**
+   * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+   */
+  public com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry getEntries(int index) {
+    return entries_.get(index);
+  }
+  /**
+   * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+   */
+  public com.scalar.backup.cassandra.rpc.ClusterListingResponse.EntryOrBuilder getEntriesOrBuilder(
+      int index) {
+    return entries_.get(index);
   }
 
   private byte memoizedIsInitialized = -1;
@@ -130,8 +1334,8 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    for (int i = 0; i < clusterId_.size(); i++) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, clusterId_.getRaw(i));
+    for (int i = 0; i < entries_.size(); i++) {
+      output.writeMessage(1, entries_.get(i));
     }
     unknownFields.writeTo(output);
   }
@@ -142,13 +1346,9 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    {
-      int dataSize = 0;
-      for (int i = 0; i < clusterId_.size(); i++) {
-        dataSize += computeStringSizeNoTag(clusterId_.getRaw(i));
-      }
-      size += dataSize;
-      size += 1 * getClusterIdList().size();
+    for (int i = 0; i < entries_.size(); i++) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(1, entries_.get(i));
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -166,8 +1366,8 @@ private static final long serialVersionUID = 0L;
     com.scalar.backup.cassandra.rpc.ClusterListingResponse other = (com.scalar.backup.cassandra.rpc.ClusterListingResponse) obj;
 
     boolean result = true;
-    result = result && getClusterIdList()
-        .equals(other.getClusterIdList());
+    result = result && getEntriesList()
+        .equals(other.getEntriesList());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -179,9 +1379,9 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    if (getClusterIdCount() > 0) {
-      hash = (37 * hash) + CLUSTER_ID_FIELD_NUMBER;
-      hash = (53 * hash) + getClusterIdList().hashCode();
+    if (getEntriesCount() > 0) {
+      hash = (37 * hash) + ENTRIES_FIELD_NUMBER;
+      hash = (53 * hash) + getEntriesList().hashCode();
     }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
@@ -311,13 +1511,18 @@ private static final long serialVersionUID = 0L;
     private void maybeForceBuilderInitialization() {
       if (com.google.protobuf.GeneratedMessageV3
               .alwaysUseFieldBuilders) {
+        getEntriesFieldBuilder();
       }
     }
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      clusterId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      bitField0_ = (bitField0_ & ~0x00000001);
+      if (entriesBuilder_ == null) {
+        entries_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+      } else {
+        entriesBuilder_.clear();
+      }
       return this;
     }
 
@@ -345,11 +1550,15 @@ private static final long serialVersionUID = 0L;
     public com.scalar.backup.cassandra.rpc.ClusterListingResponse buildPartial() {
       com.scalar.backup.cassandra.rpc.ClusterListingResponse result = new com.scalar.backup.cassandra.rpc.ClusterListingResponse(this);
       int from_bitField0_ = bitField0_;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        clusterId_ = clusterId_.getUnmodifiableView();
-        bitField0_ = (bitField0_ & ~0x00000001);
+      if (entriesBuilder_ == null) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          entries_ = java.util.Collections.unmodifiableList(entries_);
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.entries_ = entries_;
+      } else {
+        result.entries_ = entriesBuilder_.build();
       }
-      result.clusterId_ = clusterId_;
       onBuilt();
       return result;
     }
@@ -398,15 +1607,31 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(com.scalar.backup.cassandra.rpc.ClusterListingResponse other) {
       if (other == com.scalar.backup.cassandra.rpc.ClusterListingResponse.getDefaultInstance()) return this;
-      if (!other.clusterId_.isEmpty()) {
-        if (clusterId_.isEmpty()) {
-          clusterId_ = other.clusterId_;
-          bitField0_ = (bitField0_ & ~0x00000001);
-        } else {
-          ensureClusterIdIsMutable();
-          clusterId_.addAll(other.clusterId_);
+      if (entriesBuilder_ == null) {
+        if (!other.entries_.isEmpty()) {
+          if (entries_.isEmpty()) {
+            entries_ = other.entries_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureEntriesIsMutable();
+            entries_.addAll(other.entries_);
+          }
+          onChanged();
         }
-        onChanged();
+      } else {
+        if (!other.entries_.isEmpty()) {
+          if (entriesBuilder_.isEmpty()) {
+            entriesBuilder_.dispose();
+            entriesBuilder_ = null;
+            entries_ = other.entries_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+            entriesBuilder_ = 
+              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                 getEntriesFieldBuilder() : null;
+          } else {
+            entriesBuilder_.addAllMessages(other.entries_);
+          }
+        }
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -438,98 +1663,244 @@ private static final long serialVersionUID = 0L;
     }
     private int bitField0_;
 
-    private com.google.protobuf.LazyStringList clusterId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-    private void ensureClusterIdIsMutable() {
+    private java.util.List<com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry> entries_ =
+      java.util.Collections.emptyList();
+    private void ensureEntriesIsMutable() {
       if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-        clusterId_ = new com.google.protobuf.LazyStringArrayList(clusterId_);
+        entries_ = new java.util.ArrayList<com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry>(entries_);
         bitField0_ |= 0x00000001;
        }
     }
+
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry, com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder, com.scalar.backup.cassandra.rpc.ClusterListingResponse.EntryOrBuilder> entriesBuilder_;
+
     /**
-     * <code>repeated string cluster_id = 1;</code>
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
      */
-    public com.google.protobuf.ProtocolStringList
-        getClusterIdList() {
-      return clusterId_.getUnmodifiableView();
+    public java.util.List<com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry> getEntriesList() {
+      if (entriesBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(entries_);
+      } else {
+        return entriesBuilder_.getMessageList();
+      }
     }
     /**
-     * <code>repeated string cluster_id = 1;</code>
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
      */
-    public int getClusterIdCount() {
-      return clusterId_.size();
+    public int getEntriesCount() {
+      if (entriesBuilder_ == null) {
+        return entries_.size();
+      } else {
+        return entriesBuilder_.getCount();
+      }
     }
     /**
-     * <code>repeated string cluster_id = 1;</code>
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
      */
-    public java.lang.String getClusterId(int index) {
-      return clusterId_.get(index);
+    public com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry getEntries(int index) {
+      if (entriesBuilder_ == null) {
+        return entries_.get(index);
+      } else {
+        return entriesBuilder_.getMessage(index);
+      }
     }
     /**
-     * <code>repeated string cluster_id = 1;</code>
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
      */
-    public com.google.protobuf.ByteString
-        getClusterIdBytes(int index) {
-      return clusterId_.getByteString(index);
-    }
-    /**
-     * <code>repeated string cluster_id = 1;</code>
-     */
-    public Builder setClusterId(
-        int index, java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureClusterIdIsMutable();
-      clusterId_.set(index, value);
-      onChanged();
+    public Builder setEntries(
+        int index, com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry value) {
+      if (entriesBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureEntriesIsMutable();
+        entries_.set(index, value);
+        onChanged();
+      } else {
+        entriesBuilder_.setMessage(index, value);
+      }
       return this;
     }
     /**
-     * <code>repeated string cluster_id = 1;</code>
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
      */
-    public Builder addClusterId(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureClusterIdIsMutable();
-      clusterId_.add(value);
-      onChanged();
+    public Builder setEntries(
+        int index, com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder builderForValue) {
+      if (entriesBuilder_ == null) {
+        ensureEntriesIsMutable();
+        entries_.set(index, builderForValue.build());
+        onChanged();
+      } else {
+        entriesBuilder_.setMessage(index, builderForValue.build());
+      }
       return this;
     }
     /**
-     * <code>repeated string cluster_id = 1;</code>
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
      */
-    public Builder addAllClusterId(
-        java.lang.Iterable<java.lang.String> values) {
-      ensureClusterIdIsMutable();
-      com.google.protobuf.AbstractMessageLite.Builder.addAll(
-          values, clusterId_);
-      onChanged();
+    public Builder addEntries(com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry value) {
+      if (entriesBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureEntriesIsMutable();
+        entries_.add(value);
+        onChanged();
+      } else {
+        entriesBuilder_.addMessage(value);
+      }
       return this;
     }
     /**
-     * <code>repeated string cluster_id = 1;</code>
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
      */
-    public Builder clearClusterId() {
-      clusterId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      bitField0_ = (bitField0_ & ~0x00000001);
-      onChanged();
+    public Builder addEntries(
+        int index, com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry value) {
+      if (entriesBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureEntriesIsMutable();
+        entries_.add(index, value);
+        onChanged();
+      } else {
+        entriesBuilder_.addMessage(index, value);
+      }
       return this;
     }
     /**
-     * <code>repeated string cluster_id = 1;</code>
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
      */
-    public Builder addClusterIdBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      ensureClusterIdIsMutable();
-      clusterId_.add(value);
-      onChanged();
+    public Builder addEntries(
+        com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder builderForValue) {
+      if (entriesBuilder_ == null) {
+        ensureEntriesIsMutable();
+        entries_.add(builderForValue.build());
+        onChanged();
+      } else {
+        entriesBuilder_.addMessage(builderForValue.build());
+      }
       return this;
+    }
+    /**
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+     */
+    public Builder addEntries(
+        int index, com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder builderForValue) {
+      if (entriesBuilder_ == null) {
+        ensureEntriesIsMutable();
+        entries_.add(index, builderForValue.build());
+        onChanged();
+      } else {
+        entriesBuilder_.addMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+     */
+    public Builder addAllEntries(
+        java.lang.Iterable<? extends com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry> values) {
+      if (entriesBuilder_ == null) {
+        ensureEntriesIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, entries_);
+        onChanged();
+      } else {
+        entriesBuilder_.addAllMessages(values);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+     */
+    public Builder clearEntries() {
+      if (entriesBuilder_ == null) {
+        entries_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+      } else {
+        entriesBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+     */
+    public Builder removeEntries(int index) {
+      if (entriesBuilder_ == null) {
+        ensureEntriesIsMutable();
+        entries_.remove(index);
+        onChanged();
+      } else {
+        entriesBuilder_.remove(index);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+     */
+    public com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder getEntriesBuilder(
+        int index) {
+      return getEntriesFieldBuilder().getBuilder(index);
+    }
+    /**
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+     */
+    public com.scalar.backup.cassandra.rpc.ClusterListingResponse.EntryOrBuilder getEntriesOrBuilder(
+        int index) {
+      if (entriesBuilder_ == null) {
+        return entries_.get(index);  } else {
+        return entriesBuilder_.getMessageOrBuilder(index);
+      }
+    }
+    /**
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+     */
+    public java.util.List<? extends com.scalar.backup.cassandra.rpc.ClusterListingResponse.EntryOrBuilder> 
+         getEntriesOrBuilderList() {
+      if (entriesBuilder_ != null) {
+        return entriesBuilder_.getMessageOrBuilderList();
+      } else {
+        return java.util.Collections.unmodifiableList(entries_);
+      }
+    }
+    /**
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+     */
+    public com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder addEntriesBuilder() {
+      return getEntriesFieldBuilder().addBuilder(
+          com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+     */
+    public com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder addEntriesBuilder(
+        int index) {
+      return getEntriesFieldBuilder().addBuilder(
+          index, com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+     */
+    public java.util.List<com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder> 
+         getEntriesBuilderList() {
+      return getEntriesFieldBuilder().getBuilderList();
+    }
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry, com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder, com.scalar.backup.cassandra.rpc.ClusterListingResponse.EntryOrBuilder> 
+        getEntriesFieldBuilder() {
+      if (entriesBuilder_ == null) {
+        entriesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry, com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry.Builder, com.scalar.backup.cassandra.rpc.ClusterListingResponse.EntryOrBuilder>(
+                entries_,
+                ((bitField0_ & 0x00000001) == 0x00000001),
+                getParentForChildren(),
+                isClean());
+        entries_ = null;
+      }
+      return entriesBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

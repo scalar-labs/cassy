@@ -54,58 +54,31 @@ public final class CassandraBackupGrpc {
      return getRegisterClusterMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      com.scalar.backup.cassandra.rpc.ClusterListingResponse> getShowClustersMethod;
+  private static volatile io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.ClusterListingRequest,
+      com.scalar.backup.cassandra.rpc.ClusterListingResponse> getListClustersMethod;
 
-  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      com.scalar.backup.cassandra.rpc.ClusterListingResponse> getShowClustersMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.Empty, com.scalar.backup.cassandra.rpc.ClusterListingResponse> getShowClustersMethod;
-    if ((getShowClustersMethod = CassandraBackupGrpc.getShowClustersMethod) == null) {
+  public static io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.ClusterListingRequest,
+      com.scalar.backup.cassandra.rpc.ClusterListingResponse> getListClustersMethod() {
+    io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.ClusterListingRequest, com.scalar.backup.cassandra.rpc.ClusterListingResponse> getListClustersMethod;
+    if ((getListClustersMethod = CassandraBackupGrpc.getListClustersMethod) == null) {
       synchronized (CassandraBackupGrpc.class) {
-        if ((getShowClustersMethod = CassandraBackupGrpc.getShowClustersMethod) == null) {
-          CassandraBackupGrpc.getShowClustersMethod = getShowClustersMethod = 
-              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, com.scalar.backup.cassandra.rpc.ClusterListingResponse>newBuilder()
+        if ((getListClustersMethod = CassandraBackupGrpc.getListClustersMethod) == null) {
+          CassandraBackupGrpc.getListClustersMethod = getListClustersMethod = 
+              io.grpc.MethodDescriptor.<com.scalar.backup.cassandra.rpc.ClusterListingRequest, com.scalar.backup.cassandra.rpc.ClusterListingResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(
-                  "rpc.CassandraBackup", "ShowClusters"))
+                  "rpc.CassandraBackup", "ListClusters"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.Empty.getDefaultInstance()))
+                  com.scalar.backup.cassandra.rpc.ClusterListingRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.scalar.backup.cassandra.rpc.ClusterListingResponse.getDefaultInstance()))
-                  .setSchemaDescriptor(new CassandraBackupMethodDescriptorSupplier("ShowClusters"))
+                  .setSchemaDescriptor(new CassandraBackupMethodDescriptorSupplier("ListClusters"))
                   .build();
           }
         }
      }
-     return getShowClustersMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.NodeListingRequest,
-      com.scalar.backup.cassandra.rpc.NodeListingResponse> getListNodesMethod;
-
-  public static io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.NodeListingRequest,
-      com.scalar.backup.cassandra.rpc.NodeListingResponse> getListNodesMethod() {
-    io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.NodeListingRequest, com.scalar.backup.cassandra.rpc.NodeListingResponse> getListNodesMethod;
-    if ((getListNodesMethod = CassandraBackupGrpc.getListNodesMethod) == null) {
-      synchronized (CassandraBackupGrpc.class) {
-        if ((getListNodesMethod = CassandraBackupGrpc.getListNodesMethod) == null) {
-          CassandraBackupGrpc.getListNodesMethod = getListNodesMethod = 
-              io.grpc.MethodDescriptor.<com.scalar.backup.cassandra.rpc.NodeListingRequest, com.scalar.backup.cassandra.rpc.NodeListingResponse>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(
-                  "rpc.CassandraBackup", "ListNodes"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.scalar.backup.cassandra.rpc.NodeListingRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.scalar.backup.cassandra.rpc.NodeListingResponse.getDefaultInstance()))
-                  .setSchemaDescriptor(new CassandraBackupMethodDescriptorSupplier("ListNodes"))
-                  .build();
-          }
-        }
-     }
-     return getListNodesMethod;
+     return getListClustersMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<com.scalar.backup.cassandra.rpc.BackupListingRequest,
@@ -252,19 +225,24 @@ public final class CassandraBackupGrpc {
 
     /**
      */
-    public void showClusters(com.google.protobuf.Empty request,
+    public void listClusters(com.scalar.backup.cassandra.rpc.ClusterListingRequest request,
         io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.ClusterListingResponse> responseObserver) {
-      asyncUnimplementedUnaryCall(getShowClustersMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getListClustersMethod(), responseObserver);
     }
 
     /**
-     */
-    public void listNodes(com.scalar.backup.cassandra.rpc.NodeListingRequest request,
-        io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.NodeListingResponse> responseObserver) {
-      asyncUnimplementedUnaryCall(getListNodesMethod(), responseObserver);
-    }
-
-    /**
+     * <pre>
+     *rpc ShowClusters (google.protobuf.Empty) returns (ClusterListingResponse) {
+     *option (google.api.http) = {
+     *get: "/v1/clusters"
+     *};
+     *}
+     *rpc ListNodes (NodeListingRequest) returns (NodeListingResponse) {
+     *option (google.api.http) = {
+     *get: "/v1/clusters/{cluster_id}"
+     *};
+     *}
+     * </pre>
      */
     public void listBackups(com.scalar.backup.cassandra.rpc.BackupListingRequest request,
         io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.BackupListingResponse> responseObserver) {
@@ -302,19 +280,12 @@ public final class CassandraBackupGrpc {
                 com.scalar.backup.cassandra.rpc.ClusterRegistrationResponse>(
                   this, METHODID_REGISTER_CLUSTER)))
           .addMethod(
-            getShowClustersMethod(),
+            getListClustersMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                com.google.protobuf.Empty,
+                com.scalar.backup.cassandra.rpc.ClusterListingRequest,
                 com.scalar.backup.cassandra.rpc.ClusterListingResponse>(
-                  this, METHODID_SHOW_CLUSTERS)))
-          .addMethod(
-            getListNodesMethod(),
-            asyncUnaryCall(
-              new MethodHandlers<
-                com.scalar.backup.cassandra.rpc.NodeListingRequest,
-                com.scalar.backup.cassandra.rpc.NodeListingResponse>(
-                  this, METHODID_LIST_NODES)))
+                  this, METHODID_LIST_CLUSTERS)))
           .addMethod(
             getListBackupsMethod(),
             asyncUnaryCall(
@@ -375,21 +346,25 @@ public final class CassandraBackupGrpc {
 
     /**
      */
-    public void showClusters(com.google.protobuf.Empty request,
+    public void listClusters(com.scalar.backup.cassandra.rpc.ClusterListingRequest request,
         io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.ClusterListingResponse> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getShowClustersMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getListClustersMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
-     */
-    public void listNodes(com.scalar.backup.cassandra.rpc.NodeListingRequest request,
-        io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.NodeListingResponse> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getListNodesMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
+     * <pre>
+     *rpc ShowClusters (google.protobuf.Empty) returns (ClusterListingResponse) {
+     *option (google.api.http) = {
+     *get: "/v1/clusters"
+     *};
+     *}
+     *rpc ListNodes (NodeListingRequest) returns (NodeListingResponse) {
+     *option (google.api.http) = {
+     *get: "/v1/clusters/{cluster_id}"
+     *};
+     *}
+     * </pre>
      */
     public void listBackups(com.scalar.backup.cassandra.rpc.BackupListingRequest request,
         io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.BackupListingResponse> responseObserver) {
@@ -449,19 +424,24 @@ public final class CassandraBackupGrpc {
 
     /**
      */
-    public com.scalar.backup.cassandra.rpc.ClusterListingResponse showClusters(com.google.protobuf.Empty request) {
+    public com.scalar.backup.cassandra.rpc.ClusterListingResponse listClusters(com.scalar.backup.cassandra.rpc.ClusterListingRequest request) {
       return blockingUnaryCall(
-          getChannel(), getShowClustersMethod(), getCallOptions(), request);
+          getChannel(), getListClustersMethod(), getCallOptions(), request);
     }
 
     /**
-     */
-    public com.scalar.backup.cassandra.rpc.NodeListingResponse listNodes(com.scalar.backup.cassandra.rpc.NodeListingRequest request) {
-      return blockingUnaryCall(
-          getChannel(), getListNodesMethod(), getCallOptions(), request);
-    }
-
-    /**
+     * <pre>
+     *rpc ShowClusters (google.protobuf.Empty) returns (ClusterListingResponse) {
+     *option (google.api.http) = {
+     *get: "/v1/clusters"
+     *};
+     *}
+     *rpc ListNodes (NodeListingRequest) returns (NodeListingResponse) {
+     *option (google.api.http) = {
+     *get: "/v1/clusters/{cluster_id}"
+     *};
+     *}
+     * </pre>
      */
     public com.scalar.backup.cassandra.rpc.BackupListingResponse listBackups(com.scalar.backup.cassandra.rpc.BackupListingRequest request) {
       return blockingUnaryCall(
@@ -518,21 +498,25 @@ public final class CassandraBackupGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.scalar.backup.cassandra.rpc.ClusterListingResponse> showClusters(
-        com.google.protobuf.Empty request) {
+    public com.google.common.util.concurrent.ListenableFuture<com.scalar.backup.cassandra.rpc.ClusterListingResponse> listClusters(
+        com.scalar.backup.cassandra.rpc.ClusterListingRequest request) {
       return futureUnaryCall(
-          getChannel().newCall(getShowClustersMethod(), getCallOptions()), request);
+          getChannel().newCall(getListClustersMethod(), getCallOptions()), request);
     }
 
     /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<com.scalar.backup.cassandra.rpc.NodeListingResponse> listNodes(
-        com.scalar.backup.cassandra.rpc.NodeListingRequest request) {
-      return futureUnaryCall(
-          getChannel().newCall(getListNodesMethod(), getCallOptions()), request);
-    }
-
-    /**
+     * <pre>
+     *rpc ShowClusters (google.protobuf.Empty) returns (ClusterListingResponse) {
+     *option (google.api.http) = {
+     *get: "/v1/clusters"
+     *};
+     *}
+     *rpc ListNodes (NodeListingRequest) returns (NodeListingResponse) {
+     *option (google.api.http) = {
+     *get: "/v1/clusters/{cluster_id}"
+     *};
+     *}
+     * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<com.scalar.backup.cassandra.rpc.BackupListingResponse> listBackups(
         com.scalar.backup.cassandra.rpc.BackupListingRequest request) {
@@ -566,12 +550,11 @@ public final class CassandraBackupGrpc {
   }
 
   private static final int METHODID_REGISTER_CLUSTER = 0;
-  private static final int METHODID_SHOW_CLUSTERS = 1;
-  private static final int METHODID_LIST_NODES = 2;
-  private static final int METHODID_LIST_BACKUPS = 3;
-  private static final int METHODID_TAKE_BACKUP = 4;
-  private static final int METHODID_RESTORE_BACKUP = 5;
-  private static final int METHODID_LIST_RESTORE_STATUSES = 6;
+  private static final int METHODID_LIST_CLUSTERS = 1;
+  private static final int METHODID_LIST_BACKUPS = 2;
+  private static final int METHODID_TAKE_BACKUP = 3;
+  private static final int METHODID_RESTORE_BACKUP = 4;
+  private static final int METHODID_LIST_RESTORE_STATUSES = 5;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -594,13 +577,9 @@ public final class CassandraBackupGrpc {
           serviceImpl.registerCluster((com.scalar.backup.cassandra.rpc.ClusterRegistrationRequest) request,
               (io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.ClusterRegistrationResponse>) responseObserver);
           break;
-        case METHODID_SHOW_CLUSTERS:
-          serviceImpl.showClusters((com.google.protobuf.Empty) request,
+        case METHODID_LIST_CLUSTERS:
+          serviceImpl.listClusters((com.scalar.backup.cassandra.rpc.ClusterListingRequest) request,
               (io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.ClusterListingResponse>) responseObserver);
-          break;
-        case METHODID_LIST_NODES:
-          serviceImpl.listNodes((com.scalar.backup.cassandra.rpc.NodeListingRequest) request,
-              (io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.NodeListingResponse>) responseObserver);
           break;
         case METHODID_LIST_BACKUPS:
           serviceImpl.listBackups((com.scalar.backup.cassandra.rpc.BackupListingRequest) request,
@@ -680,8 +659,7 @@ public final class CassandraBackupGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new CassandraBackupFileDescriptorSupplier())
               .addMethod(getRegisterClusterMethod())
-              .addMethod(getShowClustersMethod())
-              .addMethod(getListNodesMethod())
+              .addMethod(getListClustersMethod())
               .addMethod(getListBackupsMethod())
               .addMethod(getTakeBackupMethod())
               .addMethod(getRestoreBackupMethod())
