@@ -109,14 +109,14 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
   public void listClusters(
       ClusterListingRequest request, StreamObserver<ClusterListingResponse> responseObserver) {
     List<ClusterInfoRecord> clusters = new ArrayList<>();
-    if (!request.getClusterId().isEmpty()) {
+    if (request.getClusterId().isEmpty()) {
+      int limit = request.getLimit() == 0 ? -1 : request.getLimit();
+      clusters.addAll(database.getClusterInfo().selectRecent(limit));
+    } else {
       database
           .getClusterInfo()
           .selectByClusterId(request.getClusterId())
           .ifPresent(c -> clusters.add(c));
-    } else {
-      int limit = request.getLimit() == 0 ? -1 : request.getLimit();
-      clusters.addAll(database.getClusterInfo().selectRecent(limit));
     }
 
     ClusterListingResponse.Builder builder = ClusterListingResponse.newBuilder();
