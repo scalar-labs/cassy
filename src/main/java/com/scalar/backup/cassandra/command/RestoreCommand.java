@@ -19,7 +19,8 @@ public class RestoreCommand extends AbstractCommand {
   private int restoreType;
 
   public static void main(String[] args) {
-    CommandLine.call(new RestoreCommand(), args);
+    int exitCode = new CommandLine(new RestoreCommand()).execute(args);
+    System.exit(exitCode);
   }
 
   @Override
