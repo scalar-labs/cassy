@@ -16,11 +16,10 @@ import com.scalar.backup.cassandra.rpc.BackupListingResponse;
 import com.scalar.backup.cassandra.rpc.BackupRequest;
 import com.scalar.backup.cassandra.rpc.BackupResponse;
 import com.scalar.backup.cassandra.rpc.CassandraBackupGrpc;
+import com.scalar.backup.cassandra.rpc.ClusterListingRequest;
 import com.scalar.backup.cassandra.rpc.ClusterListingResponse;
 import com.scalar.backup.cassandra.rpc.ClusterRegistrationRequest;
 import com.scalar.backup.cassandra.rpc.ClusterRegistrationResponse;
-import com.scalar.backup.cassandra.rpc.NodeListingRequest;
-import com.scalar.backup.cassandra.rpc.NodeListingResponse;
 import com.scalar.backup.cassandra.rpc.OperationStatus;
 import com.scalar.backup.cassandra.rpc.RestoreRequest;
 import com.scalar.backup.cassandra.rpc.RestoreResponse;
@@ -107,27 +106,33 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
   }
 
   @Override
-  public void showClusters(
-      com.google.protobuf.Empty request, StreamObserver<ClusterListingResponse> responseObserver) {
-    JmxManager jmx = getJmx(config.getCassandraHost(), config.getJmxPort());
-    ClusterListingResponse response =
-        ClusterListingResponse.newBuilder().addClusterId(jmx.getClusterName()).build();
+  public void listClusters(
+      ClusterListingRequest request, StreamObserver<ClusterListingResponse> responseObserver) {
+    List<ClusterInfoRecord> clusters = new ArrayList<>();
+    if (request.getClusterId().isEmpty()) {
+      int limit = request.getLimit() == 0 ? -1 : request.getLimit();
+      clusters.addAll(database.getClusterInfo().selectRecent(limit));
+    } else {
+      database
+          .getClusterInfo()
+          .selectByClusterId(request.getClusterId())
+          .ifPresent(c -> clusters.add(c));
+    }
 
-    responseObserver.onNext(response);
-    responseObserver.onCompleted();
-  }
-
-  @Override
-  public void listNodes(
-      NodeListingRequest request, StreamObserver<NodeListingResponse> responseObserver) {
-    NodeListingResponse.Builder builder = NodeListingResponse.newBuilder();
-    JmxManager jmx = getJmx(config.getCassandraHost(), config.getJmxPort());
-
-    addNodes(builder, jmx.getLiveNodes(), NodeListingResponse.Entry.NodeStatus.LIVE);
-    addNodes(builder, jmx.getJoiningNodes(), NodeListingResponse.Entry.NodeStatus.JOINING);
-    addNodes(builder, jmx.getLeavingNodes(), NodeListingResponse.Entry.NodeStatus.LEAVING);
-    addNodes(builder, jmx.getMovingNodes(), NodeListingResponse.Entry.NodeStatus.MOVING);
-    addNodes(builder, jmx.getUnreachableNodes(), NodeListingResponse.Entry.NodeStatus.UNREACHABLE);
+    ClusterListingResponse.Builder builder = ClusterListingResponse.newBuilder();
+    clusters.forEach(
+        c -> {
+          ClusterListingResponse.Entry entry =
+              ClusterListingResponse.Entry.newBuilder()
+                  .setClusterId(c.getClusterId())
+                  .addAllTargetIps(c.getTargetIps())
+                  .addAllKeyspaces(c.getKeyspaces())
+                  .setDataDir(c.getDataDir())
+                  .setCreatedAt(c.getCreatedAt())
+                  .setUpdatedAt(c.getUpdatedAt())
+                  .build();
+          builder.addEntries(entry);
+        });
 
     responseObserver.onNext(builder.build());
     responseObserver.onCompleted();
@@ -356,16 +361,6 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     } else {
       backupKeys.forEach(backupKey -> database.getRestoreHistory().update(backupKey, status));
     }
-  }
-
-  private void addNodes(
-      NodeListingResponse.Builder builder,
-      List<String> nodes,
-      NodeListingResponse.Entry.NodeStatus status) {
-    nodes.forEach(
-        ip ->
-            builder.addEntries(
-                NodeListingResponse.Entry.newBuilder().setIp(ip).setStatus(status).build()));
   }
 
   @VisibleForTesting

@@ -4,19 +4,20 @@
 package com.scalar.backup.cassandra.rpc;
 
 /**
- * Protobuf type {@code rpc.NodeListingRequest}
+ * Protobuf type {@code rpc.ClusterListingRequest}
  */
-public  final class NodeListingRequest extends
+public  final class ClusterListingRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rpc.NodeListingRequest)
-    NodeListingRequestOrBuilder {
+    // @@protoc_insertion_point(message_implements:rpc.ClusterListingRequest)
+    ClusterListingRequestOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use NodeListingRequest.newBuilder() to construct.
-  private NodeListingRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use ClusterListingRequest.newBuilder() to construct.
+  private ClusterListingRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private NodeListingRequest() {
+  private ClusterListingRequest() {
     clusterId_ = "";
+    limit_ = 0;
   }
 
   @java.lang.Override
@@ -24,7 +25,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private NodeListingRequest(
+  private ClusterListingRequest(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -49,6 +50,11 @@ private static final long serialVersionUID = 0L;
             clusterId_ = s;
             break;
           }
+          case 16: {
+
+            limit_ = input.readInt32();
+            break;
+          }
           default: {
             if (!parseUnknownFieldProto3(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -70,15 +76,15 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_NodeListingRequest_descriptor;
+    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_ClusterListingRequest_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_NodeListingRequest_fieldAccessorTable
+    return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_ClusterListingRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            com.scalar.backup.cassandra.rpc.NodeListingRequest.class, com.scalar.backup.cassandra.rpc.NodeListingRequest.Builder.class);
+            com.scalar.backup.cassandra.rpc.ClusterListingRequest.class, com.scalar.backup.cassandra.rpc.ClusterListingRequest.Builder.class);
   }
 
   public static final int CLUSTER_ID_FIELD_NUMBER = 1;
@@ -115,6 +121,15 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int LIMIT_FIELD_NUMBER = 2;
+  private int limit_;
+  /**
+   * <code>int32 limit = 2;</code>
+   */
+  public int getLimit() {
+    return limit_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -132,6 +147,9 @@ private static final long serialVersionUID = 0L;
     if (!getClusterIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, clusterId_);
     }
+    if (limit_ != 0) {
+      output.writeInt32(2, limit_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -144,6 +162,10 @@ private static final long serialVersionUID = 0L;
     if (!getClusterIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, clusterId_);
     }
+    if (limit_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(2, limit_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -154,14 +176,16 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof com.scalar.backup.cassandra.rpc.NodeListingRequest)) {
+    if (!(obj instanceof com.scalar.backup.cassandra.rpc.ClusterListingRequest)) {
       return super.equals(obj);
     }
-    com.scalar.backup.cassandra.rpc.NodeListingRequest other = (com.scalar.backup.cassandra.rpc.NodeListingRequest) obj;
+    com.scalar.backup.cassandra.rpc.ClusterListingRequest other = (com.scalar.backup.cassandra.rpc.ClusterListingRequest) obj;
 
     boolean result = true;
     result = result && getClusterId()
         .equals(other.getClusterId());
+    result = result && (getLimit()
+        == other.getLimit());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -175,74 +199,76 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + CLUSTER_ID_FIELD_NUMBER;
     hash = (53 * hash) + getClusterId().hashCode();
+    hash = (37 * hash) + LIMIT_FIELD_NUMBER;
+    hash = (53 * hash) + getLimit();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseFrom(
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseFrom(
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseFrom(
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseFrom(
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseFrom(byte[] data)
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseFrom(
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseFrom(java.io.InputStream input)
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseFrom(
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseDelimitedFrom(java.io.InputStream input)
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseDelimitedFrom(
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseFrom(
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest parseFrom(
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -255,7 +281,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(com.scalar.backup.cassandra.rpc.NodeListingRequest prototype) {
+  public static Builder newBuilder(com.scalar.backup.cassandra.rpc.ClusterListingRequest prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -271,26 +297,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rpc.NodeListingRequest}
+   * Protobuf type {@code rpc.ClusterListingRequest}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rpc.NodeListingRequest)
-      com.scalar.backup.cassandra.rpc.NodeListingRequestOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rpc.ClusterListingRequest)
+      com.scalar.backup.cassandra.rpc.ClusterListingRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_NodeListingRequest_descriptor;
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_ClusterListingRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_NodeListingRequest_fieldAccessorTable
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_ClusterListingRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.scalar.backup.cassandra.rpc.NodeListingRequest.class, com.scalar.backup.cassandra.rpc.NodeListingRequest.Builder.class);
+              com.scalar.backup.cassandra.rpc.ClusterListingRequest.class, com.scalar.backup.cassandra.rpc.ClusterListingRequest.Builder.class);
     }
 
-    // Construct using com.scalar.backup.cassandra.rpc.NodeListingRequest.newBuilder()
+    // Construct using com.scalar.backup.cassandra.rpc.ClusterListingRequest.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -310,23 +336,25 @@ private static final long serialVersionUID = 0L;
       super.clear();
       clusterId_ = "";
 
+      limit_ = 0;
+
       return this;
     }
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_NodeListingRequest_descriptor;
+      return com.scalar.backup.cassandra.rpc.CassandraBackupProto.internal_static_rpc_ClusterListingRequest_descriptor;
     }
 
     @java.lang.Override
-    public com.scalar.backup.cassandra.rpc.NodeListingRequest getDefaultInstanceForType() {
-      return com.scalar.backup.cassandra.rpc.NodeListingRequest.getDefaultInstance();
+    public com.scalar.backup.cassandra.rpc.ClusterListingRequest getDefaultInstanceForType() {
+      return com.scalar.backup.cassandra.rpc.ClusterListingRequest.getDefaultInstance();
     }
 
     @java.lang.Override
-    public com.scalar.backup.cassandra.rpc.NodeListingRequest build() {
-      com.scalar.backup.cassandra.rpc.NodeListingRequest result = buildPartial();
+    public com.scalar.backup.cassandra.rpc.ClusterListingRequest build() {
+      com.scalar.backup.cassandra.rpc.ClusterListingRequest result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -334,9 +362,10 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public com.scalar.backup.cassandra.rpc.NodeListingRequest buildPartial() {
-      com.scalar.backup.cassandra.rpc.NodeListingRequest result = new com.scalar.backup.cassandra.rpc.NodeListingRequest(this);
+    public com.scalar.backup.cassandra.rpc.ClusterListingRequest buildPartial() {
+      com.scalar.backup.cassandra.rpc.ClusterListingRequest result = new com.scalar.backup.cassandra.rpc.ClusterListingRequest(this);
       result.clusterId_ = clusterId_;
+      result.limit_ = limit_;
       onBuilt();
       return result;
     }
@@ -375,19 +404,22 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof com.scalar.backup.cassandra.rpc.NodeListingRequest) {
-        return mergeFrom((com.scalar.backup.cassandra.rpc.NodeListingRequest)other);
+      if (other instanceof com.scalar.backup.cassandra.rpc.ClusterListingRequest) {
+        return mergeFrom((com.scalar.backup.cassandra.rpc.ClusterListingRequest)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(com.scalar.backup.cassandra.rpc.NodeListingRequest other) {
-      if (other == com.scalar.backup.cassandra.rpc.NodeListingRequest.getDefaultInstance()) return this;
+    public Builder mergeFrom(com.scalar.backup.cassandra.rpc.ClusterListingRequest other) {
+      if (other == com.scalar.backup.cassandra.rpc.ClusterListingRequest.getDefaultInstance()) return this;
       if (!other.getClusterId().isEmpty()) {
         clusterId_ = other.clusterId_;
         onChanged();
+      }
+      if (other.getLimit() != 0) {
+        setLimit(other.getLimit());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -404,11 +436,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      com.scalar.backup.cassandra.rpc.NodeListingRequest parsedMessage = null;
+      com.scalar.backup.cassandra.rpc.ClusterListingRequest parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (com.scalar.backup.cassandra.rpc.NodeListingRequest) e.getUnfinishedMessage();
+        parsedMessage = (com.scalar.backup.cassandra.rpc.ClusterListingRequest) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -486,6 +518,32 @@ private static final long serialVersionUID = 0L;
       onChanged();
       return this;
     }
+
+    private int limit_ ;
+    /**
+     * <code>int32 limit = 2;</code>
+     */
+    public int getLimit() {
+      return limit_;
+    }
+    /**
+     * <code>int32 limit = 2;</code>
+     */
+    public Builder setLimit(int value) {
+      
+      limit_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 limit = 2;</code>
+     */
+    public Builder clearLimit() {
+      
+      limit_ = 0;
+      onChanged();
+      return this;
+    }
     @java.lang.Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -499,41 +557,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rpc.NodeListingRequest)
+    // @@protoc_insertion_point(builder_scope:rpc.ClusterListingRequest)
   }
 
-  // @@protoc_insertion_point(class_scope:rpc.NodeListingRequest)
-  private static final com.scalar.backup.cassandra.rpc.NodeListingRequest DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rpc.ClusterListingRequest)
+  private static final com.scalar.backup.cassandra.rpc.ClusterListingRequest DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new com.scalar.backup.cassandra.rpc.NodeListingRequest();
+    DEFAULT_INSTANCE = new com.scalar.backup.cassandra.rpc.ClusterListingRequest();
   }
 
-  public static com.scalar.backup.cassandra.rpc.NodeListingRequest getDefaultInstance() {
+  public static com.scalar.backup.cassandra.rpc.ClusterListingRequest getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<NodeListingRequest>
-      PARSER = new com.google.protobuf.AbstractParser<NodeListingRequest>() {
+  private static final com.google.protobuf.Parser<ClusterListingRequest>
+      PARSER = new com.google.protobuf.AbstractParser<ClusterListingRequest>() {
     @java.lang.Override
-    public NodeListingRequest parsePartialFrom(
+    public ClusterListingRequest parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new NodeListingRequest(input, extensionRegistry);
+      return new ClusterListingRequest(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<NodeListingRequest> parser() {
+  public static com.google.protobuf.Parser<ClusterListingRequest> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<NodeListingRequest> getParserForType() {
+  public com.google.protobuf.Parser<ClusterListingRequest> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.scalar.backup.cassandra.rpc.NodeListingRequest getDefaultInstanceForType() {
+  public com.scalar.backup.cassandra.rpc.ClusterListingRequest getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

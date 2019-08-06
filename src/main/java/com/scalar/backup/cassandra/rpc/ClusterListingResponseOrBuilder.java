@@ -8,21 +8,26 @@ public interface ClusterListingResponseOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>repeated string cluster_id = 1;</code>
+   * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
    */
-  java.util.List<java.lang.String>
-      getClusterIdList();
+  java.util.List<com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry> 
+      getEntriesList();
   /**
-   * <code>repeated string cluster_id = 1;</code>
+   * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
    */
-  int getClusterIdCount();
+  com.scalar.backup.cassandra.rpc.ClusterListingResponse.Entry getEntries(int index);
   /**
-   * <code>repeated string cluster_id = 1;</code>
+   * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
    */
-  java.lang.String getClusterId(int index);
+  int getEntriesCount();
   /**
-   * <code>repeated string cluster_id = 1;</code>
+   * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
    */
-  com.google.protobuf.ByteString
-      getClusterIdBytes(int index);
+  java.util.List<? extends com.scalar.backup.cassandra.rpc.ClusterListingResponse.EntryOrBuilder> 
+      getEntriesOrBuilderList();
+  /**
+   * <code>repeated .rpc.ClusterListingResponse.Entry entries = 1;</code>
+   */
+  com.scalar.backup.cassandra.rpc.ClusterListingResponse.EntryOrBuilder getEntriesOrBuilder(
+      int index);
 }
