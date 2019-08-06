@@ -28,9 +28,9 @@ public interface BackupListingRequestOrBuilder extends
       getTargetIpBytes();
 
   /**
-   * <code>int32 n = 3;</code>
+   * <code>int32 limit = 3;</code>
    */
-  int getN();
+  int getLimit();
 
   /**
    * <code>string snapshot_id = 4;</code>

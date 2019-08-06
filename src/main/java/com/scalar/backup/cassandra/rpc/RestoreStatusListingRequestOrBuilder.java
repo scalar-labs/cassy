@@ -46,7 +46,7 @@ public interface RestoreStatusListingRequestOrBuilder extends
       getSnapshotIdBytes();
 
   /**
-   * <code>int32 n = 4;</code>
+   * <code>int32 limit = 4;</code>
    */
-  int getN();
+  int getLimit();
 }

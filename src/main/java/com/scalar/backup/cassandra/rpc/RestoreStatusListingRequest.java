@@ -19,7 +19,7 @@ private static final long serialVersionUID = 0L;
     clusterId_ = "";
     targetIp_ = "";
     snapshotId_ = "";
-    n_ = 0;
+    limit_ = 0;
   }
 
   @java.lang.Override
@@ -66,7 +66,7 @@ private static final long serialVersionUID = 0L;
           }
           case 32: {
 
-            n_ = input.readInt32();
+            limit_ = input.readInt32();
             break;
           }
           default: {
@@ -211,13 +211,13 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int N_FIELD_NUMBER = 4;
-  private int n_;
+  public static final int LIMIT_FIELD_NUMBER = 4;
+  private int limit_;
   /**
-   * <code>int32 n = 4;</code>
+   * <code>int32 limit = 4;</code>
    */
-  public int getN() {
-    return n_;
+  public int getLimit() {
+    return limit_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -243,8 +243,8 @@ private static final long serialVersionUID = 0L;
     if (!getSnapshotIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, snapshotId_);
     }
-    if (n_ != 0) {
-      output.writeInt32(4, n_);
+    if (limit_ != 0) {
+      output.writeInt32(4, limit_);
     }
     unknownFields.writeTo(output);
   }
@@ -264,9 +264,9 @@ private static final long serialVersionUID = 0L;
     if (!getSnapshotIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, snapshotId_);
     }
-    if (n_ != 0) {
+    if (limit_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(4, n_);
+        .computeInt32Size(4, limit_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -290,8 +290,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getTargetIp());
     result = result && getSnapshotId()
         .equals(other.getSnapshotId());
-    result = result && (getN()
-        == other.getN());
+    result = result && (getLimit()
+        == other.getLimit());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -309,8 +309,8 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getTargetIp().hashCode();
     hash = (37 * hash) + SNAPSHOT_ID_FIELD_NUMBER;
     hash = (53 * hash) + getSnapshotId().hashCode();
-    hash = (37 * hash) + N_FIELD_NUMBER;
-    hash = (53 * hash) + getN();
+    hash = (37 * hash) + LIMIT_FIELD_NUMBER;
+    hash = (53 * hash) + getLimit();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -450,7 +450,7 @@ private static final long serialVersionUID = 0L;
 
       snapshotId_ = "";
 
-      n_ = 0;
+      limit_ = 0;
 
       return this;
     }
@@ -481,7 +481,7 @@ private static final long serialVersionUID = 0L;
       result.clusterId_ = clusterId_;
       result.targetIp_ = targetIp_;
       result.snapshotId_ = snapshotId_;
-      result.n_ = n_;
+      result.limit_ = limit_;
       onBuilt();
       return result;
     }
@@ -542,8 +542,8 @@ private static final long serialVersionUID = 0L;
         snapshotId_ = other.snapshotId_;
         onChanged();
       }
-      if (other.getN() != 0) {
-        setN(other.getN());
+      if (other.getLimit() != 0) {
+        setLimit(other.getLimit());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -801,28 +801,28 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int n_ ;
+    private int limit_ ;
     /**
-     * <code>int32 n = 4;</code>
+     * <code>int32 limit = 4;</code>
      */
-    public int getN() {
-      return n_;
+    public int getLimit() {
+      return limit_;
     }
     /**
-     * <code>int32 n = 4;</code>
+     * <code>int32 limit = 4;</code>
      */
-    public Builder setN(int value) {
+    public Builder setLimit(int value) {
       
-      n_ = value;
+      limit_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>int32 n = 4;</code>
+     * <code>int32 limit = 4;</code>
      */
-    public Builder clearN() {
+    public Builder clearLimit() {
       
-      n_ = 0;
+      limit_ = 0;
       onChanged();
       return this;
     }

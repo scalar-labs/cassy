@@ -31,7 +31,7 @@ public class BackupHistoryTest {
   private final String SNAPSHOT_ID = "snapshot_id";
   private final long CREATED_AT = 1L;
   private final OperationStatus BACKUP_STATUS = OperationStatus.COMPLETED;
-  private final int N = 3;
+  private final int LIMIT = 3;
   @Mock private Connection connection;
   @Mock private PreparedStatement insert;
   @Mock private PreparedStatement update;
@@ -186,7 +186,7 @@ public class BackupHistoryTest {
           throws SQLException {
     // Arrange
     BackupListingRequest request =
-        BackupListingRequest.newBuilder().setClusterId(CLUSTER_ID).setN(N).build();
+        BackupListingRequest.newBuilder().setClusterId(CLUSTER_ID).setLimit(LIMIT).build();
     ResultSet resultSet = mock(ResultSet.class);
     when(selectRecentByCluster.executeQuery()).thenReturn(resultSet);
     when(resultSet.getString(anyString())).thenReturn("anyString");
@@ -200,9 +200,9 @@ public class BackupHistoryTest {
     // Assert
     verify(selectRecentByCluster).clearParameters();
     verify(selectRecentByCluster).setString(1, CLUSTER_ID);
-    verify(selectRecentByCluster).setInt(2, N);
+    verify(selectRecentByCluster).setInt(2, LIMIT);
     verify(selectRecentByCluster).executeQuery();
-    assertThat(records.size()).isEqualTo(N);
+    assertThat(records.size()).isEqualTo(LIMIT);
   }
 
   @Test
@@ -210,7 +210,7 @@ public class BackupHistoryTest {
       throws SQLException {
     // Arrange
     BackupListingRequest request =
-        BackupListingRequest.newBuilder().setClusterId(CLUSTER_ID).setN(N).build();
+        BackupListingRequest.newBuilder().setClusterId(CLUSTER_ID).setLimit(LIMIT).build();
     SQLException toThrow = mock(SQLException.class);
     when(selectRecentByCluster.executeQuery()).thenThrow(toThrow);
     doNothing().when(selectRecentByCluster).clearParameters();
@@ -226,7 +226,7 @@ public class BackupHistoryTest {
     // Assert
     verify(selectRecentByCluster).clearParameters();
     verify(selectRecentByCluster).setString(1, CLUSTER_ID);
-    verify(selectRecentByCluster).setInt(2, N);
+    verify(selectRecentByCluster).setInt(2, LIMIT);
     verify(selectRecentByCluster).executeQuery();
   }
 
@@ -239,7 +239,7 @@ public class BackupHistoryTest {
         BackupListingRequest.newBuilder()
             .setClusterId(CLUSTER_ID)
             .setTargetIp(TARGET_IP)
-            .setN(N)
+            .setLimit(LIMIT)
             .build();
     ResultSet resultSet = mock(ResultSet.class);
     when(selectRecentByHost.executeQuery()).thenReturn(resultSet);
@@ -255,9 +255,9 @@ public class BackupHistoryTest {
     verify(selectRecentByHost).clearParameters();
     verify(selectRecentByHost).setString(1, CLUSTER_ID);
     verify(selectRecentByHost).setString(2, TARGET_IP);
-    verify(selectRecentByHost).setInt(3, N);
+    verify(selectRecentByHost).setInt(3, LIMIT);
     verify(selectRecentByHost).executeQuery();
-    assertThat(records.size()).isEqualTo(N);
+    assertThat(records.size()).isEqualTo(LIMIT);
   }
 
   @Test
@@ -265,7 +265,7 @@ public class BackupHistoryTest {
       throws SQLException {
     // Arrange
     BackupListingRequest request =
-        BackupListingRequest.newBuilder().setSnapshotId(SNAPSHOT_ID).setN(N).build();
+        BackupListingRequest.newBuilder().setSnapshotId(SNAPSHOT_ID).setLimit(LIMIT).build();
     ResultSet resultSet = mock(ResultSet.class);
     when(selectRecentBySnapshot.executeQuery()).thenReturn(resultSet);
     when(resultSet.getString(anyString())).thenReturn("anyString");
@@ -278,9 +278,9 @@ public class BackupHistoryTest {
 
     // Assert
     verify(selectRecentBySnapshot).setString(1, SNAPSHOT_ID);
-    verify(selectRecentBySnapshot).setInt(2, N);
+    verify(selectRecentBySnapshot).setInt(2, LIMIT);
     verify(selectRecentBySnapshot).executeQuery();
-    assertThat(records.size()).isEqualTo(N);
+    assertThat(records.size()).isEqualTo(LIMIT);
   }
 
   @Test

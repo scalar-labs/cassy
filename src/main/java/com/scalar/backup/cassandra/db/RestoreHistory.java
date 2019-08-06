@@ -123,7 +123,7 @@ public class RestoreHistory {
   private ResultSet selectRecentByCluster(RestoreStatusListingRequest request) throws SQLException {
     selectRecentByCluster.clearParameters();
     selectRecentByCluster.setString(1, request.getClusterId());
-    int n = request.getN() == 0 ? DEFAULT_N : request.getN();
+    int n = request.getLimit() == 0 ? DEFAULT_N : request.getLimit();
     selectRecentByCluster.setInt(2, n);
     ResultSet resultSet = selectRecentByCluster.executeQuery();
     return resultSet;
@@ -133,7 +133,7 @@ public class RestoreHistory {
     selectRecentByHost.clearParameters();
     selectRecentByHost.setString(1, request.getClusterId());
     selectRecentByHost.setString(2, request.getTargetIp());
-    int n = request.getN() == 0 ? DEFAULT_N : request.getN();
+    int n = request.getLimit() == 0 ? DEFAULT_N : request.getLimit();
     selectRecentByHost.setInt(3, n);
     ResultSet resultSet = selectRecentByHost.executeQuery();
     return resultSet;
@@ -142,7 +142,7 @@ public class RestoreHistory {
   private ResultSet selectRecentBySnapshot(RestoreStatusListingRequest request)
       throws SQLException {
     selectRecentBySnapshot.setString(1, request.getSnapshotId());
-    int n = request.getN() == 0 ? DEFAULT_N : request.getN();
+    int n = request.getLimit() == 0 ? DEFAULT_N : request.getLimit();
     selectRecentBySnapshot.setInt(2, n);
     ResultSet resultSet = selectRecentBySnapshot.executeQuery();
     return resultSet;

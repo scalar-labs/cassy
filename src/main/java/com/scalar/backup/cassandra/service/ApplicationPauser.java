@@ -5,6 +5,7 @@ import com.scalar.backup.cassandra.exception.PauseException;
 import com.scalar.backup.cassandra.exception.TimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,9 +24,9 @@ import org.xbill.DNS.Type;
 @Immutable
 public class ApplicationPauser {
   private static final Logger logger = LoggerFactory.getLogger(ApplicationPauser.class);
-  private final String srvServiceUrl;
+  private final Optional<String> srvServiceUrl;
 
-  public ApplicationPauser(String srvServiceUrl) {
+  public ApplicationPauser(Optional<String> srvServiceUrl) {
     this.srvServiceUrl = srvServiceUrl;
   }
 
@@ -38,8 +39,12 @@ public class ApplicationPauser {
   }
 
   private void run(Consumer<ApplicationPauseClient> consumer) {
+    String serviceUrl =
+        srvServiceUrl.orElseThrow(
+            () -> new PauseException("Please configure srv_service_url to pause a cluster. "));
+
     // Assume that the list of addresses for unpause is the same as the one for pause.
-    List<SRVRecord> records = getApplicationIps(srvServiceUrl);
+    List<SRVRecord> records = getApplicationIps(serviceUrl);
 
     List<Future<String>> futures = new ArrayList<>();
     ExecutorService executor = Executors.newCachedThreadPool();
