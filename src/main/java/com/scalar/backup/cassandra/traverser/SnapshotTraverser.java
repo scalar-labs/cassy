@@ -27,8 +27,7 @@ public class SnapshotTraverser extends FileTraverser {
   }
 
   private List<Path> traverseSnapshot(Stream<Path> stream) {
-    return traverseFile(stream, SNAPSHOT_DIRNAME, DIR_TO_FILE_DISTANCE)
-        .stream()
+    return traverseFile(stream, SNAPSHOT_DIRNAME, DIR_TO_FILE_DISTANCE).stream()
         .filter(f -> f.toString().contains(snapshotId))
         .collect(Collectors.toList());
   }
