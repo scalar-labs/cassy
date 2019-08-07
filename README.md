@@ -163,7 +163,7 @@ $ grpcurl -plaintext -d '{"limit": 3, "cluster_id": ""}' 192.168.0.254:20051  rp
 ### Restore backups to a node
 
 You can restore a node with `RestoreBackup` with `"restore_type": 2`.
-Note that there should be no data, commitlogs, hints in a node that is being recovered, and Cassandra daemon is stopped.
+Note that there should be no data, commitlogs, hints in a node that is being recovered, and the Cassandra daemon should be stopped.
 
 ```
 $ grpcurl -plaintext -d '{"snapshot_id": "", "restore_type": 2, "cluster_id": ""}' 192.168.0.254:20051 rpc.CassandraBackup.RestoreBackup
