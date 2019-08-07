@@ -145,7 +145,7 @@ You can take cluster-wide consistent backups with `TakeBackup` with `"backup_typ
 $ grpcurl -plaintext -d '{"cluster_id": "", "backup_type": 1}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup 
 ```
 
-Cassy master asks a DNS to resolve the service URL to get a list of IPs and ports of Cassandra applications, and ask those nodes to stop processing. The node that is asked to stop will finish already received requests and will be in a pause mode afterward and return a response to Cassy master. The master waits for all responses, and takes snapshots of all Cassandra nodes. Then the master unpause the application nodes and upload all the snapshots.
+Cassy master asks a DNS to resolve the service URL to get a list of IPs and ports of Cassandra applications, and ask those nodes to stop processing. The node that is asked to stop will finish already received requests and will be in a pause mode afterward and return a response to Cassy master. The master waits for all responses, and takes snapshots of all Cassandra nodes. Then the master unpauses the application nodes and uploads all the snapshots.
 
 Note that applications must implement a pause feature to do this. Cassy currently supports gRPC endpoints for pause. For more detail, please take a look at the source code.
 
