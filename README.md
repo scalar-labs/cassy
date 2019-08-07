@@ -5,11 +5,11 @@ Cassy is a simple and integrated backup tool for Apache Cassandra.
 You can do the following things with Cassy from an easy to use gRPC APIs or HTTP/1.1 REST APIs:
 * Take snapshots, and upload snapshots and incremental backups to a blob store or filesystem of your choice from your cluster
 * Download backups, and restore a node or a cluster from the backups
-* Manage backup and restore histories
+* Manage backups and restore histories
 
 ## Background
 
-The existing Cassandra backup features such as snapshot and incremental backups are great building blocks for doing backup and restore for Cassandra data. However they are not necessarily easy to use because it is not fully integrated. Moreover, the current backup feature or the existing backup tools are problematic when it is used with [Scalar DB](https://github.com/scalar-labs/scalardb/) transaction that updates multiple records in a transactional (atomic) way because they do not handle transactional consistency of multiple records. 
+The existing Cassandra backup features such as snapshot and incremental backups are great building blocks for doing backup and restore for Cassandra data. However they are not necessarily easy to use because they are not fully integrated. Moreover, the current backup feature or the existing backup tools are problematic when it is used with [Scalar DB](https://github.com/scalar-labs/scalardb/) transaction that updates multiple records in a transactional (atomic) way because they do not handle transactional consistency of multiple records. 
 This is why we come up with a new backup tool, which can not only do backup and restore in an easy and integrated manner, but also take care of a cluster-wide transactionally consistent backup.
 
 ## System Overview
@@ -18,7 +18,7 @@ TODO
 
 ## How to Use
 
-This section briery describes how to install and use Cassy.
+This section briefly describes how to install and use Cassy.
 
 ### Prerequisite
 
@@ -30,11 +30,11 @@ Of-course, you need a well-configured Cassandra cluster that you can manage. The
 * Set `incremental_backups=true` in casssandra.yaml. (only if you want to use incremental backups)
 * Set `LOCAL_JMX=no` for enabling remote JMX and set `com.sun.management.jmxremote.authenticate=false` to disable authentication in cassandra-env.sh. (Please do not expose the JMX port to the internet.)
 
-From here, it assumes there are a multi-node Cassandra cluster (192.168.0.2, ...) and a node for running Cassy master daemon (192.168.0.254).
+From here, it assumes there is a multi-node Cassandra cluster (192.168.0.2, ...) and a node for running the Cassy master daemon (192.168.0.254).
 
 ### Install
 
-As of writing this, Cassy is not uploaded to Maven so you need to install from the source.
+As of writing this, Cassy is not uploaded to Maven so you will need to install from the source.
 
 ```
 # At each node of Cassandra cluster and the Cassy master node
@@ -44,7 +44,7 @@ $ ./gradlew installDist
 $ // TODO: grpc-gateway for HTTP/1.0
 ```
 
-The following actions are also needed:
+The following actions are also required:
 * Place a SSH private key without passphrase in the master node and a corresponding public key to each Cassandra node. 
 * Configure AWS config and credential properly. (Note that the first version only supports AWS S3 as a blob store) 
 
@@ -128,14 +128,14 @@ $ grpcurl -plaintext -d '{"cluster_id": "", "target_ips": ["192.168.0.2"], "back
 ```
 
 When you want to upload incremental backups, please specify `"backup_type": 3` instead. 
-You also need to specify `snapshot_id` because incremental backups are differences from a previous snapshot.
+You will also need to specify a `snapshot_id` because incremental backups are differences from a previous snapshot.
 
 ```
 # It asks each node to upload incremental backups to the specified location.
 $ grpcurl -plaintext -d '{"cluster_id": "", "snapshot_id": "", "backup_type": 3}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup 
 ```
 
-(NOTE: Cassandra incremental backups are created per memtable flush and it is not controllable from outside of system. So what Cassy can do is just upload incremental backups.)
+(NOTE: Cassandra incremental backups are created per memtable flush and it is not controllable from outside of system. So what Cassy does is just upload incremental backups.)
 
 ### Take cluster-wide consistent backups
 
@@ -145,7 +145,7 @@ You can take cluster-wide consistent backups with `TakeBackup` with `"backup_typ
 $ grpcurl -plaintext -d '{"cluster_id": "", "backup_type": 1}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup 
 ```
 
-Cassy master asks a DNS to resolve the service URL to get a list of IPs and ports of Cassandra applications, and ask those nodes to stop processing. The node that is asked to stop will finish already received requests and will be in a pause mode afterward and return a response to Cassy master. The master waits for all responses, and takes snapshots of all Cassandra nodes. Then the master unpause the application nodes and upload all the snapshots.
+Cassy master asks a DNS to resolve the service URL to get a list of IPs and ports of Cassandra applications, and ask those nodes to stop processing. The node that is asked to stop will finish already received requests and will be in a pause mode afterward and return a response to Cassy master. The master waits for all responses, and takes snapshots of all Cassandra nodes. Then the master unpauses the application nodes and uploads all the snapshots.
 
 Note that applications must implement a pause feature to do this. Cassy currently supports gRPC endpoints for pause. For more detail, please take a look at the source code.
 
@@ -163,7 +163,7 @@ $ grpcurl -plaintext -d '{"limit": 3, "cluster_id": ""}' 192.168.0.254:20051  rp
 ### Restore backups to a node
 
 You can restore a node with `RestoreBackup` with `"restore_type": 2`.
-Note that there should be no data, commitlogs, hints in a node that is being recovered, and Cassandra daemon is stopped.
+Note that there should be no data, commitlogs, hints in a node that is being recovered, and the Cassandra daemon should be stopped.
 
 ```
 $ grpcurl -plaintext -d '{"snapshot_id": "", "restore_type": 2, "cluster_id": ""}' 192.168.0.254:20051 rpc.CassandraBackup.RestoreBackup
