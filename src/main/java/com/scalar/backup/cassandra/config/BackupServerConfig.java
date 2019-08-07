@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.Properties;
 import javax.annotation.concurrent.Immutable;
 
@@ -15,24 +16,20 @@ public class BackupServerConfig {
   protected static final String PREFIX = "scalar.backup.cassandra.server.";
   public static final String PORT = PREFIX + "port";
   public static final String JMX_PORT = PREFIX + "jmx_port";
-  public static final String USER_NAME = PREFIX + "user_name";
-  public static final String PRIVATE_KEY_PATH = PREFIX + "private_key_path";
-  public static final String CASSANDRA_HOST = PREFIX + "cassandra_host";
-  public static final String SCALAR_HOSTS = PREFIX + "scalar_hosts";
+  public static final String SSH_USER = PREFIX + "ssh_user";
+  public static final String SSH_PRIVATE_KEY_PATH = PREFIX + "ssh_private_key_path";
   public static final String SLAVE_COMMAND_PATH = PREFIX + "slave_command_path";
   public static final String STORAGE_BASE_URI = PREFIX + "storage_base_uri";
-  public static final String DB_URL = PREFIX + "db_url";
+  public static final String METADATA_DB_URL = PREFIX + "metadata_db_url";
   public static final String SRV_SERVICE_URL = PREFIX + "srv_service_url";
   private int port = 20051;
   private int jmxPort = 7199;
-  private String userName;
-  private String privateKeyPath;
-  private String cassandraHost;
-  private String scalarHosts;
+  private String sshUser;
+  private String sshPrivateKeyPath;
   private String slaveCommandPath;
   private String storageBaseUri;
-  private String dbUrl;
-  private String srvServiceUrl;
+  private String metadataDbUrl;
+  private Optional<String> srvServiceUrl;
 
   public BackupServerConfig(File propertiesFile) throws IOException {
     this(new FileInputStream(propertiesFile));
@@ -61,20 +58,12 @@ public class BackupServerConfig {
     return jmxPort;
   }
 
-  public String getUserName() {
-    return userName;
+  public String getSshUser() {
+    return sshUser;
   }
 
-  public String getPrivateKeyPath() {
-    return privateKeyPath;
-  }
-
-  public String getCassandraHost() {
-    return cassandraHost;
-  }
-
-  public String getScalarHosts() {
-    return scalarHosts;
+  public String getSshPrivateKeyPath() {
+    return sshPrivateKeyPath;
   }
 
   public String getSlaveCommandPath() {
@@ -85,11 +74,11 @@ public class BackupServerConfig {
     return storageBaseUri;
   }
 
-  public String getDbUrl() {
-    return dbUrl;
+  public String getMetadataDbUrl() {
+    return metadataDbUrl;
   }
 
-  public String getSrvServiceUrl() {
+  public Optional<String> getSrvServiceUrl() {
     return srvServiceUrl;
   }
 
@@ -100,21 +89,16 @@ public class BackupServerConfig {
     if (props.getProperty(JMX_PORT) != null) {
       jmxPort = Integer.parseInt(props.getProperty(JMX_PORT));
     }
-    checkArgument(props.getProperty(USER_NAME) != null);
-    userName = props.getProperty(USER_NAME);
-    checkArgument(props.getProperty(PRIVATE_KEY_PATH) != null);
-    privateKeyPath = props.getProperty(PRIVATE_KEY_PATH);
-    checkArgument(props.getProperty(CASSANDRA_HOST) != null);
-    cassandraHost = props.getProperty(CASSANDRA_HOST);
-    checkArgument(props.getProperty(SCALAR_HOSTS) != null);
-    scalarHosts = props.getProperty(SCALAR_HOSTS);
+    checkArgument(props.getProperty(SSH_USER) != null);
+    sshUser = props.getProperty(SSH_USER);
+    checkArgument(props.getProperty(SSH_PRIVATE_KEY_PATH) != null);
+    sshPrivateKeyPath = props.getProperty(SSH_PRIVATE_KEY_PATH);
     checkArgument(props.getProperty(SLAVE_COMMAND_PATH) != null);
     slaveCommandPath = props.getProperty(SLAVE_COMMAND_PATH);
     checkArgument(props.getProperty(STORAGE_BASE_URI) != null);
     storageBaseUri = props.getProperty(STORAGE_BASE_URI);
-    checkArgument(props.getProperty(DB_URL) != null);
-    dbUrl = props.getProperty(DB_URL);
-    checkArgument(props.getProperty(SRV_SERVICE_URL) != null);
-    srvServiceUrl = props.getProperty(SRV_SERVICE_URL);
+    checkArgument(props.getProperty(METADATA_DB_URL) != null);
+    metadataDbUrl = props.getProperty(METADATA_DB_URL);
+    srvServiceUrl = Optional.ofNullable(props.getProperty(SRV_SERVICE_URL));
   }
 }

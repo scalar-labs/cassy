@@ -62,8 +62,8 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
     RemoteCommand command =
         RemoteCommand.newBuilder()
             .ip(backupKey.getTargetIp())
-            .username(config.getUserName())
-            .privateKeyFile(Paths.get(config.getPrivateKeyPath()))
+            .username(config.getSshUser())
+            .privateKeyFile(Paths.get(config.getSshPrivateKeyPath()))
             .name(RESTORE_COMMAND)
             .command(config.getSlaveCommandPath() + "/" + RESTORE_COMMAND)
             .arguments(arguments)

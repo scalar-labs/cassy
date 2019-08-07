@@ -16,9 +16,4 @@ public interface ClusterRegistrationRequestOrBuilder extends
    */
   com.google.protobuf.ByteString
       getCassandraHostBytes();
-
-  /**
-   * <code>uint32 jmx_port = 2;</code>
-   */
-  int getJmxPort();
 }

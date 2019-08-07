@@ -17,7 +17,6 @@ private static final long serialVersionUID = 0L;
   }
   private ClusterRegistrationRequest() {
     cassandraHost_ = "";
-    jmxPort_ = 0;
   }
 
   @java.lang.Override
@@ -48,11 +47,6 @@ private static final long serialVersionUID = 0L;
             java.lang.String s = input.readStringRequireUtf8();
 
             cassandraHost_ = s;
-            break;
-          }
-          case 16: {
-
-            jmxPort_ = input.readUInt32();
             break;
           }
           default: {
@@ -121,15 +115,6 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int JMX_PORT_FIELD_NUMBER = 2;
-  private int jmxPort_;
-  /**
-   * <code>uint32 jmx_port = 2;</code>
-   */
-  public int getJmxPort() {
-    return jmxPort_;
-  }
-
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -147,9 +132,6 @@ private static final long serialVersionUID = 0L;
     if (!getCassandraHostBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, cassandraHost_);
     }
-    if (jmxPort_ != 0) {
-      output.writeUInt32(2, jmxPort_);
-    }
     unknownFields.writeTo(output);
   }
 
@@ -161,10 +143,6 @@ private static final long serialVersionUID = 0L;
     size = 0;
     if (!getCassandraHostBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, cassandraHost_);
-    }
-    if (jmxPort_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeUInt32Size(2, jmxPort_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -184,8 +162,6 @@ private static final long serialVersionUID = 0L;
     boolean result = true;
     result = result && getCassandraHost()
         .equals(other.getCassandraHost());
-    result = result && (getJmxPort()
-        == other.getJmxPort());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -199,8 +175,6 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + CASSANDRA_HOST_FIELD_NUMBER;
     hash = (53 * hash) + getCassandraHost().hashCode();
-    hash = (37 * hash) + JMX_PORT_FIELD_NUMBER;
-    hash = (53 * hash) + getJmxPort();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -336,8 +310,6 @@ private static final long serialVersionUID = 0L;
       super.clear();
       cassandraHost_ = "";
 
-      jmxPort_ = 0;
-
       return this;
     }
 
@@ -365,7 +337,6 @@ private static final long serialVersionUID = 0L;
     public com.scalar.backup.cassandra.rpc.ClusterRegistrationRequest buildPartial() {
       com.scalar.backup.cassandra.rpc.ClusterRegistrationRequest result = new com.scalar.backup.cassandra.rpc.ClusterRegistrationRequest(this);
       result.cassandraHost_ = cassandraHost_;
-      result.jmxPort_ = jmxPort_;
       onBuilt();
       return result;
     }
@@ -417,9 +388,6 @@ private static final long serialVersionUID = 0L;
       if (!other.getCassandraHost().isEmpty()) {
         cassandraHost_ = other.cassandraHost_;
         onChanged();
-      }
-      if (other.getJmxPort() != 0) {
-        setJmxPort(other.getJmxPort());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -515,32 +483,6 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       cassandraHost_ = value;
-      onChanged();
-      return this;
-    }
-
-    private int jmxPort_ ;
-    /**
-     * <code>uint32 jmx_port = 2;</code>
-     */
-    public int getJmxPort() {
-      return jmxPort_;
-    }
-    /**
-     * <code>uint32 jmx_port = 2;</code>
-     */
-    public Builder setJmxPort(int value) {
-      
-      jmxPort_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>uint32 jmx_port = 2;</code>
-     */
-    public Builder clearJmxPort() {
-      
-      jmxPort_ = 0;
       onChanged();
       return this;
     }

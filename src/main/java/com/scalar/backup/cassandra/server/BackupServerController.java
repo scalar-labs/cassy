@@ -46,32 +46,32 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
   private static final Logger logger = LoggerFactory.getLogger(BackupServerController.class);
   private final BackupServerConfig config;
   private final DatabaseAccessor database;
-  private final BlockingQueue<RemoteCommandContext> futureQueue;
+  private final BlockingQueue<RemoteCommandContext> commandQueue;
 
   public BackupServerController(
       BackupServerConfig config,
       DatabaseAccessor database,
-      BlockingQueue<RemoteCommandContext> futureQueue) {
+      BlockingQueue<RemoteCommandContext> commandQueue) {
     this.config = config;
     this.database = database;
-    this.futureQueue = futureQueue;
+    this.commandQueue = commandQueue;
   }
 
   @Override
   public void registerCluster(
       ClusterRegistrationRequest request,
       StreamObserver<ClusterRegistrationResponse> responseObserver) {
-    if (request.getCassandraHost().isEmpty() || request.getJmxPort() == 0) {
+    if (request.getCassandraHost().isEmpty()) {
       responseObserver.onError(
           Status.INVALID_ARGUMENT
-              .withDescription("cassandra_host or jmx_port is not set correctly.")
+              .withDescription("cassandra_host is not set correctly.")
               .asRuntimeException());
       return;
     }
 
     ClusterInfoRecord record;
     try {
-      JmxManager jmx = getJmx(request.getCassandraHost(), request.getJmxPort());
+      JmxManager jmx = getJmx(request.getCassandraHost(), config.getJmxPort());
       if (!areAllNodesAlive(jmx)) {
         responseObserver.onError(
             Status.UNAVAILABLE
@@ -264,7 +264,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
               new ApplicationPauser(config.getSrvServiceUrl()));
       List<RemoteCommandContext> futures = master.takeBackup(backupKeys, type);
       updateBackupStatus(backupKeys, type, OperationStatus.STARTED);
-      futureQueue.addAll(futures);
+      commandQueue.addAll(futures);
     } catch (Exception e) {
       builder.setStatus(OperationStatus.FAILED);
       updateBackupStatus(backupKeys, type, OperationStatus.FAILED);
@@ -305,7 +305,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
       RestoreServiceMaster master = new RestoreServiceMaster(config, clusterInfo.get(), executor);
       List<RemoteCommandContext> futures = master.restoreBackup(backupKeys, type);
       updateRestoreStatus(backupKeys, type, OperationStatus.STARTED);
-      futureQueue.addAll(futures);
+      commandQueue.addAll(futures);
     } catch (Exception e) {
       builder.setStatus(OperationStatus.FAILED);
       updateRestoreStatus(backupKeys, type, OperationStatus.FAILED);
