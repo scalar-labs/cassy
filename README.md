@@ -23,7 +23,7 @@ This section briery describes how to install and use Cassy.
 ### Prerequisite
 
 Cassy requires the following software to run: 
-* Oracle JDK 8 (or OpenJDK 8) or higher version
+* Oracle JDK 8 (or OpenJDK 8) (it should work with 9, but probably not with 10+)
 * SQLite (or JDBC-supported relational DBMS)
 
 Of-course, you need a well-configured Cassandra cluster that you can manage. The following Cassandra configurations are required to be updated to run Cassy properly.
