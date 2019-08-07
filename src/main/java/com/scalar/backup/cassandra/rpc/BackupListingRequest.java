@@ -18,7 +18,7 @@ private static final long serialVersionUID = 0L;
   private BackupListingRequest() {
     clusterId_ = "";
     targetIp_ = "";
-    n_ = 0;
+    limit_ = 0;
     snapshotId_ = "";
   }
 
@@ -60,7 +60,7 @@ private static final long serialVersionUID = 0L;
           }
           case 24: {
 
-            n_ = input.readInt32();
+            limit_ = input.readInt32();
             break;
           }
           case 34: {
@@ -169,13 +169,13 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int N_FIELD_NUMBER = 3;
-  private int n_;
+  public static final int LIMIT_FIELD_NUMBER = 3;
+  private int limit_;
   /**
-   * <code>int32 n = 3;</code>
+   * <code>int32 limit = 3;</code>
    */
-  public int getN() {
-    return n_;
+  public int getLimit() {
+    return limit_;
   }
 
   public static final int SNAPSHOT_ID_FIELD_NUMBER = 4;
@@ -232,8 +232,8 @@ private static final long serialVersionUID = 0L;
     if (!getTargetIpBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, targetIp_);
     }
-    if (n_ != 0) {
-      output.writeInt32(3, n_);
+    if (limit_ != 0) {
+      output.writeInt32(3, limit_);
     }
     if (!getSnapshotIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 4, snapshotId_);
@@ -253,9 +253,9 @@ private static final long serialVersionUID = 0L;
     if (!getTargetIpBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, targetIp_);
     }
-    if (n_ != 0) {
+    if (limit_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(3, n_);
+        .computeInt32Size(3, limit_);
     }
     if (!getSnapshotIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, snapshotId_);
@@ -280,8 +280,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getClusterId());
     result = result && getTargetIp()
         .equals(other.getTargetIp());
-    result = result && (getN()
-        == other.getN());
+    result = result && (getLimit()
+        == other.getLimit());
     result = result && getSnapshotId()
         .equals(other.getSnapshotId());
     result = result && unknownFields.equals(other.unknownFields);
@@ -299,8 +299,8 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getClusterId().hashCode();
     hash = (37 * hash) + TARGET_IP_FIELD_NUMBER;
     hash = (53 * hash) + getTargetIp().hashCode();
-    hash = (37 * hash) + N_FIELD_NUMBER;
-    hash = (53 * hash) + getN();
+    hash = (37 * hash) + LIMIT_FIELD_NUMBER;
+    hash = (53 * hash) + getLimit();
     hash = (37 * hash) + SNAPSHOT_ID_FIELD_NUMBER;
     hash = (53 * hash) + getSnapshotId().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -440,7 +440,7 @@ private static final long serialVersionUID = 0L;
 
       targetIp_ = "";
 
-      n_ = 0;
+      limit_ = 0;
 
       snapshotId_ = "";
 
@@ -472,7 +472,7 @@ private static final long serialVersionUID = 0L;
       com.scalar.backup.cassandra.rpc.BackupListingRequest result = new com.scalar.backup.cassandra.rpc.BackupListingRequest(this);
       result.clusterId_ = clusterId_;
       result.targetIp_ = targetIp_;
-      result.n_ = n_;
+      result.limit_ = limit_;
       result.snapshotId_ = snapshotId_;
       onBuilt();
       return result;
@@ -530,8 +530,8 @@ private static final long serialVersionUID = 0L;
         targetIp_ = other.targetIp_;
         onChanged();
       }
-      if (other.getN() != 0) {
-        setN(other.getN());
+      if (other.getLimit() != 0) {
+        setLimit(other.getLimit());
       }
       if (!other.getSnapshotId().isEmpty()) {
         snapshotId_ = other.snapshotId_;
@@ -704,28 +704,28 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int n_ ;
+    private int limit_ ;
     /**
-     * <code>int32 n = 3;</code>
+     * <code>int32 limit = 3;</code>
      */
-    public int getN() {
-      return n_;
+    public int getLimit() {
+      return limit_;
     }
     /**
-     * <code>int32 n = 3;</code>
+     * <code>int32 limit = 3;</code>
      */
-    public Builder setN(int value) {
+    public Builder setLimit(int value) {
       
-      n_ = value;
+      limit_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>int32 n = 3;</code>
+     * <code>int32 limit = 3;</code>
      */
-    public Builder clearN() {
+    public Builder clearLimit() {
       
-      n_ = 0;
+      limit_ = 0;
       onChanged();
       return this;
     }

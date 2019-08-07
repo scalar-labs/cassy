@@ -31,7 +31,7 @@ public class RestoreHistoryTest {
   private final String SNAPSHOT_ID = "snapshot_id";
   private final long CREATED_AT = 1L;
   private final OperationStatus RESTORE_STATUS = OperationStatus.COMPLETED;
-  private final int N = 3;
+  private final int LIMIT = 3;
   @Mock private Connection connection;
   @Mock private PreparedStatement insert;
   @Mock private PreparedStatement update;
@@ -233,7 +233,7 @@ public class RestoreHistoryTest {
         RestoreStatusListingRequest.newBuilder()
             .setClusterId(CLUSTER_ID)
             .setTargetIp(TARGET_IP)
-            .setN(N)
+            .setLimit(LIMIT)
             .build();
     ResultSet resultSet = mock(ResultSet.class);
     when(selectRecentByHost.executeQuery()).thenReturn(resultSet);
@@ -249,9 +249,9 @@ public class RestoreHistoryTest {
     verify(selectRecentByHost).clearParameters();
     verify(selectRecentByHost).setString(1, CLUSTER_ID);
     verify(selectRecentByHost).setString(2, TARGET_IP);
-    verify(selectRecentByHost).setInt(3, N);
+    verify(selectRecentByHost).setInt(3, LIMIT);
     verify(selectRecentByHost).executeQuery();
-    assertThat(records.size()).isEqualTo(N);
+    assertThat(records.size()).isEqualTo(LIMIT);
   }
 
   @Test
@@ -260,7 +260,7 @@ public class RestoreHistoryTest {
           throws SQLException {
     // Arrange
     RestoreStatusListingRequest request =
-        RestoreStatusListingRequest.newBuilder().setSnapshotId(SNAPSHOT_ID).setN(N).build();
+        RestoreStatusListingRequest.newBuilder().setSnapshotId(SNAPSHOT_ID).setLimit(LIMIT).build();
     ResultSet resultSet = mock(ResultSet.class);
     when(selectBySnapshot.executeQuery()).thenReturn(resultSet);
     when(resultSet.getString(anyString())).thenReturn("anyString");
@@ -273,8 +273,8 @@ public class RestoreHistoryTest {
 
     // Assert
     verify(selectBySnapshot).setString(1, SNAPSHOT_ID);
-    verify(selectBySnapshot).setInt(2, N);
+    verify(selectBySnapshot).setInt(2, LIMIT);
     verify(selectBySnapshot).executeQuery();
-    assertThat(records.size()).isEqualTo(N);
+    assertThat(records.size()).isEqualTo(LIMIT);
   }
 }

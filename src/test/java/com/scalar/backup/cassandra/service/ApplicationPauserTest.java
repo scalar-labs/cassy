@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.scalar.backup.cassandra.exception.PauseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +30,7 @@ public class ApplicationPauserTest {
 
   @Before
   public void setUp() {
-    pauser = spy(new ApplicationPauser(SRV_SERVICE_URL));
+    pauser = spy(new ApplicationPauser(Optional.of(SRV_SERVICE_URL)));
   }
 
   public List<SRVRecord> prepareSrvRecords() throws TextParseException {

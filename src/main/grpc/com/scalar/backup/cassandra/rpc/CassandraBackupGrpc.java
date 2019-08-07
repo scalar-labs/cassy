@@ -40,13 +40,13 @@ public final class CassandraBackupGrpc {
               io.grpc.MethodDescriptor.<com.scalar.backup.cassandra.rpc.ClusterRegistrationRequest, com.scalar.backup.cassandra.rpc.ClusterRegistrationResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(
-                  "rpc.CassandraBackup", "registerCluster"))
+                  "rpc.CassandraBackup", "RegisterCluster"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.scalar.backup.cassandra.rpc.ClusterRegistrationRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.scalar.backup.cassandra.rpc.ClusterRegistrationResponse.getDefaultInstance()))
-                  .setSchemaDescriptor(new CassandraBackupMethodDescriptorSupplier("registerCluster"))
+                  .setSchemaDescriptor(new CassandraBackupMethodDescriptorSupplier("RegisterCluster"))
                   .build();
           }
         }
@@ -231,18 +231,6 @@ public final class CassandraBackupGrpc {
     }
 
     /**
-     * <pre>
-     *rpc ShowClusters (google.protobuf.Empty) returns (ClusterListingResponse) {
-     *option (google.api.http) = {
-     *get: "/v1/clusters"
-     *};
-     *}
-     *rpc ListNodes (NodeListingRequest) returns (NodeListingResponse) {
-     *option (google.api.http) = {
-     *get: "/v1/clusters/{cluster_id}"
-     *};
-     *}
-     * </pre>
      */
     public void listBackups(com.scalar.backup.cassandra.rpc.BackupListingRequest request,
         io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.BackupListingResponse> responseObserver) {
@@ -353,18 +341,6 @@ public final class CassandraBackupGrpc {
     }
 
     /**
-     * <pre>
-     *rpc ShowClusters (google.protobuf.Empty) returns (ClusterListingResponse) {
-     *option (google.api.http) = {
-     *get: "/v1/clusters"
-     *};
-     *}
-     *rpc ListNodes (NodeListingRequest) returns (NodeListingResponse) {
-     *option (google.api.http) = {
-     *get: "/v1/clusters/{cluster_id}"
-     *};
-     *}
-     * </pre>
      */
     public void listBackups(com.scalar.backup.cassandra.rpc.BackupListingRequest request,
         io.grpc.stub.StreamObserver<com.scalar.backup.cassandra.rpc.BackupListingResponse> responseObserver) {
@@ -430,18 +406,6 @@ public final class CassandraBackupGrpc {
     }
 
     /**
-     * <pre>
-     *rpc ShowClusters (google.protobuf.Empty) returns (ClusterListingResponse) {
-     *option (google.api.http) = {
-     *get: "/v1/clusters"
-     *};
-     *}
-     *rpc ListNodes (NodeListingRequest) returns (NodeListingResponse) {
-     *option (google.api.http) = {
-     *get: "/v1/clusters/{cluster_id}"
-     *};
-     *}
-     * </pre>
      */
     public com.scalar.backup.cassandra.rpc.BackupListingResponse listBackups(com.scalar.backup.cassandra.rpc.BackupListingRequest request) {
       return blockingUnaryCall(
@@ -505,18 +469,6 @@ public final class CassandraBackupGrpc {
     }
 
     /**
-     * <pre>
-     *rpc ShowClusters (google.protobuf.Empty) returns (ClusterListingResponse) {
-     *option (google.api.http) = {
-     *get: "/v1/clusters"
-     *};
-     *}
-     *rpc ListNodes (NodeListingRequest) returns (NodeListingResponse) {
-     *option (google.api.http) = {
-     *get: "/v1/clusters/{cluster_id}"
-     *};
-     *}
-     * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<com.scalar.backup.cassandra.rpc.BackupListingResponse> listBackups(
         com.scalar.backup.cassandra.rpc.BackupListingRequest request) {

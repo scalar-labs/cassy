@@ -36,19 +36,19 @@ public final class BackupServer extends CassandraBackupGrpc.CassandraBackupImplB
   }
 
   private void start() throws IOException, SQLException {
-    connection = DriverManager.getConnection(config.getDbUrl());
+    connection = DriverManager.getConnection(config.getMetadataDbUrl());
     DatabaseAccessor database =
         new DatabaseAccessor(
             new BackupHistory(connection),
             new RestoreHistory(connection),
             new ClusterInfo(connection));
-    BlockingQueue futureQueue = new LinkedBlockingQueue<RemoteCommandContext>();
+    BlockingQueue commandQueue = new LinkedBlockingQueue<RemoteCommandContext>();
     handlerService = Executors.newFixedThreadPool(1);
-    handlerService.submit(new RemoteCommandHandler(futureQueue, database));
+    handlerService.submit(new RemoteCommandHandler(commandQueue, database));
 
     ServerBuilder builder =
         ServerBuilder.forPort(config.getPort())
-            .addService(new BackupServerController(config, database, futureQueue))
+            .addService(new BackupServerController(config, database, commandQueue))
             .addService(ProtoReflectionService.newInstance());
 
     server = builder.build().start();

@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BackupServiceMaster extends AbstractServiceMaster {
-  private static final Logger logger = LoggerFactory.getLogger(BackupServiceMaster.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(BackupServiceMaster.class);
   private static final String BACKUP_TYPE_OPTION = "--backup-type=";
   public static final String BACKUP_COMMAND = "cassandra-backup";
   private ApplicationPauser pauser;
@@ -51,7 +51,7 @@ public class BackupServiceMaster extends AbstractServiceMaster {
     pauser.pause();
 
     // 2. take snapshots of all the nodes in a C* cluster
-    takeNodesSnapshots(backupKeys, type);
+    takeNodesSnapshots(backupKeys);
 
     // 3. unpause C* applications
     pauser.unpause();
@@ -63,14 +63,14 @@ public class BackupServiceMaster extends AbstractServiceMaster {
   private List<RemoteCommandContext> takeNodesBackups(List<BackupKey> backupKeys, BackupType type) {
     // 1. take snapshots of the specified nodes if NODE_SNAPSHOT
     if (type == BackupType.NODE_SNAPSHOT) {
-      takeNodesSnapshots(backupKeys, type);
+      takeNodesSnapshots(backupKeys);
     }
 
     // 2. copy backups in parallel
     return uploadNodesBackups(backupKeys, type);
   }
 
-  private void takeNodesSnapshots(List<BackupKey> backupKeys, BackupType type) {
+  private void takeNodesSnapshots(List<BackupKey> backupKeys) {
     String[] keyspaces = clusterInfo.getKeyspaces().toArray(new String[0]);
 
     ExecutorService executor = Executors.newCachedThreadPool();
@@ -112,8 +112,8 @@ public class BackupServiceMaster extends AbstractServiceMaster {
     RemoteCommand command =
         RemoteCommand.newBuilder()
             .ip(backupKey.getTargetIp())
-            .username(config.getUserName())
-            .privateKeyFile(Paths.get(config.getPrivateKeyPath()))
+            .username(config.getSshUser())
+            .privateKeyFile(Paths.get(config.getSshPrivateKeyPath()))
             .name(BACKUP_COMMAND)
             .command(config.getSlaveCommandPath() + "/" + BACKUP_COMMAND)
             .arguments(arguments)
