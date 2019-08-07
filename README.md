@@ -5,7 +5,7 @@ Cassy is a simple and integrated backup tool for Apache Cassandra.
 You can do the following things with Cassy from an easy to use gRPC APIs or HTTP/1.1 REST APIs:
 * Take snapshots, and upload snapshots and incremental backups to a blob store or filesystem of your choice from your cluster
 * Download backups, and restore a node or a cluster from the backups
-* Manage backup and restore histories
+* Manage backups and restore histories
 
 ## Background
 
