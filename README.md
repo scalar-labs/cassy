@@ -135,7 +135,7 @@ You will also need to specify a `snapshot_id` because incremental backups are di
 $ grpcurl -plaintext -d '{"cluster_id": "", "snapshot_id": "", "backup_type": 3}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup 
 ```
 
-(NOTE: Cassandra incremental backups are created per memtable flush and it is not controllable from outside of system. So what Cassy can do is just upload incremental backups.)
+(NOTE: Cassandra incremental backups are created per memtable flush and it is not controllable from outside of system. So what Cassy does is just upload incremental backups.)
 
 ### Take cluster-wide consistent backups
 
