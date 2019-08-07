@@ -64,7 +64,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     if (request.getCassandraHost().isEmpty()) {
       responseObserver.onError(
           Status.INVALID_ARGUMENT
-              .withDescription("Please specify cassandra_host properly.")
+              .withDescription("cassandra_host is not set correctly.")
               .asRuntimeException());
       return;
     }
