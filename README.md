@@ -128,7 +128,7 @@ $ grpcurl -plaintext -d '{"cluster_id": "", "target_ips": ["192.168.0.2"], "back
 ```
 
 When you want to upload incremental backups, please specify `"backup_type": 3` instead. 
-You also need to specify `snapshot_id` because incremental backups are differences from a previous snapshot.
+You will also need to specify a `snapshot_id` because incremental backups are differences from a previous snapshot.
 
 ```
 # It asks each node to upload incremental backups to the specified location.
