@@ -18,7 +18,7 @@ TODO
 
 ## How to Use
 
-This section briery describes how to install and use Cassy.
+This section briefly describes how to install and use Cassy.
 
 ### Prerequisite
 
