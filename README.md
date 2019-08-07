@@ -9,7 +9,7 @@ You can do the following things with Cassy from an easy to use gRPC APIs or HTTP
 
 ## Background
 
-The existing Cassandra backup features such as snapshot and incremental backups are great building blocks for doing backup and restore for Cassandra data. However they are not necessarily easy to use because it is not fully integrated. Moreover, the current backup feature or the existing backup tools are problematic when it is used with [Scalar DB](https://github.com/scalar-labs/scalardb/) transaction that updates multiple records in a transactional (atomic) way because they do not handle transactional consistency of multiple records. 
+The existing Cassandra backup features such as snapshot and incremental backups are great building blocks for doing backup and restore for Cassandra data. However they are not necessarily easy to use because they are not fully integrated. Moreover, the current backup feature or the existing backup tools are problematic when it is used with [Scalar DB](https://github.com/scalar-labs/scalardb/) transaction that updates multiple records in a transactional (atomic) way because they do not handle transactional consistency of multiple records. 
 This is why we come up with a new backup tool, which can not only do backup and restore in an easy and integrated manner, but also take care of a cluster-wide transactionally consistent backup.
 
 ## System Overview
