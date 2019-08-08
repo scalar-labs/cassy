@@ -24,7 +24,7 @@ This section briefly describes how to install and use Cassy.
 
 Cassy requires the following software to run: 
 * Oracle JDK 8 (or OpenJDK 8) (it should work with 9, but probably not with 10+)
-* SQLite (or JDBC-supported relational DBMS)
+* SQLite 3 (or JDBC-supported relational DBMS)
 
 Of-course, you need a well-configured Cassandra cluster that you can manage. The following Cassandra configurations are required to be updated to run Cassy properly.
 * Set `incremental_backups=true` in casssandra.yaml. (only if you want to use incremental backups)
@@ -72,13 +72,18 @@ scalar.backup.cassandra.server.slave_command_path=/path/to/cassandra-backup/buil
 scalar.backup.cassandra.server.storage_base_uri=s3://your-bucket
 
 # URL of JDBC for managing some metadata such as backup and restore histories
-scalar.backup.cassandra.server.db_url=jdbc:sqlite:cassy.db
+scalar.backup.cassandra.server.metadata_db_url=jdbc:sqlite:cassy.db
 
 # URL of SRV record. It is used to know and pause Cassandra application nodes to take a cluster-wide snapshot. If you don't use the feature, it can be omitted or the value can be left blank.
 scalar.backup.cassandra.server.srv_service_url=_app._tcp.your-service.com
 ```
 
 ### Use
+
+First of all, let's create a metadata database with the following command.
+```
+$ sqlite3 cassy.db < scripts/db.schema
+```
 
 Let's start a Cassy master with a configuration file `backup-server.properties`.
 
@@ -106,7 +111,7 @@ You can also view your cluster information that you registered with `ListCluster
 
 ```
 # List all registered clusters.
-$ grpcurl -plaintext ' 192.168.0.254:20051 rpc.CassandraBackup.ListClusters
+$ grpcurl -plaintext 192.168.0.254:20051 rpc.CassandraBackup.ListClusters
 
 # Show only the specified cluster.
 $ grpcurl -plaintext -d '{"cluster_id": ""}' 192.168.0.254:20051 rpc.CassandraBackup.registerCluster
@@ -166,10 +171,12 @@ You can restore a node with `RestoreBackup` with `"restore_type": 2`.
 Note that there should be no data, commitlogs, hints in a node that is being recovered, and the Cassandra daemon should be stopped.
 
 ```
-$ grpcurl -plaintext -d '{"snapshot_id": "", "restore_type": 2, "cluster_id": ""}' 192.168.0.254:20051 rpc.CassandraBackup.RestoreBackup
+$ grpcurl -plaintext -d '{"snapshot_id": "", "restore_type": 2, "cluster_id": "", "target_ips": ["192.168.0.3]}' 192.168.0.254:20051 rpc.CassandraBackup.RestoreBackup
 ```
 
-It will download the specified snapshot and the incremental backups from the blob store into Cassandra data directory with a directory named `node-backup` and place the files properly for Cassandra to start up with the files.
+It will download the specified snapshot and the incremental backups from the blob store into Cassandra data directory of "192.168.0.3" with a directory named `node-backup` and place the files properly for Cassandra to start up with the files.
+
+If `target_ips` is omitted, it will restore the specified backups to all the nodes.
 
 ### Restore backups to a cluster
 
