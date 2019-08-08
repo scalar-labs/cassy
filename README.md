@@ -57,7 +57,7 @@ Here is a sample configuration file. Please see the comments above each entry fo
 #scalar.backup.cassandra.server.port=20051
 
 # Port number of JMX. If not specified port 7199 is used by default.
-scalar.backup.cassandra.server.jmx_port
+#scalar.backup.cassandra.server.jmx_port=7199
 
 # Username for SSH.  
 scalar.backup.cassandra.server.ssh_user=foo
