@@ -53,7 +53,7 @@ The following actions are also required:
 To run Casssy properly, it is required to create a property file.
 Here is a sample configuration file. Please see the comments above each entry for the meaning of the configuration.
 ```  
-# Port number of Cassy master. It is optional and 20051 is used by default.
+# Port number of Cassy master. If not specified port 20051 is used by default.
 scalar.backup.cassandra.server.port
 
 # Port number of JMX. It is optional and 7199 is used by default.
