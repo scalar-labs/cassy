@@ -1,7 +1,5 @@
 # Cassy: A simple and integrated backup tool for Apache Cassandra
 
-Cassy is a simple and integrated backup tool for Apache Cassandra.
-
 You can do the following things with Cassy from an easy to use gRPC APIs or HTTP/1.1 REST APIs:
 * Take snapshots, and upload snapshots and incremental backups to a blob store or filesystem of your choice from your cluster
   * AWS S3 is the only supported blob store at the current version, but other blob stores or filesystems will be supported shortly
