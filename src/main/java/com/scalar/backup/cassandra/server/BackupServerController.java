@@ -47,6 +47,15 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
   private final BackupServerConfig config;
   private final DatabaseAccessor database;
   private final BlockingQueue<RemoteCommandContext> commandQueue;
+  private static final String NO_CASSANDRA_HOST = "cassandra_host is not set correctly.";
+  private static final String NODES_UNAVAILABLE = "All the required nodes are not available.";
+  private static final String NO_SNAPSHOT_ID =
+      "snapshot_id must be specified when taking incremental backups.";
+  private static final String NON_EMPTY_SNAPSHOT_ID =
+      "snapshot_id must be empty when taking snapshots.";
+  private static final String CLUSTER_NOT_FOUND = "The specified cluster not found.";
+  private static final String NON_CLUSTER_BACKUP =
+      "The specified backup is not a cluster-wide backup.";
 
   public BackupServerController(
       BackupServerConfig config,
@@ -62,10 +71,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
       ClusterRegistrationRequest request,
       StreamObserver<ClusterRegistrationResponse> responseObserver) {
     if (request.getCassandraHost().isEmpty()) {
-      responseObserver.onError(
-          Status.INVALID_ARGUMENT
-              .withDescription("cassandra_host is not set correctly.")
-              .asRuntimeException());
+      setError(responseObserver, Status.INVALID_ARGUMENT, NO_CASSANDRA_HOST);
       return;
     }
 
@@ -73,10 +79,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     try {
       JmxManager jmx = getJmx(request.getCassandraHost(), config.getJmxPort());
       if (!areAllNodesAlive(jmx)) {
-        responseObserver.onError(
-            Status.UNAVAILABLE
-                .withDescription("This method is allowed only when all the nodes are alive.")
-                .asRuntimeException());
+        setError(responseObserver, Status.UNAVAILABLE, NODES_UNAVAILABLE);
         return;
       }
 
@@ -89,8 +92,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
               jmx.getAllDataFileLocations().get(0));
       record = database.getClusterInfo().selectByClusterId(jmx.getClusterName()).get();
     } catch (Exception e) {
-      logger.error(e.getMessage(), e);
-      responseObserver.onError(Status.INTERNAL.withCause(e).asRuntimeException());
+      setError(responseObserver, Status.INTERNAL, e);
       return;
     }
 
@@ -101,6 +103,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
             .addAllKeyspaces(record.getKeyspaces())
             .setDataDir(record.getDataDir())
             .build();
+
     responseObserver.onNext(response);
     responseObserver.onCompleted();
   }
@@ -141,11 +144,11 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
   @Override
   public void listBackups(
       BackupListingRequest request, StreamObserver<BackupListingResponse> responseObserver) {
-    List<BackupHistoryRecord> records = null;
+    List<BackupHistoryRecord> records;
     try {
       records = database.getBackupHistory().selectRecentSnapshots(request);
     } catch (Exception e) {
-      responseObserver.onError(Status.INTERNAL.withCause(e).asRuntimeException());
+      setError(responseObserver, Status.INTERNAL, e);
       return;
     }
 
@@ -172,16 +175,14 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
   public void listRestoreStatuses(
       RestoreStatusListingRequest request,
       StreamObserver<RestoreStatusListingResponse> responseObserver) {
-    List<RestoreHistoryRecord> records = null;
+    List<RestoreHistoryRecord> records;
     try {
       records = database.getRestoreHistory().selectRecent(request);
     } catch (IllegalArgumentException e) {
-      logger.error(e.getMessage(), e);
-      responseObserver.onError(Status.INVALID_ARGUMENT.withCause(e).asRuntimeException());
+      setError(responseObserver, Status.INVALID_ARGUMENT, e);
       return;
     } catch (Exception e) {
-      logger.error(e.getMessage(), e);
-      responseObserver.onError(Status.INTERNAL.withCause(e).asRuntimeException());
+      setError(responseObserver, Status.INTERNAL, e);
       return;
     }
 
@@ -200,55 +201,28 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
           builder.addEntries(entry);
         });
 
-    builder.setClusterId(request.getClusterId());
-    responseObserver.onNext(builder.build());
+    responseObserver.onNext(builder.setClusterId(request.getClusterId()).build());
     responseObserver.onCompleted();
   }
 
   @Override
   public void takeBackup(BackupRequest request, StreamObserver<BackupResponse> responseObserver) {
-    if (request.getSnapshotId().isEmpty()
-        && request.getBackupType() == BackupType.NODE_INCREMENTAL.get()) {
-      responseObserver.onError(
-          Status.INVALID_ARGUMENT
-              .withDescription("snapshot_id must be specified when taking incremental backups.")
-              .asRuntimeException());
-      return;
-    }
-    if (!request.getSnapshotId().isEmpty()
-        && request.getBackupType() != BackupType.NODE_INCREMENTAL.get()) {
-      responseObserver.onError(
-          Status.INVALID_ARGUMENT
-              .withDescription("snapshot_id must be empty when taking snapshots.")
-              .asRuntimeException());
+    if (!isValidOrSetError(request, responseObserver)) {
       return;
     }
 
     Optional<ClusterInfoRecord> clusterInfo =
-        database.getClusterInfo().selectByClusterId(request.getClusterId());
+        getClusterOrSetError(request.getClusterId(), responseObserver);
     if (!clusterInfo.isPresent()) {
-      responseObserver.onError(
-          Status.NOT_FOUND
-              .withDescription("The specified cluster not found.")
-              .asRuntimeException());
       return;
     }
 
-    try {
-      JmxManager jmx = getJmx(clusterInfo.get().getTargetIps().get(0), config.getJmxPort());
-      if (!areAllNodesAlive(jmx)) {
-        throw new RuntimeException("All nodes are not alive.");
-      }
-    } catch (Exception e) {
-      responseObserver.onError(
-          Status.UNAVAILABLE
-              .withDescription("This method is allowed only when all the nodes are alive.")
-              .asRuntimeException());
+    if (!areTargetsAliveOrSetError(
+        clusterInfo.get().getTargetIps(), config.getJmxPort(), responseObserver)) {
       return;
     }
 
-    final String snapshotId =
-        request.getSnapshotId().isEmpty() ? UUID.randomUUID().toString() : request.getSnapshotId();
+    final String snapshotId = createSnapshotId(request);
     List<BackupKey> backupKeys =
         getBackupKeys(snapshotId, request.getTargetIpsList(), clusterInfo.get());
     BackupType type = BackupType.getByType(request.getBackupType());
@@ -277,6 +251,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
         .setSnapshotId(snapshotId)
         .setCreatedAt(backupKeys.get(0).getCreatedAt())
         .setBackupType(type.get());
+
     responseObserver.onNext(builder.build());
     responseObserver.onCompleted();
   }
@@ -284,13 +259,12 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
   @Override
   public void restoreBackup(
       RestoreRequest request, StreamObserver<RestoreResponse> responseObserver) {
+    if (!isValidOrSetError(request, responseObserver)) {
+      return;
+    }
     Optional<ClusterInfoRecord> clusterInfo =
-        database.getClusterInfo().selectByClusterId(request.getClusterId());
+        getClusterOrSetError(request.getClusterId(), responseObserver);
     if (!clusterInfo.isPresent()) {
-      responseObserver.onError(
-          Status.NOT_FOUND
-              .withDescription("The specified cluster not found.")
-              .asRuntimeException());
       return;
     }
 
@@ -318,8 +292,88 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
         .setSnapshotId(request.getSnapshotId())
         .setRestoreType(type.get())
         .setSnapshotOnly(request.getSnapshotOnly());
+
     responseObserver.onNext(builder.build());
     responseObserver.onCompleted();
+  }
+
+  @VisibleForTesting
+  JmxManager getJmx(String ip, int port) {
+    return new JmxManager(ip, port);
+  }
+
+  private boolean areAllNodesAlive(JmxManager jmx) {
+    if (jmx.getJoiningNodes().isEmpty()
+        && jmx.getMovingNodes().isEmpty()
+        && jmx.getLeavingNodes().isEmpty()
+        && jmx.getUnreachableNodes().isEmpty()
+        && jmx.getLiveNodes().size() > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  private boolean isValidOrSetError(
+      BackupRequest request, StreamObserver<BackupResponse> responseObserver) {
+    if (request.getSnapshotId().isEmpty()
+        && request.getBackupType() == BackupType.NODE_INCREMENTAL.get()) {
+      setError(responseObserver, Status.INVALID_ARGUMENT, NO_SNAPSHOT_ID);
+      return false;
+    }
+
+    if (!request.getSnapshotId().isEmpty()
+        && request.getBackupType() != BackupType.NODE_INCREMENTAL.get()) {
+      setError(responseObserver, Status.INVALID_ARGUMENT, NON_EMPTY_SNAPSHOT_ID);
+      return false;
+    }
+    return true;
+  }
+
+  private boolean isValidOrSetError(
+      RestoreRequest request, StreamObserver<RestoreResponse> responseObserver) {
+    // Return invalid if node-level backups are used to restore a cluster
+    if (request.getRestoreType() == RestoreType.CLUSTER.get()) {
+      BackupListingRequest listingRequest =
+          BackupListingRequest.newBuilder().setSnapshotId(request.getSnapshotId()).build();
+      List<BackupHistoryRecord> records =
+          database.getBackupHistory().selectRecentSnapshots(listingRequest);
+      if (records.get(records.size() - 1).getBackupType() == BackupType.NODE_SNAPSHOT) {
+        setError(responseObserver, Status.INVALID_ARGUMENT, NON_CLUSTER_BACKUP);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private <T> Optional<ClusterInfoRecord> getClusterOrSetError(
+      String clusterId, StreamObserver<T> responseObserver) {
+    Optional<ClusterInfoRecord> clusterInfo =
+        database.getClusterInfo().selectByClusterId(clusterId);
+    if (!clusterInfo.isPresent()) {
+      setError(responseObserver, Status.NOT_FOUND, CLUSTER_NOT_FOUND);
+    }
+    return clusterInfo;
+  }
+
+  private <T> boolean areTargetsAliveOrSetError(
+      List<String> ips, int port, StreamObserver<T> responseObserver) {
+    try {
+      JmxManager jmx = getJmx(ips.get(0), port);
+      if (!jmx.getLiveNodes().containsAll(ips)) {
+        setError(responseObserver, Status.UNAVAILABLE, NODES_UNAVAILABLE);
+        return false;
+      }
+    } catch (Exception e) {
+      setError(responseObserver, Status.UNAVAILABLE, e);
+      return false;
+    }
+    return true;
+  }
+
+  private String createSnapshotId(BackupRequest request) {
+    return request.getSnapshotId().isEmpty()
+        ? UUID.randomUUID().toString()
+        : request.getSnapshotId();
   }
 
   private List<BackupKey> getBackupKeys(
@@ -363,19 +417,13 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     }
   }
 
-  @VisibleForTesting
-  JmxManager getJmx(String ip, int port) {
-    return new JmxManager(ip, port);
+  private <T> void setError(StreamObserver<T> responseObserver, Status status, String message) {
+    logger.error(message);
+    responseObserver.onError(status.withDescription(message).asRuntimeException());
   }
 
-  private boolean areAllNodesAlive(JmxManager jmx) {
-    if (jmx.getJoiningNodes().isEmpty()
-        && jmx.getMovingNodes().isEmpty()
-        && jmx.getLeavingNodes().isEmpty()
-        && jmx.getUnreachableNodes().isEmpty()
-        && jmx.getLiveNodes().size() > 0) {
-      return true;
-    }
-    return false;
+  private <T> void setError(StreamObserver<T> responseObserver, Status status, Throwable e) {
+    logger.error(e.getMessage(), e);
+    responseObserver.onError(status.withCause(e).asRuntimeException());
   }
 }
