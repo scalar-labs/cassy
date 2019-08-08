@@ -53,7 +53,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
       "snapshot_id must be specified when taking incremental backups.";
   private static final String NON_EMPTY_SNAPSHOT_ID =
       "snapshot_id must be empty when taking snapshots.";
-  private static final String CLUSTER_NOT_FOUND = "The specified cluster not found.";
+  private static final String CLUSTER_NOT_FOUND = "The specified cluster cannot be found.";
   private static final String NON_CLUSTER_BACKUP =
       "The specified backup is not a cluster-wide backup.";
 
