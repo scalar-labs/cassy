@@ -95,7 +95,7 @@ $ build/install/cassandra-backup/bin/backup-server --config ./backup-server.prop
 ```
 
 Now you can run backup and restore through gRPC APIs or HTTP/1.1 REST APIs. For gRPC APIs, you can do it easily with [grpcurl](https://github.com/fullstorydev/grpcurl).
-It will show some examples with grpcurl for the sake of simplicity.
+Here we will use grpcurl for the sake of simplicity.
 
 #### Register your cluster
 
