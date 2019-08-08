@@ -106,7 +106,7 @@ $ grpcurl -plaintext -d '{"cassandra_host": "192.168.0.2"}' 192.168.0.254:20051 
 ```
 You need to specify an address of one of Cassandra nodes to register your cluster. All the other cluster information such as cluster name, nodes' IP addresses, keyspaces and the data directory are retrieved by JMX and are saved in the metadata database for later use.
 
-Note that you need to re-register your cluster if you update some of the above cluster information. Backup files with an old cluster information will be invalid in such case. (but nothing stops you from doing it at the current version.)
+Note that you need to re-register your cluster if you update some of the above cluster information. Backup files with outdated cluster information are invalid (but in the current version nothing stops you from taking a backup, changing your cluster, and trying to perform a restore).
 
 #### List your clusters
 
