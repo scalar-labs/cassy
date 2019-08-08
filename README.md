@@ -4,8 +4,14 @@ Cassy is a simple and integrated backup tool for Apache Cassandra.
 
 You can do the following things with Cassy from an easy to use gRPC APIs or HTTP/1.1 REST APIs:
 * Take snapshots, and upload snapshots and incremental backups to a blob store or filesystem of your choice from your cluster
+  * AWS S3 is the only supported blob store at the current version, but other blob stores or filesystems will be supported shortly
 * Download backups, and restore a node or a cluster from the backups
 * Manage backups and restore histories
+
+You can NOT do the followings things with the current version of Cassy:
+* Backup commitlogs 
+* Select keyspaces to take/restore backups 
+* Operate easily with GUI
 
 ## Background
 
@@ -171,15 +177,17 @@ $ grpcurl -plaintext -d '{"limit": 3, "cluster_id": ""}' 192.168.0.254:20051  rp
 ### Restore backups to a node
 
 You can restore a node with `RestoreBackup` with `"restore_type": 2`.
+If `target_ips` is omitted, it will restore the specified backups to all the nodes.
 Note that there should be no data, commitlogs, hints in a node that is being recovered, and the Cassandra daemon should be stopped.
 
 ```
 $ grpcurl -plaintext -d '{"snapshot_id": "", "restore_type": 2, "cluster_id": "", "target_ips": ["192.168.0.3]}' 192.168.0.254:20051 rpc.CassandraBackup.RestoreBackup
+
+// Start up Cassandra and do repair
 ```
 
-It will download the specified snapshot and the incremental backups from the blob store into Cassandra data directory of "192.168.0.3" with a directory named `node-backup` and place the files properly for Cassandra to start up with the files.
+It will download the specified snapshot and the incremental backups from the blob store into Cassandra data directory of "192.168.0.3" with a directory named `node-backup` and place the files properly for Cassandra to start up with the files. Then start up Cassandra and do repair if replica consistency is important.
 
-If `target_ips` is omitted, it will restore the specified backups to all the nodes.
 
 ### Restore backups to a cluster
 
@@ -201,6 +209,6 @@ $ grpcurl -plaintext -d '{"limit": 3, "cluster_id": ""}' 192.168.0.254:20051 rpc
 ## Future Work
 
 The following features are planned to be implemented in the near future.
-* Upload backup files to a specified remote filesystem or other cloud blob store than AWS S3.
-* GUI component to make backup and restore operation even easier.
+* Upload backup files to a specified remote filesystem or other cloud blob stores than AWS S3.
+* GUI component to make backup and restore operations even easier.
 
