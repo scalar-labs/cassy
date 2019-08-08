@@ -27,8 +27,10 @@ Cassy requires the following software to run:
 * SQLite 3 (or JDBC-supported relational DBMS)
 
 Of-course, you need a well-configured Cassandra cluster that you can manage. The following Cassandra configurations are required to be updated to run Cassy properly.
-* Set `incremental_backups=true` in casssandra.yaml if you want to use incremental backups.
 * Set `LOCAL_JMX=no` for enabling remote JMX and set `com.sun.management.jmxremote.authenticate=false` to disable authentication in cassandra-env.sh. (Please do not expose the JMX port to the internet.)
+
+Furthermore, the following configurations are recommended (but not required) to be updated.
+* Set `incremental_backups=true` in casssandra.yaml if you want to use incremental backups.
 
 From here, it assumes there is a multi-node Cassandra cluster (192.168.0.2, ...) and a node for running the Cassy master daemon (192.168.0.254).
 
