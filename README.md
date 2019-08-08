@@ -88,7 +88,7 @@ First of all, let's create a metadata database with the following command.
 $ sqlite3 cassy.db < scripts/db.schema
 ```
 
-Let's start a Cassy master with a configuration file `backup-server.properties`.
+Let's start a Cassy master with the configuration file `backup-server.properties`.
 
 ```
 $ build/install/cassandra-backup/bin/backup-server --config ./backup-server.properties
