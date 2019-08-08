@@ -47,7 +47,7 @@ $ // TODO: grpc-gateway for HTTP/1.0
 ```
 
 The following actions are also required:
-* Place a SSH private key without passphrase in the master node and a corresponding public key to each Cassandra node. 
+* Place a SSH private key without passphrase in the master node and a corresponding public key in each Cassandra node. 
 * Configure AWS config and credential properly. (Note that the first version only supports AWS S3 as a blob store) 
 * Permit SSH user to access Cassandra data directory. (Use cassandra user for SSH might be the easiest way)
 
