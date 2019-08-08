@@ -56,7 +56,7 @@ Here is a sample configuration file. Please see the comments above each entry fo
 # Port number of Cassy master. If not specified port 20051 is used by default.
 scalar.backup.cassandra.server.port
 
-# Port number of JMX. It is optional and 7199 is used by default.
+# Port number of JMX. If not specified port 7199 is used by default.
 scalar.backup.cassandra.server.jmx_port
 
 # Username for SSH.  
