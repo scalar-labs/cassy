@@ -83,14 +83,16 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
         return;
       }
 
+      String clusterId = jmx.getClusterName() + "-" + UUID.randomUUID().toString();
       database
           .getClusterInfo()
-          .upsert(
+          .insert(
+              clusterId,
               jmx.getClusterName(),
               jmx.getLiveNodes(),
               jmx.getKeyspaces(),
               jmx.getAllDataFileLocations().get(0));
-      record = database.getClusterInfo().selectByClusterId(jmx.getClusterName()).get();
+      record = database.getClusterInfo().selectByClusterId(clusterId).get();
     } catch (Exception e) {
       setError(responseObserver, Status.INTERNAL, e);
       return;
@@ -99,6 +101,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     ClusterRegistrationResponse response =
         ClusterRegistrationResponse.newBuilder()
             .setClusterId(record.getClusterId())
+            .setClusterName(record.getClusterName())
             .addAllTargetIps(record.getTargetIps())
             .addAllKeyspaces(record.getKeyspaces())
             .setDataDir(record.getDataDir())
@@ -128,6 +131,7 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
           ClusterListingResponse.Entry entry =
               ClusterListingResponse.Entry.newBuilder()
                   .setClusterId(c.getClusterId())
+                  .setClusterName(c.getClusterName())
                   .addAllTargetIps(c.getTargetIps())
                   .addAllKeyspaces(c.getKeyspaces())
                   .setDataDir(c.getDataDir())
