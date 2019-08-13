@@ -10,6 +10,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class ClusterInfoRecord {
   private final String clusterId;
+  private final String clusterName;
   private final List<String> targetIps;
   private final List<String> keyspaces;
   private final String dataDir;
@@ -18,6 +19,7 @@ public class ClusterInfoRecord {
 
   private ClusterInfoRecord(Builder builder) {
     this.clusterId = builder.clusterId;
+    this.clusterName = builder.clusterName;
     this.targetIps = builder.targetIps;
     this.keyspaces = builder.keyspaces;
     this.dataDir = builder.dataDir;
@@ -27,6 +29,10 @@ public class ClusterInfoRecord {
 
   public String getClusterId() {
     return clusterId;
+  }
+
+  public String getClusterName() {
+    return clusterName;
   }
 
   public List<String> getTargetIps() {
@@ -55,6 +61,7 @@ public class ClusterInfoRecord {
 
   public static final class Builder {
     private String clusterId;
+    private String clusterName;
     private List<String> targetIps;
     private List<String> keyspaces;
     private String dataDir;
@@ -64,6 +71,12 @@ public class ClusterInfoRecord {
     public Builder clusterId(String clusterId) {
       checkArgument(clusterId != null);
       this.clusterId = clusterId;
+      return this;
+    }
+
+    public Builder clusterName(String clusterName) {
+      checkArgument(clusterName != null);
+      this.clusterName = clusterName;
       return this;
     }
 
@@ -99,6 +112,7 @@ public class ClusterInfoRecord {
 
     public ClusterInfoRecord build() {
       if (clusterId == null
+          || clusterName == null
           || targetIps == null
           || keyspaces == null
           || dataDir == null

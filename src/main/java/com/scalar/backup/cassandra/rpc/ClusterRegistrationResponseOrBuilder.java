@@ -18,49 +18,59 @@ public interface ClusterRegistrationResponseOrBuilder extends
       getClusterIdBytes();
 
   /**
-   * <code>repeated string target_ips = 2;</code>
+   * <code>string cluster_name = 2;</code>
+   */
+  java.lang.String getClusterName();
+  /**
+   * <code>string cluster_name = 2;</code>
+   */
+  com.google.protobuf.ByteString
+      getClusterNameBytes();
+
+  /**
+   * <code>repeated string target_ips = 3;</code>
    */
   java.util.List<java.lang.String>
       getTargetIpsList();
   /**
-   * <code>repeated string target_ips = 2;</code>
+   * <code>repeated string target_ips = 3;</code>
    */
   int getTargetIpsCount();
   /**
-   * <code>repeated string target_ips = 2;</code>
+   * <code>repeated string target_ips = 3;</code>
    */
   java.lang.String getTargetIps(int index);
   /**
-   * <code>repeated string target_ips = 2;</code>
+   * <code>repeated string target_ips = 3;</code>
    */
   com.google.protobuf.ByteString
       getTargetIpsBytes(int index);
 
   /**
-   * <code>repeated string keyspaces = 3;</code>
+   * <code>repeated string keyspaces = 4;</code>
    */
   java.util.List<java.lang.String>
       getKeyspacesList();
   /**
-   * <code>repeated string keyspaces = 3;</code>
+   * <code>repeated string keyspaces = 4;</code>
    */
   int getKeyspacesCount();
   /**
-   * <code>repeated string keyspaces = 3;</code>
+   * <code>repeated string keyspaces = 4;</code>
    */
   java.lang.String getKeyspaces(int index);
   /**
-   * <code>repeated string keyspaces = 3;</code>
+   * <code>repeated string keyspaces = 4;</code>
    */
   com.google.protobuf.ByteString
       getKeyspacesBytes(int index);
 
   /**
-   * <code>string data_dir = 4;</code>
+   * <code>string data_dir = 5;</code>
    */
   java.lang.String getDataDir();
   /**
-   * <code>string data_dir = 4;</code>
+   * <code>string data_dir = 5;</code>
    */
   com.google.protobuf.ByteString
       getDataDirBytes();

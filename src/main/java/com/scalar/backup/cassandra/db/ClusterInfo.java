@@ -16,16 +16,12 @@ public class ClusterInfo {
   private static final String DELIMITER = ",";
   static final String INSERT =
       "INSERT INTO cluster_info "
-          + "(cluster_id, target_ips, keyspaces, data_dir, created_at, updated_at) "
-          + "VALUES (?, ?, ?, ?, ?, ?)";
-  static final String UPDATE =
-      "UPDATE cluster_info SET target_ips = ?, keyspaces = ?, data_dir =?, updated_at = ? "
-          + "WHERE cluster_id = ?";
+          + "(cluster_id, cluster_name, target_ips, keyspaces, data_dir, created_at, updated_at) "
+          + "VALUES (?, ?, ?, ?, ?, ?, ?)";
   static final String SELECT_BY_CLUSTER = "SELECT * FROM cluster_info WHERE cluster_id = ?";
   static final String SELECT_RECENT = "SELECT * FROM cluster_info ORDER BY created_at DESC limit ?";
   private final Connection connection;
   private final PreparedStatement insert;
-  private final PreparedStatement update;
   private final PreparedStatement selectByCluster;
   private final PreparedStatement selectRecent;
 
@@ -34,8 +30,6 @@ public class ClusterInfo {
     try {
       insert = connection.prepareStatement(INSERT);
       insert.setQueryTimeout(30);
-      update = connection.prepareStatement(UPDATE);
-      update.setQueryTimeout(30);
       selectByCluster = connection.prepareStatement(SELECT_BY_CLUSTER);
       selectByCluster.setQueryTimeout(30);
       selectRecent = connection.prepareStatement(SELECT_RECENT);
@@ -45,28 +39,14 @@ public class ClusterInfo {
     }
   }
 
-  public void upsert(
-      String clusterId, List<String> targetIps, List<String> keyspaces, String dataDir) {
-    if (!selectByClusterId(clusterId).isPresent()) {
-      insert(clusterId, targetIps, keyspaces, dataDir);
-    } else {
-      update(clusterId, targetIps, keyspaces, dataDir);
-    }
-  }
-
   public void insert(
-      String clusterId, List<String> targetIps, List<String> keyspaces, String dataDir) {
+      String clusterId,
+      String clusterName,
+      List<String> targetIps,
+      List<String> keyspaces,
+      String dataDir) {
     try {
-      insertImpl(clusterId, targetIps, keyspaces, dataDir);
-    } catch (SQLException e) {
-      throw new DatabaseException(e);
-    }
-  }
-
-  public void update(
-      String clusterId, List<String> targetIps, List<String> keyspaces, String dataDir) {
-    try {
-      updateImpl(clusterId, targetIps, keyspaces, dataDir);
+      insertImpl(clusterId, clusterName, targetIps, keyspaces, dataDir);
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
@@ -104,32 +84,22 @@ public class ClusterInfo {
   }
 
   private void insertImpl(
-      String clusterId, List<String> targetIps, List<String> keyspaces, String dataDir)
+      String clusterId,
+      String clusterName,
+      List<String> targetIps,
+      List<String> keyspaces,
+      String dataDir)
       throws SQLException {
     insert.clearParameters();
     long currentTimestamp = System.currentTimeMillis();
     insert.setString(1, clusterId);
-    insert.setString(2, String.join(DELIMITER, targetIps));
-    insert.setString(3, String.join(DELIMITER, keyspaces));
-    insert.setString(4, dataDir);
-    insert.setLong(5, currentTimestamp);
+    insert.setString(2, clusterName);
+    insert.setString(3, String.join(DELIMITER, targetIps));
+    insert.setString(4, String.join(DELIMITER, keyspaces));
+    insert.setString(5, dataDir);
     insert.setLong(6, currentTimestamp);
+    insert.setLong(7, currentTimestamp);
     if (insert.executeUpdate() != 1) {
-      throw new SQLException("Inserting the record failed.");
-    }
-  }
-
-  private void updateImpl(
-      String clusterId, List<String> targetIps, List<String> keyspaces, String dataDir)
-      throws SQLException {
-    update.clearParameters();
-    long currentTimestamp = System.currentTimeMillis();
-    update.setString(1, String.join(DELIMITER, targetIps));
-    update.setString(2, String.join(DELIMITER, keyspaces));
-    update.setString(3, dataDir);
-    update.setLong(4, currentTimestamp);
-    update.setString(5, clusterId);
-    if (update.executeUpdate() != 1) {
       throw new SQLException("Inserting the record failed.");
     }
   }
@@ -140,6 +110,7 @@ public class ClusterInfo {
       while (resultSet.next()) {
         ClusterInfoRecord.Builder builder = ClusterInfoRecord.newBuilder();
         builder.clusterId(resultSet.getString("cluster_id"));
+        builder.clusterName(resultSet.getString("cluster_name"));
         builder.targetIps(Arrays.asList(resultSet.getString("target_ips").split(DELIMITER)));
         builder.keyspaces(Arrays.asList(resultSet.getString("keyspaces").split(DELIMITER)));
         builder.dataDir(resultSet.getString("data_dir"));
