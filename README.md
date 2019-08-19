@@ -7,13 +7,13 @@ You can do the following things with Cassy from an easy to use gRPC APIs or HTTP
 * Manage backups and restore histories
 
 You can NOT do the followings things with the current version of Cassy:
-* Backup commitlogs 
-* Select keyspaces to take/restore backups 
+* Backup commitlogs
+* Select keyspaces to take/restore backups
 * Operate easily with GUI
 
 ## Background
 
-The existing Cassandra backup features such as snapshot and incremental backups are great building blocks for doing backup and restore for Cassandra data. However, they are not necessarily easy to use because they are not fully integrated. Moreover, the current backup feature and the existing backup tools are problematic when used with [Scalar DB](https://github.com/scalar-labs/scalardb/) transactions that update multiple records in a transactional (atomic) way as they do not handle transactional consistency of multiple records. 
+The existing Cassandra backup features such as snapshot and incremental backups are great building blocks for doing backup and restore for Cassandra data. However, they are not necessarily easy to use because they are not fully integrated. Moreover, the current backup feature and the existing backup tools are problematic when used with [Scalar DB](https://github.com/scalar-labs/scalardb/) transactions that update multiple records in a transactional (atomic) way as they do not handle transactional consistency of multiple records.
 In order to overcome these problems we created a new backup tool, which makes it easy to do backup and restore operations, and makes it possible to do cluster-wide transactionally consistent backups.
 
 ## System Overview
@@ -26,7 +26,7 @@ This section briefly describes how to install and use Cassy.
 
 ### Prerequisite
 
-Cassy requires the following software to run: 
+Cassy requires the following software to run:
 * Oracle JDK 8 (or OpenJDK 8) (it should work with 9, but probably not with 10+)
 * SQLite 3 (or JDBC-supported relational DBMS)
 
@@ -51,8 +51,8 @@ $ // TODO: grpc-gateway for HTTP/1.0
 ```
 
 The following actions are also required:
-* Place a SSH private key without passphrase in the master node and a corresponding public key in each Cassandra node. 
-* Configure AWS config and credentials properly. (Note that the first version only supports AWS S3 as a blob store.) 
+* Place a SSH private key without passphrase in the master node and a corresponding public key in each Cassandra node.
+* Configure AWS config and credentials properly. (Note that the first version only supports AWS S3 as a blob store.)
 * Permit SSH user to access Cassandra data directory. (Use cassandra user for SSH might be the easiest way)
 
 ### Configure
@@ -75,7 +75,7 @@ scalar.backup.cassandra.server.ssh_private_key_path=/path/to/.ssh/id_rsa
 # Path to the bin directory of Cassy in each Cassandra nodes (Cassy assumes all Cassandra nodes install Cassy in the same directory)
 scalar.backup.cassandra.server.slave_command_path=/path/to/cassandra-backup/build/install/cassandra-backup/bin
 
-# URI of a blob store to manage backup files 
+# URI of a blob store to manage backup files
 scalar.backup.cassandra.server.storage_base_uri=s3://your-bucket
 
 # URL of JDBC for managing some metadata such as backup and restore histories
@@ -97,6 +97,14 @@ Let's start a Cassy master with the configuration file `backup-server.properties
 ```
 $ build/install/cassandra-backup/bin/backup-server --config ./backup-server.properties
 ```
+
+### Docker Use
+To run the Cassy with docker, please follow the steps below. The docker container will initialize a sqlite db if none is provided.
+```
+docker build -t cassy:latest .
+docker run -p 20051:20051 -d -v /path/to/backup-server.properties:/opt/cassandra-backup/conf cassy:latest
+```
+
 
 Now you can run backup and restore through gRPC APIs or HTTP/1.1 REST APIs. For gRPC APIs, you can do it easily with [grpcurl](https://github.com/fullstorydev/grpcurl).
 Here we will use grpcurl for the sake of simplicity.
@@ -133,28 +141,28 @@ You can take a snapshot with `TakeBackup` with `"backup_type": 2`. It will take 
 
 ```
 # It asks each node to clean up old snapshots and take a new snapshot (with flush), and upload the snapshot to the specified location. It also asks each node to remove old incremental backups.
-$ grpcurl -plaintext -d '{"cluster_id": "", "backup_type": 2}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup 
+$ grpcurl -plaintext -d '{"cluster_id": "", "backup_type": 2}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup
 
 # You can also specify nodes.
-$ grpcurl -plaintext -d '{"cluster_id": "", "target_ips": ["192.168.0.2"], "backup_type": 2}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup 
+$ grpcurl -plaintext -d '{"cluster_id": "", "target_ips": ["192.168.0.2"], "backup_type": 2}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup
 ```
 
-When you want to upload incremental backups, please specify `"backup_type": 3` instead. 
+When you want to upload incremental backups, please specify `"backup_type": 3` instead.
 You will also need to specify a `snapshot_id` because incremental backups are differences from a previous snapshot.
 
 ```
 # It asks each node to upload incremental backups to the specified location.
-$ grpcurl -plaintext -d '{"cluster_id": "", "snapshot_id": "", "backup_type": 3}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup 
+$ grpcurl -plaintext -d '{"cluster_id": "", "snapshot_id": "", "backup_type": 3}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup
 ```
 
 (NOTE: Cassandra incremental backups are created per memtable flush and it is not controllable from outside of system. So what Cassy does is just upload incremental backups.)
 
 ### Take cluster-wide consistent backups
 
-You can take cluster-wide consistent backups with `TakeBackup` with `"backup_type": 1`. 
+You can take cluster-wide consistent backups with `TakeBackup` with `"backup_type": 1`.
 
 ```
-$ grpcurl -plaintext -d '{"cluster_id": "", "backup_type": 1}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup 
+$ grpcurl -plaintext -d '{"cluster_id": "", "backup_type": 1}' 192.168.0.254:20051 rpc.CassandraBackup.TakeBackup
 ```
 
 Cassy master asks a DNS to resolve the service URL to get a list of IPs and ports of Cassandra applications, and ask those nodes to stop processing. The node that is asked to stop will finish already received requests and will be in a pause mode afterward and return a response to Cassy master. The master waits for all responses, and takes snapshots of all Cassandra nodes. Then the master unpauses the application nodes and uploads all the snapshots.
@@ -207,4 +215,3 @@ $ grpcurl -plaintext -d '{"limit": 3, "cluster_id": ""}' 192.168.0.254:20051 rpc
 The following features are planned to be implemented in the near future.
 * Upload backup files to a specified remote filesystem or other cloud blob stores than AWS S3.
 * GUI component to make backup and restore operations even easier.
-
