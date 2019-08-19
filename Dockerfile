@@ -15,7 +15,7 @@ RUN apk add sqlite
 
 # Copy Build output from Builder Step
 COPY --from=builder /opt/cassandra-backup/build /opt/cassandra-backup/build
-COPY --from=builder /opt/cassandra-backup/scripts /opt/cassandra-backup/scripts
+COPY scripts /opt/cassandra-backup/scripts
 COPY conf/backup-server.properties /opt/cassandra-backup
 
 WORKDIR /opt/cassandra-backup
