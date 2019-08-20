@@ -1,10 +1,12 @@
 FROM openjdk:8u212-jdk-stretch AS builder
 
-RUN mkdir -p /opt/cassandra-backup
+RUN mkdir -p /opt/cassy
+WORKDIR /opt/cassy
 
-COPY . /opt/cassandra-backup
-
-WORKDIR /opt/cassandra-backup
+COPY gradle ./gradle
+COPY build.gradle ./
+COPY gradlew ./gradlew
+COPY src ./src
 
 RUN ./gradlew installDist
 
@@ -13,17 +15,20 @@ FROM openjdk:8-alpine
 
 RUN apk add sqlite
 
-# Copy Build output from Builder Step
-COPY --from=builder /opt/cassandra-backup/build /opt/cassandra-backup/build
-COPY scripts /opt/cassandra-backup/scripts
-COPY conf/backup-server.properties /opt/cassandra-backup
+WORKDIR /opt/cassy
 
-WORKDIR /opt/cassandra-backup
+RUN mkdir -p /etc/cassy/data && mkdir -p /etc/cassy/conf
+
+# Copy Build output from Builder Step
+COPY --from=builder /opt/cassy/build ./build
+COPY scripts ./scripts
+COPY conf ./conf
 
 RUN sqlite3 ./cassy.db < ./scripts/db.schema
-VOLUME /opt/cassandra-backup/conf
+
+VOLUME /etc/cassy
 
 ENTRYPOINT ["/bin/sh", "scripts/entrypoint.sh"]
-CMD ["--config", "conf/backup-server.properties"]
+CMD ["--config", "/etc/cassy/conf/backup-server.properties"]
 
 EXPOSE 20051

@@ -1,11 +1,11 @@
 #!/bin/sh
 
-if [ ! -f conf/cassy.db ]; then
-   cp cassy.db conf/cassy.db;
+if [ ! -f /etc/cassy/data/cassy.db ]; then
+   cp cassy.db /etc/cassy/data/;
 fi;
 
-if [ ! -f conf/backup-server.properties ]; then
-   cp backup-server.properties conf/backup-server.properties;
+if [ ! -f /etc/cassy/conf/backup-server.properties ]; then
+   cp conf/backup-server.properties /etc/cassy/conf/;
 fi;
 
-build/install/cassandra-backup/bin/backup-server $@
+build/install/cassy/bin/backup-server $@
