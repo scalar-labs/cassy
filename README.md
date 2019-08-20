@@ -44,8 +44,8 @@ As of writing this, Cassy is not uploaded to Maven so you will need to install f
 
 ```
 # At each node of Cassandra cluster and the Cassy master node
-$ git clone https://github.com/scalar-labs/cassandra-backup
-$ cd cassandra-backup
+$ git clone https://github.com/scalar-labs/cassy
+$ cd cassy
 $ ./gradlew installDist
 $ // TODO: grpc-gateway for HTTP/1.0
 ```
@@ -73,7 +73,7 @@ scalar.backup.cassandra.server.ssh_user=foo
 scalar.backup.cassandra.server.ssh_private_key_path=/path/to/.ssh/id_rsa
 
 # Path to the bin directory of Cassy in each Cassandra nodes (Cassy assumes all Cassandra nodes install Cassy in the same directory)
-scalar.backup.cassandra.server.slave_command_path=/path/to/cassandra-backup/build/install/cassandra-backup/bin
+scalar.backup.cassandra.server.slave_command_path=/path/to/cassy/build/install/cassy/bin
 
 # URI of a blob store to manage backup files 
 scalar.backup.cassandra.server.storage_base_uri=s3://your-bucket
@@ -95,7 +95,7 @@ $ sqlite3 cassy.db < scripts/db.schema
 Let's start a Cassy master with the configuration file `backup-server.properties`.
 
 ```
-$ build/install/cassandra-backup/bin/backup-server --config ./backup-server.properties
+$ build/install/cassy/bin/backup-server --config ./backup-server.properties
 ```
 
 Now you can run backup and restore through gRPC APIs or HTTP/1.1 REST APIs. For gRPC APIs, you can do it easily with [grpcurl](https://github.com/fullstorydev/grpcurl).
