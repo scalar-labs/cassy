@@ -17,7 +17,7 @@ RUN apk add sqlite
 
 WORKDIR /opt/cassy
 
-RUN mkdir -p /etc/cassy/data && mkdir -p /etc/cassy/conf
+RUN mkdir -p /cassy/data && mkdir -p /cassy/conf
 
 # Copy Build output from Builder Step
 COPY --from=builder /opt/cassy/build ./build
@@ -26,9 +26,9 @@ COPY conf ./conf
 
 RUN sqlite3 ./cassy.db < ./scripts/db.schema
 
-VOLUME /etc/cassy
+VOLUME /cassy
 
 ENTRYPOINT ["/bin/sh", "scripts/entrypoint.sh"]
-CMD ["--config", "/etc/cassy/conf/backup-server.properties"]
+CMD ["--config", "/cassy/conf/backup-server.properties"]
 
 EXPOSE 20051

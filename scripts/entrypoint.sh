@@ -1,11 +1,11 @@
 #!/bin/sh
 
-if [ ! -f /etc/cassy/data/cassy.db ]; then
-   cp cassy.db /etc/cassy/data/;
+if [ ! -f /cassy/data/cassy.db ]; then
+   cp cassy.db /cassy/data/;
 fi;
 
-if [ ! -f /etc/cassy/conf/backup-server.properties ]; then
-   cp conf/backup-server.properties /etc/cassy/conf/;
+if [ ! -f /cassy/conf/backup-server.properties ]; then
+   cp conf/backup-server.properties /cassy/conf/;
 fi;
 
 build/install/cassy/bin/backup-server $@
