@@ -10,7 +10,6 @@ import com.scalar.backup.cassandra.remotecommand.RemoteCommandExecutor;
 import com.scalar.backup.cassandra.remotecommand.RemoteCommandFuture;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,16 +55,17 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
   @VisibleForTesting
   RemoteCommandContext downloadNodeBackups(
       BackupKey backupKey, RestoreType type, boolean snapshotOnly) {
-    List<String> arguments =
-        Arrays.asList(
-            CLUSTER_ID_OPTION + backupKey.getClusterId(),
-            SNAPSHOT_ID_OPTION + backupKey.getSnapshotId(),
-            TARGET_IP_OPTION + backupKey.getTargetIp(),
-            DATA_DIR_OPTION + clusterInfo.getDataDir(),
-            STORE_BASE_URI_OPTION + config.getStorageBaseUri(),
-            KEYSPACES_OPTION + String.join(",", clusterInfo.getKeyspaces()),
-            RESTORE_TYPE_OPTION + type.get(),
-            snapshotOnly ? SNAPSHOT_ONLY_OPTION : null);
+    List<String> arguments = new ArrayList<>();
+    arguments.add(CLUSTER_ID_OPTION + backupKey.getClusterId());
+    arguments.add(SNAPSHOT_ID_OPTION + backupKey.getSnapshotId());
+    arguments.add(TARGET_IP_OPTION + backupKey.getTargetIp());
+    arguments.add(DATA_DIR_OPTION + clusterInfo.getDataDir());
+    arguments.add(STORE_BASE_URI_OPTION + config.getStorageBaseUri());
+    arguments.add(KEYSPACES_OPTION + String.join(",", clusterInfo.getKeyspaces()));
+    arguments.add(RESTORE_TYPE_OPTION + type.get());
+    if (snapshotOnly) {
+      arguments.add(SNAPSHOT_ONLY_OPTION);
+    }
 
     RemoteCommand command =
         RemoteCommand.newBuilder()
