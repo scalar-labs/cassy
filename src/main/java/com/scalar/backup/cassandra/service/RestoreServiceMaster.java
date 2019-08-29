@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 
 public class RestoreServiceMaster extends AbstractServiceMaster {
   private static final String RESTORE_TYPE_OPTION = "--restore-type=";
+  private static final String SNAPSHOT_ONLY_OPTION = "--snapshot-only";
   public static final String RESTORE_COMMAND = "cassandra-restore";
 
   public RestoreServiceMaster(
@@ -25,15 +26,20 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
   }
 
   public List<RemoteCommandContext> restoreBackup(List<BackupKey> backupKeys, RestoreType type) {
+    return restoreBackup(backupKeys, type, false);
+  }
+
+  public List<RemoteCommandContext> restoreBackup(
+      List<BackupKey> backupKeys, RestoreType type, boolean snapshotOnly) {
     if (type != RestoreType.CLUSTER && type != RestoreType.NODE) {
       throw new IllegalArgumentException("Unsupported restore type.");
     }
 
-    return downloadNodesBackups(backupKeys, type);
+    return downloadNodesBackups(backupKeys, type, snapshotOnly);
   }
 
   private List<RemoteCommandContext> downloadNodesBackups(
-      List<BackupKey> backupKeys, RestoreType type) {
+      List<BackupKey> backupKeys, RestoreType type, boolean snapshotOnly) {
     List<RemoteCommandContext> futures = new ArrayList<>();
 
     ExecutorService executor = Executors.newCachedThreadPool();
@@ -41,14 +47,15 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
         backupKey ->
             executor.submit(
                 () -> {
-                  futures.add(downloadNodeBackups(backupKey, type));
+                  futures.add(downloadNodeBackups(backupKey, type, snapshotOnly));
                 }));
     awaitTermination(executor, "downloadNodesBackups");
     return futures;
   }
 
   @VisibleForTesting
-  RemoteCommandContext downloadNodeBackups(BackupKey backupKey, RestoreType type) {
+  RemoteCommandContext downloadNodeBackups(
+      BackupKey backupKey, RestoreType type, boolean snapshotOnly) {
     List<String> arguments =
         Arrays.asList(
             CLUSTER_ID_OPTION + backupKey.getClusterId(),
@@ -57,7 +64,8 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
             DATA_DIR_OPTION + clusterInfo.getDataDir(),
             STORE_BASE_URI_OPTION + config.getStorageBaseUri(),
             KEYSPACES_OPTION + String.join(",", clusterInfo.getKeyspaces()),
-            RESTORE_TYPE_OPTION + type.get());
+            RESTORE_TYPE_OPTION + type.get(),
+            snapshotOnly ? SNAPSHOT_ONLY_OPTION : null);
 
     RemoteCommand command =
         RemoteCommand.newBuilder()

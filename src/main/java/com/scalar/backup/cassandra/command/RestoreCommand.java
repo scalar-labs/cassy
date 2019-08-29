@@ -18,6 +18,11 @@ public class RestoreCommand extends AbstractCommand {
       description = "The type of restore to perform")
   private int restoreType;
 
+  @CommandLine.Option(
+      names = {"--snapshot-only"},
+      description = "A flag to specify restoring snapshots only")
+  private boolean snapshotOnly = false;
+
   public static void main(String[] args) {
     int exitCode = new CommandLine(new RestoreCommand()).execute(args);
     System.exit(exitCode);
@@ -32,6 +37,7 @@ public class RestoreCommand extends AbstractCommand {
     props.setProperty(RestoreConfig.DATA_DIR, dataDir);
     props.setProperty(RestoreConfig.STORE_BASE_URI, storeBaseUri);
     props.setProperty(RestoreConfig.RESTORE_TYPE, Integer.toString(restoreType));
+    props.setProperty(RestoreConfig.SNAPSHOT_ONLY, Boolean.toString(snapshotOnly));
 
     // TODO: switching modules depending on the specified store_type
     Injector injector = Guice.createInjector(new AwsS3RestoreModule());
