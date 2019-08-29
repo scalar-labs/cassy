@@ -4,12 +4,12 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
 option java_multiple_files = true;
-option java_package = "com.scalar.backup.cassandra.rpc";
-option java_outer_classname = "CassandraBackupProto";
+option java_package = "com.scalar.cassy.rpc";
+option java_outer_classname = "CassyProto";
 
 package rpc;
 
-service CassandraBackup {
+service Cassy {
     rpc RegisterCluster (ClusterRegistrationRequest) returns (ClusterRegistrationResponse) {
         option (google.api.http) = {
             post: "/v1/clusters"

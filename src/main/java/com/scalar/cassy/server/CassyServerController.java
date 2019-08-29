@@ -15,6 +15,7 @@ import com.scalar.cassy.rpc.BackupListingRequest;
 import com.scalar.cassy.rpc.BackupListingResponse;
 import com.scalar.cassy.rpc.BackupRequest;
 import com.scalar.cassy.rpc.BackupResponse;
+import com.scalar.cassy.rpc.CassyGrpc.CassyImplBase;
 import com.scalar.cassy.rpc.ClusterListingRequest;
 import com.scalar.cassy.rpc.ClusterListingResponse;
 import com.scalar.cassy.rpc.ClusterRegistrationRequest;
@@ -28,7 +29,6 @@ import com.scalar.cassy.service.ApplicationPauser;
 import com.scalar.cassy.service.BackupKey;
 import com.scalar.cassy.service.BackupServiceMaster;
 import com.scalar.cassy.service.RestoreServiceMaster;
-import com.scalar.cassy.rpc.CassandraBackupGrpc.CassandraBackupImplBase;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Immutable
-public final class CassyServerController extends CassandraBackupImplBase {
+public final class CassyServerController extends CassyImplBase {
   private static final Logger logger = LoggerFactory.getLogger(CassyServerController.class);
   private final BackupServerConfig config;
   private final DatabaseAccessor database;

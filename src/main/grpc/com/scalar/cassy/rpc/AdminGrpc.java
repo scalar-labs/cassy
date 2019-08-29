@@ -1,18 +1,25 @@
 package com.scalar.cassy.rpc;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
+import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
 import static io.grpc.stub.ClientCalls.asyncUnaryCall;
 import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
 import static io.grpc.stub.ClientCalls.blockingUnaryCall;
 import static io.grpc.stub.ClientCalls.futureUnaryCall;
+import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnaryCall;
+import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
  */
 @javax.annotation.Generated(
     value = "by gRPC proto compiler (version 1.13.2)",
-    comments = "Source: cassandra-backup.proto")
+    comments = "Source: cassy.proto")
 public final class AdminGrpc {
 
   private AdminGrpc() {}
@@ -20,23 +27,23 @@ public final class AdminGrpc {
   public static final String SERVICE_NAME = "rpc.Admin";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<PauseRequest,
+  private static volatile io.grpc.MethodDescriptor<com.scalar.cassy.rpc.PauseRequest,
       com.google.protobuf.Empty> getPauseMethod;
 
-  public static io.grpc.MethodDescriptor<PauseRequest,
+  public static io.grpc.MethodDescriptor<com.scalar.cassy.rpc.PauseRequest,
       com.google.protobuf.Empty> getPauseMethod() {
-    io.grpc.MethodDescriptor<PauseRequest, com.google.protobuf.Empty> getPauseMethod;
+    io.grpc.MethodDescriptor<com.scalar.cassy.rpc.PauseRequest, com.google.protobuf.Empty> getPauseMethod;
     if ((getPauseMethod = AdminGrpc.getPauseMethod) == null) {
       synchronized (AdminGrpc.class) {
         if ((getPauseMethod = AdminGrpc.getPauseMethod) == null) {
           AdminGrpc.getPauseMethod = getPauseMethod = 
-              io.grpc.MethodDescriptor.<PauseRequest, com.google.protobuf.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<com.scalar.cassy.rpc.PauseRequest, com.google.protobuf.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(
                   "rpc.Admin", "Pause"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  PauseRequest.getDefaultInstance()))
+                  com.scalar.cassy.rpc.PauseRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.Empty.getDefaultInstance()))
                   .setSchemaDescriptor(new AdminMethodDescriptorSupplier("Pause"))
@@ -75,16 +82,16 @@ public final class AdminGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      StatsResponse> getStatsMethod;
+      com.scalar.cassy.rpc.StatsResponse> getStatsMethod;
 
   public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      StatsResponse> getStatsMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.Empty, StatsResponse> getStatsMethod;
+      com.scalar.cassy.rpc.StatsResponse> getStatsMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, com.scalar.cassy.rpc.StatsResponse> getStatsMethod;
     if ((getStatsMethod = AdminGrpc.getStatsMethod) == null) {
       synchronized (AdminGrpc.class) {
         if ((getStatsMethod = AdminGrpc.getStatsMethod) == null) {
           AdminGrpc.getStatsMethod = getStatsMethod = 
-              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, StatsResponse>newBuilder()
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, com.scalar.cassy.rpc.StatsResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(
                   "rpc.Admin", "Stats"))
@@ -92,7 +99,7 @@ public final class AdminGrpc {
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  StatsResponse.getDefaultInstance()))
+                  com.scalar.cassy.rpc.StatsResponse.getDefaultInstance()))
                   .setSchemaDescriptor(new AdminMethodDescriptorSupplier("Stats"))
                   .build();
           }
@@ -130,7 +137,7 @@ public final class AdminGrpc {
 
     /**
      */
-    public void pause(PauseRequest request,
+    public void pause(com.scalar.cassy.rpc.PauseRequest request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnimplementedUnaryCall(getPauseMethod(), responseObserver);
     }
@@ -145,7 +152,7 @@ public final class AdminGrpc {
     /**
      */
     public void stats(com.google.protobuf.Empty request,
-        io.grpc.stub.StreamObserver<StatsResponse> responseObserver) {
+        io.grpc.stub.StreamObserver<com.scalar.cassy.rpc.StatsResponse> responseObserver) {
       asyncUnimplementedUnaryCall(getStatsMethod(), responseObserver);
     }
 
@@ -155,7 +162,7 @@ public final class AdminGrpc {
             getPauseMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                  PauseRequest,
+                com.scalar.cassy.rpc.PauseRequest,
                 com.google.protobuf.Empty>(
                   this, METHODID_PAUSE)))
           .addMethod(
@@ -170,7 +177,7 @@ public final class AdminGrpc {
             asyncUnaryCall(
               new MethodHandlers<
                 com.google.protobuf.Empty,
-                  StatsResponse>(
+                com.scalar.cassy.rpc.StatsResponse>(
                   this, METHODID_STATS)))
           .build();
     }
@@ -196,7 +203,7 @@ public final class AdminGrpc {
 
     /**
      */
-    public void pause(PauseRequest request,
+    public void pause(com.scalar.cassy.rpc.PauseRequest request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getPauseMethod(), getCallOptions()), request, responseObserver);
@@ -213,7 +220,7 @@ public final class AdminGrpc {
     /**
      */
     public void stats(com.google.protobuf.Empty request,
-        io.grpc.stub.StreamObserver<StatsResponse> responseObserver) {
+        io.grpc.stub.StreamObserver<com.scalar.cassy.rpc.StatsResponse> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getStatsMethod(), getCallOptions()), request, responseObserver);
     }
@@ -239,7 +246,7 @@ public final class AdminGrpc {
 
     /**
      */
-    public com.google.protobuf.Empty pause(PauseRequest request) {
+    public com.google.protobuf.Empty pause(com.scalar.cassy.rpc.PauseRequest request) {
       return blockingUnaryCall(
           getChannel(), getPauseMethod(), getCallOptions(), request);
     }
@@ -253,7 +260,7 @@ public final class AdminGrpc {
 
     /**
      */
-    public StatsResponse stats(com.google.protobuf.Empty request) {
+    public com.scalar.cassy.rpc.StatsResponse stats(com.google.protobuf.Empty request) {
       return blockingUnaryCall(
           getChannel(), getStatsMethod(), getCallOptions(), request);
     }
@@ -280,7 +287,7 @@ public final class AdminGrpc {
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> pause(
-        PauseRequest request) {
+        com.scalar.cassy.rpc.PauseRequest request) {
       return futureUnaryCall(
           getChannel().newCall(getPauseMethod(), getCallOptions()), request);
     }
@@ -295,7 +302,7 @@ public final class AdminGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<StatsResponse> stats(
+    public com.google.common.util.concurrent.ListenableFuture<com.scalar.cassy.rpc.StatsResponse> stats(
         com.google.protobuf.Empty request) {
       return futureUnaryCall(
           getChannel().newCall(getStatsMethod(), getCallOptions()), request);
@@ -324,7 +331,7 @@ public final class AdminGrpc {
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_PAUSE:
-          serviceImpl.pause((PauseRequest) request,
+          serviceImpl.pause((com.scalar.cassy.rpc.PauseRequest) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
         case METHODID_UNPAUSE:
@@ -333,7 +340,7 @@ public final class AdminGrpc {
           break;
         case METHODID_STATS:
           serviceImpl.stats((com.google.protobuf.Empty) request,
-              (io.grpc.stub.StreamObserver<StatsResponse>) responseObserver);
+              (io.grpc.stub.StreamObserver<com.scalar.cassy.rpc.StatsResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -357,7 +364,7 @@ public final class AdminGrpc {
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return CassandraBackupProto.getDescriptor();
+      return com.scalar.cassy.rpc.CassyProto.getDescriptor();
     }
 
     @java.lang.Override

@@ -6,7 +6,7 @@ import com.scalar.cassy.db.ClusterInfo;
 import com.scalar.cassy.db.DatabaseAccessor;
 import com.scalar.cassy.db.RestoreHistory;
 import com.scalar.cassy.remotecommand.RemoteCommandContext;
-import com.scalar.cassy.rpc.CassandraBackupGrpc.CassandraBackupImplBase;
+import com.scalar.cassy.rpc.CassyGrpc.CassyImplBase;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import java.io.File;
@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Immutable
-public final class CassyServer extends CassandraBackupImplBase {
+public final class CassyServer extends CassyImplBase {
   private static final Logger logger = LoggerFactory.getLogger(CassyServer.class);
   private final BackupServerConfig config;
   private io.grpc.Server server;
