@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 public class SnapshotTraverser extends FileTraverser {
-  public static final String SNAPSHOT_DIRNAME = "snapshots";
+  static final String SNAPSHOT_DIRNAME = "snapshots";
   public static final int DIR_TO_FILE_DISTANCE = 2;
   private final String snapshotId;
 
