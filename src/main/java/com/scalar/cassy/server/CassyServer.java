@@ -1,6 +1,6 @@
 package com.scalar.cassy.server;
 
-import com.scalar.cassy.config.BackupServerConfig;
+import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.db.BackupHistory;
 import com.scalar.cassy.db.ClusterInfo;
 import com.scalar.cassy.db.DatabaseAccessor;
@@ -26,12 +26,12 @@ import org.slf4j.LoggerFactory;
 @Immutable
 public final class CassyServer extends CassyImplBase {
   private static final Logger logger = LoggerFactory.getLogger(CassyServer.class);
-  private final BackupServerConfig config;
+  private final CassyServerConfig config;
   private io.grpc.Server server;
   private Connection connection;
   private ExecutorService handlerService;
 
-  public CassyServer(BackupServerConfig config) {
+  public CassyServer(CassyServerConfig config) {
     this.config = config;
   }
 
@@ -85,10 +85,10 @@ public final class CassyServer extends CassyImplBase {
   }
 
   public static void main(String[] args) throws IOException, InterruptedException, SQLException {
-    BackupServerConfig config = null;
+    CassyServerConfig config = null;
     for (int i = 0; i < args.length; ++i) {
       if ("--config".equals(args[i])) {
-        config = new BackupServerConfig(new File(args[++i]));
+        config = new CassyServerConfig(new File(args[++i]));
       } else if ("-help".equals(args[i])) {
         printUsageAndExit();
       }

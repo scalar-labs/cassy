@@ -1,7 +1,7 @@
 package com.scalar.cassy.service;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.scalar.cassy.config.BackupServerConfig;
+import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.db.ClusterInfoRecord;
 import com.scalar.cassy.exception.BackupException;
 import com.scalar.cassy.exception.TimeoutException;
@@ -17,12 +17,12 @@ public abstract class AbstractServiceMaster {
   protected final String DATA_DIR_OPTION = "--data-dir=";
   protected final String STORE_BASE_URI_OPTION = "--store-base-uri=";
   protected final String KEYSPACES_OPTION = "--keyspaces=";
-  protected final BackupServerConfig config;
+  protected final CassyServerConfig config;
   protected final ClusterInfoRecord clusterInfo;
   protected final RemoteCommandExecutor executor;
 
   public AbstractServiceMaster(
-      BackupServerConfig config, ClusterInfoRecord clusterInfo, RemoteCommandExecutor executor) {
+      CassyServerConfig config, ClusterInfoRecord clusterInfo, RemoteCommandExecutor executor) {
     this.config = config;
     this.clusterInfo = clusterInfo;
     this.executor = executor;

@@ -1,7 +1,7 @@
 package com.scalar.cassy.service;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.scalar.cassy.config.BackupServerConfig;
+import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.BackupType;
 import com.scalar.cassy.db.ClusterInfoRecord;
 import com.scalar.cassy.jmx.JmxManager;
@@ -25,7 +25,7 @@ public class BackupServiceMaster extends AbstractServiceMaster {
   private ApplicationPauser pauser;
 
   public BackupServiceMaster(
-      BackupServerConfig config,
+      CassyServerConfig config,
       ClusterInfoRecord clusterInfo,
       RemoteCommandExecutor executor,
       ApplicationPauser pauser) {

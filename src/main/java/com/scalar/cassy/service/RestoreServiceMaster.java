@@ -1,7 +1,7 @@
 package com.scalar.cassy.service;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.scalar.cassy.config.BackupServerConfig;
+import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.RestoreType;
 import com.scalar.cassy.db.ClusterInfoRecord;
 import com.scalar.cassy.remotecommand.RemoteCommand;
@@ -20,7 +20,7 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
   public static final String RESTORE_COMMAND = "cassandra-restore";
 
   public RestoreServiceMaster(
-      BackupServerConfig config, ClusterInfoRecord clusterInfo, RemoteCommandExecutor executor) {
+      CassyServerConfig config, ClusterInfoRecord clusterInfo, RemoteCommandExecutor executor) {
     super(config, clusterInfo, executor);
   }
 

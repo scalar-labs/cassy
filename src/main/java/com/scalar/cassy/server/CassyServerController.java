@@ -1,7 +1,7 @@
 package com.scalar.cassy.server;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.scalar.cassy.config.BackupServerConfig;
+import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.BackupType;
 import com.scalar.cassy.config.RestoreType;
 import com.scalar.cassy.db.BackupHistoryRecord;
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @Immutable
 public final class CassyServerController extends CassyImplBase {
   private static final Logger logger = LoggerFactory.getLogger(CassyServerController.class);
-  private final BackupServerConfig config;
+  private final CassyServerConfig config;
   private final DatabaseAccessor database;
   private final BlockingQueue<RemoteCommandContext> commandQueue;
   private static final String NO_CASSANDRA_HOST = "cassandra_host is not set correctly.";
@@ -58,7 +58,7 @@ public final class CassyServerController extends CassyImplBase {
       "The specified backup is not a cluster-wide backup.";
 
   public CassyServerController(
-      BackupServerConfig config,
+      CassyServerConfig config,
       DatabaseAccessor database,
       BlockingQueue<RemoteCommandContext> commandQueue) {
     this.config = config;

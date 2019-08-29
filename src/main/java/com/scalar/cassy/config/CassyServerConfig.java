@@ -11,7 +11,7 @@ import java.util.Properties;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class BackupServerConfig {
+public class CassyServerConfig {
   private final Properties props;
   protected static final String PREFIX = "scalar.cassy.server.";
   public static final String PORT = PREFIX + "port";
@@ -31,17 +31,17 @@ public class BackupServerConfig {
   private String metadataDbUrl;
   private Optional<String> srvServiceUrl;
 
-  public BackupServerConfig(File propertiesFile) throws IOException {
+  public CassyServerConfig(File propertiesFile) throws IOException {
     this(new FileInputStream(propertiesFile));
   }
 
-  public BackupServerConfig(InputStream stream) throws IOException {
+  public CassyServerConfig(InputStream stream) throws IOException {
     props = new Properties();
     props.load(stream);
     load();
   }
 
-  public BackupServerConfig(Properties properties) {
+  public CassyServerConfig(Properties properties) {
     props = new Properties(properties);
     load();
   }
