@@ -1,8 +1,8 @@
 package com.scalar.cassy.service;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.BackupType;
+import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.db.ClusterInfoRecord;
 import com.scalar.cassy.jmx.JmxManager;
 import com.scalar.cassy.remotecommand.RemoteCommand;

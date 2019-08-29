@@ -1,8 +1,8 @@
 package com.scalar.cassy.server;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.BackupType;
+import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.RestoreType;
 import com.scalar.cassy.db.BackupHistoryRecord;
 import com.scalar.cassy.db.ClusterInfoRecord;

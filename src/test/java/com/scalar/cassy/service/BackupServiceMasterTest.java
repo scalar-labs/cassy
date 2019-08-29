@@ -11,8 +11,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.BackupType;
+import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.db.ClusterInfoRecord;
 import com.scalar.cassy.jmx.JmxManager;
 import com.scalar.cassy.remotecommand.RemoteCommandContext;
