@@ -19,7 +19,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
  */
 @javax.annotation.Generated(
     value = "by gRPC proto compiler (version 1.13.2)",
-    comments = "Source: cassandra-backup.proto")
+    comments = "Source: cassy.proto")
 public final class CassandraBackupGrpc {
 
   private CassandraBackupGrpc() {}
