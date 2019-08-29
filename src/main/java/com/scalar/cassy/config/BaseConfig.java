@@ -12,7 +12,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class BaseConfig {
   private final Properties props;
-  protected static final String PREFIX = "scalar.backup.cassandra.";
+  protected static final String PREFIX = "scalar.cassy.";
   public static final String CLUSTER_ID = PREFIX + "cluster_id";
   public static final String SNAPSHOT_ID = PREFIX + "snapshot_id";
   public static final String TARGET_IP = PREFIX + "target_ip";

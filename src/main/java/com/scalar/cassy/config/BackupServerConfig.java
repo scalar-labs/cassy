@@ -13,7 +13,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class BackupServerConfig {
   private final Properties props;
-  protected static final String PREFIX = "scalar.backup.cassandra.server.";
+  protected static final String PREFIX = "scalar.cassy.server.";
   public static final String PORT = PREFIX + "port";
   public static final String JMX_PORT = PREFIX + "jmx_port";
   public static final String SSH_USER = PREFIX + "ssh_user";
