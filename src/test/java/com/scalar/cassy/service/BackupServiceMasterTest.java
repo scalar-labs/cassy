@@ -11,7 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.scalar.cassy.config.BackupServerConfig;
+import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.BackupType;
 import com.scalar.cassy.db.ClusterInfoRecord;
 import com.scalar.cassy.jmx.JmxManager;
@@ -40,7 +40,7 @@ public class BackupServiceMasterTest {
   private static final String KEYSPACE2 = "keyspace2";
   private static final String KEYSPACE3 = "keyspace3";
   private static final List<String> keyspaces = Arrays.asList(KEYSPACE1, KEYSPACE2, KEYSPACE3);
-  @Mock private BackupServerConfig config;
+  @Mock private CassyServerConfig config;
   @Mock private ClusterInfoRecord clusterInfo;
   @Mock private RemoteCommandExecutor executor;
   @Mock private ApplicationPauser pauser;

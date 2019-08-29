@@ -7,7 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.scalar.cassy.config.BackupServerConfig;
+import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.RestoreType;
 import com.scalar.cassy.jmx.JmxManager;
 import com.scalar.cassy.remotecommand.RemoteCommandContext;
@@ -36,7 +36,7 @@ public class RestoreServiceMasterTest {
   private static final String KEYSPACE2 = "keyspace2";
   private static final String KEYSPACE3 = "keyspace3";
   private static final List<String> keyspaces = Arrays.asList(KEYSPACE1, KEYSPACE2, KEYSPACE3);
-  @Mock private BackupServerConfig config;
+  @Mock private CassyServerConfig config;
   @Mock private JmxManager jmx;
   @Mock private RemoteCommandExecutor executor;
   @Spy @InjectMocks private RestoreServiceMaster master;
