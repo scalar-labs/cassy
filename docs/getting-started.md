@@ -8,7 +8,7 @@ In order to overcome these problems we created a new backup tool, which makes it
 ## System Overview
 
 <p align="center">
-<img src="./images/cassy.png" width="440" />
+<img src="https://github.com/scalar-labs/cassy/raw/master/docs/images/cassy.png" width="440" />
 </p>
 
 ## How to Use
