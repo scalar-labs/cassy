@@ -1,6 +1,7 @@
 package com.scalar.backup.cassandra.service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -77,13 +78,13 @@ public class RestoreServiceMasterTest {
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, CREATED_AT);
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
-        .downloadNodeBackups(any(BackupKey.class), any(RestoreType.class));
+        .downloadNodeBackups(any(BackupKey.class), any(RestoreType.class), anyBoolean());
 
     // Act
     master.restoreBackup(keys, RestoreType.CLUSTER);
 
     // Assert
-    keys.forEach(key -> verify(master).downloadNodeBackups(key, RestoreType.CLUSTER));
+    keys.forEach(key -> verify(master).downloadNodeBackups(key, RestoreType.CLUSTER, false));
   }
 
   @Test
@@ -96,12 +97,30 @@ public class RestoreServiceMasterTest {
     List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, someNodes, SNAPSHOT_ID, CREATED_AT);
     doReturn(mock(RemoteCommandContext.class))
         .when(master)
-        .downloadNodeBackups(any(BackupKey.class), any(RestoreType.class));
+        .downloadNodeBackups(any(BackupKey.class), any(RestoreType.class), anyBoolean());
 
     // Act
     master.restoreBackup(keys, RestoreType.NODE);
 
     // Assert
-    keys.forEach(key -> verify(master).downloadNodeBackups(key, RestoreType.NODE));
+    keys.forEach(key -> verify(master).downloadNodeBackups(key, RestoreType.NODE, false));
+  }
+
+  @Test
+  public void restoreBackup_SnapshotOnlyGiven_DownloadWithSnapshotOnlyOption() {
+    // Arrange
+    when(config.getJmxPort()).thenReturn(JMX_PORT);
+    when(jmx.getKeyspaces()).thenReturn(keyspaces);
+    prepareNodes(jmx, nodes);
+    List<BackupKey> keys = prepareBackupKeys(CLUSTER_ID, nodes, SNAPSHOT_ID, CREATED_AT);
+    doReturn(mock(RemoteCommandContext.class))
+        .when(master)
+        .downloadNodeBackups(any(BackupKey.class), any(RestoreType.class), anyBoolean());
+
+    // Act
+    master.restoreBackup(keys, RestoreType.NODE, true);
+
+    // Assert
+    keys.forEach(key -> verify(master).downloadNodeBackups(key, RestoreType.NODE, true));
   }
 }

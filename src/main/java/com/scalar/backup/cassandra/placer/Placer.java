@@ -24,6 +24,10 @@ public class Placer {
         toDir,
         SnapshotTraverser.DIR_TO_FILE_DISTANCE);
 
+    if (config.isSnapshotOnly()) {
+      return;
+    }
+
     place(
         new IncrementalBackupTraverser(fromDir).traverse(config.getKeyspace()),
         fromDir,

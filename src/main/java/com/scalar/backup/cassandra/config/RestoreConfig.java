@@ -11,7 +11,9 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class RestoreConfig extends BaseConfig {
   public static final String RESTORE_TYPE = BaseConfig.PREFIX + "restore_type";
+  public static final String SNAPSHOT_ONLY = BaseConfig.PREFIX + "snapshot_only";
   private RestoreType restoreType;
+  private boolean snapshotOnly = false;
 
   public RestoreConfig(File propertiesFile) throws IOException {
     super(propertiesFile);
@@ -32,9 +34,16 @@ public class RestoreConfig extends BaseConfig {
     return restoreType;
   }
 
+  public boolean isSnapshotOnly() {
+    return snapshotOnly;
+  }
+
   private void load() {
     Properties props = getProperties();
     checkArgument(props.getProperty(RESTORE_TYPE) != null);
     restoreType = RestoreType.getByType(Integer.parseInt(props.getProperty(RESTORE_TYPE)));
+    if (props.getProperty(SNAPSHOT_ONLY) != null) {
+      snapshotOnly = Boolean.parseBoolean(props.getProperty(SNAPSHOT_ONLY));
+    }
   }
 }

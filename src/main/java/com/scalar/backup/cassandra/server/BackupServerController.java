@@ -281,7 +281,8 @@ public final class BackupServerController extends CassandraBackupGrpc.CassandraB
     try {
       updateRestoreStatus(backupKeys, type, OperationStatus.INITIALIZED);
       RestoreServiceMaster master = new RestoreServiceMaster(config, clusterInfo.get(), executor);
-      List<RemoteCommandContext> futures = master.restoreBackup(backupKeys, type);
+      List<RemoteCommandContext> futures =
+          master.restoreBackup(backupKeys, type, request.getSnapshotOnly());
       updateRestoreStatus(backupKeys, type, OperationStatus.STARTED);
       commandQueue.addAll(futures);
     } catch (Exception e) {
