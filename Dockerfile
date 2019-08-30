@@ -29,6 +29,6 @@ RUN sqlite3 ./cassy.db < ./scripts/db.schema
 VOLUME /cassy
 
 ENTRYPOINT ["/bin/sh", "scripts/entrypoint.sh"]
-CMD ["--config", "/cassy/conf/backup-server.properties"]
+CMD ["--config", "/cassy/conf/cassy.properties"]
 
 EXPOSE 20051

@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	endpoint = flag.String("cassandra-backup endpoint", "localhost:20051", "endpoint of Cassandra backup")
+	endpoint = flag.String("cassy server endpoint", "localhost:20051", "endpoint of Cassy server")
 )
 
 func run() error {
@@ -23,7 +23,7 @@ func run() error {
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithInsecure()}
-	err := gw.RegisterCassandraBackupHandlerFromEndpoint(ctx, mux, *endpoint, opts)
+	err := gw.RegisterCassyHandlerFromEndpoint(ctx, mux, *endpoint, opts)
 	if err != nil {
 		return err
 	}
