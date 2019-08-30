@@ -1,0 +1,174 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "com.scalar.cassy.rpc";
+option java_outer_classname = "CassyProto";
+
+package rpc;
+
+service Cassy {
+    rpc RegisterCluster (ClusterRegistrationRequest) returns (ClusterRegistrationResponse) {
+        option (google.api.http) = {
+            post: "/v1/clusters"
+            body: "*"
+        };
+    }
+    rpc ListClusters (ClusterListingRequest) returns (ClusterListingResponse) {
+        option (google.api.http) = {
+            get: "/v1/clusters/{cluster_id}"
+        };
+    }
+    rpc ListBackups (BackupListingRequest) returns (BackupListingResponse) {
+        option (google.api.http) = {
+            get: "/v1/clusters/{cluster_id}/backups"
+        };
+    }
+    rpc TakeBackup (BackupRequest) returns (BackupResponse) {
+        option (google.api.http) = {
+            post: "/v1/clusters/{cluster_id}/backups"
+            body: "*"
+        };
+    }
+    rpc RestoreBackup (RestoreRequest) returns (RestoreResponse) {
+        option (google.api.http) = {
+            put: "/v1/clusters/{cluster_id}/data/{snapshot_id}"
+            body: "*"
+        };
+    }
+    rpc ListRestoreStatuses (RestoreStatusListingRequest) returns (RestoreStatusListingResponse) {
+        option (google.api.http) = {
+            get: "/v1/clusters/{cluster_id}/data/{snapshot_id}"
+        };
+    }
+}
+
+message ClusterRegistrationRequest {
+    string cassandra_host = 1;
+}
+
+message ClusterRegistrationResponse {
+    string cluster_id = 1;
+    string cluster_name = 2;
+    repeated string target_ips = 3;
+    repeated string keyspaces = 4;
+    string data_dir = 5;
+}
+
+message ClusterListingRequest {
+    string cluster_id = 1;
+    int32 limit = 2;
+}
+
+message ClusterListingResponse {
+    message Entry {
+        string cluster_id = 1;
+        string cluster_name = 2;
+        repeated string target_ips = 3;
+        repeated string keyspaces = 4;
+        string data_dir = 5;
+        uint64 created_at = 6;
+        uint64 updated_at = 7;
+    }
+    repeated Entry entries = 1;
+}
+
+message BackupListingRequest {
+    string cluster_id = 1;
+    string target_ip = 2;
+    int32 limit = 3;
+    string snapshot_id = 4;
+}
+
+message BackupListingResponse {
+    message Entry {
+        string cluster_id = 1;
+        string target_ip = 2;
+        string snapshot_id = 3;
+        uint64 created_at = 4;
+        uint64 updated_at = 5;
+        uint32 backup_type = 6;
+        OperationStatus status = 7;
+    }
+    repeated Entry entries = 1;
+}
+
+enum OperationStatus {
+    UNKNOWN = 0;
+    INITIALIZED = 1;
+    STARTED = 2;
+    COMPLETED = 3;
+    FAILED = 4;
+}
+
+message BackupRequest {
+    string cluster_id = 1;
+    repeated string target_ips = 2; // optional
+    string snapshot_id = 3; // optional
+    uint32 backup_type = 4;
+}
+
+message BackupResponse {
+    OperationStatus status = 1;
+    string cluster_id = 2;
+    repeated string target_ips = 3;
+    string snapshot_id = 4;
+    uint64 created_at = 5;
+    uint32 backup_type = 6;
+}
+
+message RestoreRequest {
+    string cluster_id = 1;
+    repeated string target_ips = 2; // optional
+    string snapshot_id = 3;
+    uint32 restore_type = 4;
+    bool snapshot_only = 5; // optional (default: false)
+}
+
+message RestoreResponse {
+    OperationStatus status = 1;
+    string cluster_id = 2;
+    repeated string target_ips = 3;
+    string snapshot_id = 4;
+    uint32 restore_type = 5;
+    bool snapshot_only = 6;
+}
+
+message RestoreStatusListingRequest {
+    string cluster_id = 1;
+    string target_ip = 2; // optional
+    string snapshot_id = 3;
+    int32 limit = 4;
+}
+
+message RestoreStatusListingResponse {
+    message Entry {
+        string target_ip = 1;
+        string snapshot_id = 2;
+        uint64 created_at = 3;
+        uint64 updated_at = 4;
+        uint32 restore_type = 5;
+        OperationStatus status = 6;
+    }
+    string cluster_id = 1;
+    repeated Entry entries = 3;
+}
+
+service Admin {
+    rpc Pause (PauseRequest) returns (google.protobuf.Empty) {
+    }
+    rpc Unpause (google.protobuf.Empty) returns (google.protobuf.Empty) {
+    }
+    rpc Stats (google.protobuf.Empty) returns (StatsResponse) {
+    }
+}
+
+message PauseRequest {
+    bool wait_outstanding = 1;
+}
+
+message StatsResponse {
+    string stats = 1; // json-formatted
+}
