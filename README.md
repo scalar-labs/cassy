@@ -92,10 +92,10 @@ First of all, let's create a metadata database with the following command.
 $ sqlite3 cassy.db < scripts/db.schema
 ```
 
-Let's start a Cassy master with the configuration file `backup-server.properties`.
+Let's start a Cassy master with the configuration file `cassy-server.properties`.
 
 ```
-$ build/install/cassy/bin/backup-server --config ./backup-server.properties
+$ build/install/cassy/bin/cassy-server --config ./cassy-server.properties
 ```
 
 Now you can run backup and restore through gRPC APIs or HTTP/1.1 REST APIs. For gRPC APIs, you can do it easily with [grpcurl](https://github.com/fullstorydev/grpcurl).
