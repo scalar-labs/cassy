@@ -1,5 +1,7 @@
 # Cassy: A simple and integrated backup tool for Apache Cassandra
 
+[![CircleCI](https://circleci.com/gh/scalar-labs/cassy.svg?style=svg&circle-token=4f293f3061b353a7f5bd8c7d9544bae8817449af)](https://circleci.com/gh/scalar-labs/cassy)
+
 Cassy is a simple and integrated backup tool for Apache Cassandra.
 
 You can do the following things with Cassy from an easy to use gRPC APIs or HTTP/1.1 REST APIs:
