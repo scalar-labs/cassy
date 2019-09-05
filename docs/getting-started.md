@@ -1,20 +1,6 @@
 # Getting Started with Cassy
 
-## Background
-
-The existing Cassandra backup features such as snapshot and incremental backups are great building blocks for doing backup and restore for Cassandra data. However, they are not necessarily easy to use because they are not fully integrated. Moreover, the current backup feature and the existing backup tools are problematic when used with [Scalar DB](https://github.com/scalar-labs/scalardb/) transactions that update multiple records in a transactional (atomic) way as they do not handle transactional consistency of multiple records. 
-In order to overcome these problems we created a new backup tool, which makes it easy to do backup and restore operations, and makes it possible to do cluster-wide transactionally consistent backups.
-
-## System Overview
-
-<p align="center">
-<img src="https://github.com/scalar-labs/cassy/raw/master/docs/images/cassy.png" width="640" />
-</p>
-
-## How to Use
-
-
-### Prerequisite
+## Prerequisite
 
 Cassy requires the following software to run: 
 * Oracle JDK 8 (or OpenJDK 8) (it should work with 9, but probably not with 10+)
@@ -31,7 +17,7 @@ Furthermore, the following configurations are recommended (but not required) to 
 
 From here, it assumes there is a multi-node Cassandra cluster (192.168.0.10, ...) and a node for running the Cassy master daemon (192.168.0.254).
 
-### Install
+## Install
 
 Cassy is not currently available on Maven, so you will need to install from the source.
 
@@ -50,7 +36,7 @@ The following actions are also required:
 * Configure AWS config and credentials properly. (Note that the first version only supports AWS S3 as a blob store.) 
 * Permit SSH user to access Cassandra data directory. (Use cassandra user for SSH might be the easiest way)
 
-### Configure
+## Configure
 
 To run Casssy properly, it is required to create a property file.
 Here is a sample configuration file. Please see the comments above each entry for the meaning of the configuration.
@@ -80,7 +66,7 @@ scalar.cassy.server.metadata_db_url=jdbc:sqlite:cassy.db
 scalar.cassy.server.srv_service_url=_app._tcp.your-service.com
 ```
 
-### Use
+## Use
 
 First of all, let's create a metadata database with the following command.
 ```
@@ -96,7 +82,7 @@ $ build/install/cassy/bin/cassy-server --config ./cassy-server.properties
 Now you can run backup and restore through gRPC APIs or HTTP/1.1 REST APIs. For gRPC APIs, you can do it easily with [grpcurl](https://github.com/fullstorydev/grpcurl).
 Here we will use grpcurl for the sake of simplicity.
 
-#### Register your cluster
+### Register your cluster
 
 You can register your cluster with `RegisterCluster`
 
@@ -105,7 +91,7 @@ $ grpcurl -plaintext -d '{"cassandra_host": "192.168.0.10"}' 192.168.0.254:20051
 ```
 You need to specify an address of one of Cassandra nodes to register your cluster. All the other cluster information such as cluster name, nodes' IP addresses, keyspaces and the data directory are retrieved by JMX and are saved in the metadata database for later use.
 
-#### List your clusters
+### List your clusters
 
 You can also view your cluster information that you registered with `ListClusters`.
 
