@@ -24,12 +24,12 @@ Cassy requires the following software to run:
 
 
 Of-course, you need a well-configured Cassandra cluster that you can manage. The following Cassandra configurations are required to be updated to run Cassy properly.
-* Set `LOCAL_JMX=no` for enabling remote JMX and set `com.sun.management.jmxremote.authenticate=false` to disable authentication in cassandra-env.sh. (Please do not expose the JMX port to the internet.)
+* Set `LOCAL_JMX=no` for enabling remote JMX and set `com.sun.management.jmxremote.authenticate=false` to disable authentication in cassandra-env.sh since the current version does not support JMX authentication. (Please do not expose the JMX port to the internet.)
 
 Furthermore, the following configurations are recommended (but not required) to be updated.
 * Set `incremental_backups=true` in casssandra.yaml if you want to use incremental backups.
 
-From here, it assumes there is a multi-node Cassandra cluster (192.168.0.2, ...) and a node for running the Cassy master daemon (192.168.0.254).
+From here, it assumes there is a multi-node Cassandra cluster (192.168.0.10, ...) and a node for running the Cassy master daemon (192.168.0.254).
 
 ### Install
 
@@ -101,7 +101,7 @@ Here we will use grpcurl for the sake of simplicity.
 You can register your cluster with `RegisterCluster`
 
 ```
-$ grpcurl -plaintext -d '{"cassandra_host": "192.168.0.2"}' 192.168.0.254:20051 rpc.Cassy.RegisterCluster
+$ grpcurl -plaintext -d '{"cassandra_host": "192.168.0.10"}' 192.168.0.254:20051 rpc.Cassy.RegisterCluster
 ```
 You need to specify an address of one of Cassandra nodes to register your cluster. All the other cluster information such as cluster name, nodes' IP addresses, keyspaces and the data directory are retrieved by JMX and are saved in the metadata database for later use.
 
@@ -172,11 +172,11 @@ If `target_ips` is omitted, it will restore the specified backups to all the nod
 Note that there should be no data, commitlogs, hints in a node that is being recovered, and the Cassandra daemon should be stopped.
 
 ```
-$ grpcurl -plaintext -d '{"snapshot_id": "SNAPSHOT-ID", "restore_type": 2, "cluster_id": "CLUSTER-ID", "target_ips": ["192.168.0.3]}' 192.168.0.254:20051 rpc.Cassy.RestoreBackup
+$ grpcurl -plaintext -d '{"snapshot_id": "SNAPSHOT-ID", "restore_type": 2, "cluster_id": "CLUSTER-ID", "target_ips": ["192.168.0.11]}' 192.168.0.254:20051 rpc.Cassy.RestoreBackup
 // Start up Cassandra and do repair
 ```
 
-It will download the specified snapshot and the incremental backups from the blob store into Cassandra data directory of "192.168.0.3" with a directory named `node-backup` and place the files properly for Cassandra to start up with the files. Then start up Cassandra, and do repair if replica consistency is important. 
+It will download the specified snapshot and the incremental backups from the blob store into Cassandra data directory of "192.168.0.11" with a directory named `node-backup` and place the files properly for Cassandra to start up with the files. Then start up Cassandra, and do repair if replica consistency is important. 
 
 You can also specify `"snapshot-only": true` to make it restore only snapshots without any incremental backups. This option is valid when incremental backups are broken or corrupted for some reason.
 
