@@ -13,7 +13,6 @@ In order to overcome these problems we created a new backup tool, which makes it
 
 ## How to Use
 
-This section briefly describes how to install and use Cassy.
 
 ### Prerequisite
 
