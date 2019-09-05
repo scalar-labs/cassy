@@ -34,7 +34,7 @@ From here, it assumes there is a multi-node Cassandra cluster (192.168.0.2, ...)
 
 ### Install
 
-As of writing this, Cassy is not uploaded to Maven so you will need to install from the source.
+Cassy is not currently available on Maven, so you will need to install from the source.
 
 ```
 # At each node of Cassandra cluster and the Cassy master node
