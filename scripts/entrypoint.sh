@@ -5,7 +5,7 @@ if [ ! -f /cassy/data/cassy.db ]; then
 fi;
 
 if [ ! -f /cassy/conf/backup-server.properties ]; then
-   cp conf/backup-server.properties /cassy/conf/;
+   cp conf/cassy.properties /cassy/conf/;
 fi;
 
-build/install/cassy/bin/backup-server $@
+build/install/cassy/bin/cassy-server $@
