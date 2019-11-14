@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface FileUploader extends AutoCloseable {
 
-  void upload(List<Path> files, BackupConfig config) throws IOException;
+  void upload(List<Path> files, BackupConfig config);
 }

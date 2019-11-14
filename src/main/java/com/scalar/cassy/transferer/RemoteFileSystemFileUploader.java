@@ -38,16 +38,23 @@ public class RemoteFileSystemFileUploader implements FileUploader {
 
 
   @Override
-  public void upload(List<Path> files, BackupConfig config) throws IOException {
-    SshCredential credential = PublicKeySshCredential.fromFile("vincent", Paths.get("/home/vincent/.ssh/id_rsa"));
+  public void upload(List<Path> files, BackupConfig config)  {
+    SshCredential credential = null;
+    try {
+      credential = PublicKeySshCredential.fromFile("vincent", Paths.get("/home/vincent/.ssh/id_rsa"));
+    } catch (IOException e) {
+      logger.error("Could not read private key",e);
+      return;
+    }
     SshHostAccessor ssh =
         SshHostAccessor.forCredential(Host.fromHostname("172.16.1.23"), credential);
     String remoteDir = "/home/vincent/Downloads/test";
     try (HostControlSystem hcs = ssh.open()) {
       MoreFiles
           .copyLarge(hcs.getPath(remoteDir, "Dockerfile"), hcs.getPath(remoteDir, "Dockerfile2"));
+      logger.info("Copied dockerfile");
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Could not copy file",e);
     }
   }
 
