@@ -1,10 +1,11 @@
 package com.scalar.cassy.transferer;
 
 import com.scalar.cassy.config.BackupConfig;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
 public interface FileUploader extends AutoCloseable {
 
-  void upload(List<Path> files, BackupConfig config);
+  void upload(List<Path> files, BackupConfig config) throws IOException;
 }

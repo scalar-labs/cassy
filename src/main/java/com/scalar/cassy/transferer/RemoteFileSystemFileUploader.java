@@ -9,6 +9,7 @@ import com.palantir.giraffe.ssh.SshHostAccessor;
 import com.scalar.cassy.config.BackupConfig;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +38,8 @@ public class RemoteFileSystemFileUploader implements FileUploader {
 
 
   @Override
-  public void upload(List<Path> files, BackupConfig config) {
-    SshCredential credential = PublicKeySshCredential.of("vincent", "");
+  public void upload(List<Path> files, BackupConfig config) throws IOException {
+    SshCredential credential = PublicKeySshCredential.fromFile("vincent", Paths.get("/home/vincent/.ssh/id_rsa"));
     SshHostAccessor ssh =
         SshHostAccessor.forCredential(Host.fromHostname("172.16.1.23"), credential);
     String remoteDir = "/home/vincent/Downloads/test";
