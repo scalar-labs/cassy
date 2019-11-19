@@ -26,7 +26,7 @@ public class FileSystemFileUploader implements FileUploader {
           Files.createDirectories(hcs.getPath(destFile.getParent()));
           MoreFiles
               .copyLarge(sourceFile.toPath(),
-                  destFile.toPath());
+                  hcs.getPath(destFile.toString()));
         }
       }
     } catch (IOException e) {
