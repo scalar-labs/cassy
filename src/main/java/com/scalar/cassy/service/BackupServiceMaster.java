@@ -19,9 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BackupServiceMaster extends AbstractServiceMaster {
+
+  public static final String BACKUP_COMMAND = "cassy-backup";
   private static final Logger logger = LoggerFactory.getLogger(BackupServiceMaster.class);
   private static final String BACKUP_TYPE_OPTION = "--backup-type=";
-  public static final String BACKUP_COMMAND = "cassy-backup";
   private ApplicationPauser pauser;
 
   public BackupServiceMaster(
@@ -105,6 +106,7 @@ public class BackupServiceMaster extends AbstractServiceMaster {
             SNAPSHOT_ID_OPTION + backupKey.getSnapshotId(),
             TARGET_IP_OPTION + backupKey.getTargetIp(),
             DATA_DIR_OPTION + clusterInfo.getDataDir(),
+            STORE_TYPE_OPTION + config.getStorageType(),
             STORE_BASE_URI_OPTION + config.getStorageBaseUri(),
             KEYSPACES_OPTION + String.join(",", clusterInfo.getKeyspaces()),
             BACKUP_TYPE_OPTION + type.get());

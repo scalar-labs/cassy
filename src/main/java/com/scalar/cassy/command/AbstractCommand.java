@@ -1,5 +1,6 @@
 package com.scalar.cassy.command;
 
+import com.scalar.cassy.config.StorageType;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 
@@ -32,7 +33,12 @@ public abstract class AbstractCommand implements Callable<Void> {
       paramLabel = "DATA_DIR",
       description = "A data directory to take backups from or restore backup to")
   protected String dataDir;
-
+  @CommandLine.Option(
+      names = {"--store-type"},
+      required = true,
+      paramLabel = "STORE_TYPE",
+      description = "The store type [AWS_S3, FILE_SYSTEM]")
+  protected StorageType storeType;
   @CommandLine.Option(
       names = {"--store-base-uri"},
       required = true,

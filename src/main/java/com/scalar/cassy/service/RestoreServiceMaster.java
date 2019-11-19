@@ -15,9 +15,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class RestoreServiceMaster extends AbstractServiceMaster {
+
+  public static final String RESTORE_COMMAND = "cassy-restore";
   private static final String RESTORE_TYPE_OPTION = "--restore-type=";
   private static final String SNAPSHOT_ONLY_OPTION = "--snapshot-only";
-  public static final String RESTORE_COMMAND = "cassy-restore";
 
   public RestoreServiceMaster(
       CassyServerConfig config, ClusterInfoRecord clusterInfo, RemoteCommandExecutor executor) {
@@ -60,6 +61,7 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
     arguments.add(SNAPSHOT_ID_OPTION + backupKey.getSnapshotId());
     arguments.add(TARGET_IP_OPTION + backupKey.getTargetIp());
     arguments.add(DATA_DIR_OPTION + clusterInfo.getDataDir());
+    arguments.add(STORE_TYPE_OPTION + config.getStorageType());
     arguments.add(STORE_BASE_URI_OPTION + config.getStorageBaseUri());
     arguments.add(KEYSPACES_OPTION + String.join(",", clusterInfo.getKeyspaces()));
     arguments.add(RESTORE_TYPE_OPTION + type.get());
