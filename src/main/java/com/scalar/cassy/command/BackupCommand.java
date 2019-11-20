@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import com.scalar.cassy.config.BackupConfig;
 import com.scalar.cassy.config.BackupType;
 import com.scalar.cassy.service.AwsS3BackupModule;
+import com.scalar.cassy.service.AzureBackupModule;
 import com.scalar.cassy.service.BackupService;
 import java.util.Arrays;
 import java.util.Properties;
@@ -36,7 +37,8 @@ public class BackupCommand extends AbstractCommand {
 
     BackupType type = BackupType.getByType(backupType);
     // TODO: switching modules depending on the specified store_type
-    Injector injector = Guice.createInjector(new AwsS3BackupModule(type, dataDir, snapshotId));
+//    Injector injector = Guice.createInjector(new AwsS3BackupModule(type, dataDir, snapshotId));
+    Injector injector = Guice.createInjector(new AzureBackupModule(type, dataDir, snapshotId));
 
     try (BackupService service = injector.getInstance(BackupService.class)) {
       Arrays.asList(keyspaces.split(","))
