@@ -2,11 +2,7 @@ package com.scalar.cassy.service;
 
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobAsyncClient;
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobClientBuilder;
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobContainerClientBuilder;
-import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceAsyncClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -46,10 +42,18 @@ public class AzureBackupModule extends AbstractModule {
 
   @Provides
   @Singleton
-  BlobAsyncClient provideBlobClient() {
-    return new BlobClientBuilder()
-        .endpoint("https://cassydev.blob.core.windows.net/indetail-cassy-test")
+  BlobServiceAsyncClient provideBlobServiceClient() {
+    return new BlobServiceClientBuilder()
+        .endpoint("https://cassydev.blob.core.windows.net/indetail-cassy-test") // input string directly for testing
         .credential(new DefaultAzureCredentialBuilder().build())
         .buildAsyncClient();
+  }
+
+  @Provides
+  @Singleton
+  BlobAsyncClient provideBlobClient(BlobServiceAsyncClient serviceAsyncClient) {
+    return serviceAsyncClient
+        .getBlobContainerAsyncClient("indetail-cassy-test") // input string directly for testing
+        .getBlobAsyncClient("myblob"); // input string directly for testing
   }
 }
