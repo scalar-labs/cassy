@@ -6,6 +6,7 @@ import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.service.AwsS3RestoreModule;
 import com.scalar.cassy.service.FileSystemRestoreModule;
 import com.scalar.cassy.service.RestoreService;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Properties;
 import picocli.CommandLine;
@@ -47,7 +48,7 @@ public class RestoreCommand extends AbstractCommand {
         injector = Guice.createInjector(new AwsS3RestoreModule());
         break;
       case FILE_SYSTEM:
-        injector = Guice.createInjector(new FileSystemRestoreModule());
+        injector = Guice.createInjector(new FileSystemRestoreModule(URI.create(storeBaseUri)));
         break;
       default:
         throw new UnsupportedOperationException(
