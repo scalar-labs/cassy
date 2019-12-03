@@ -1,8 +1,14 @@
 package com.scalar.cassy.service;
 
+import com.azure.identity.CredentialBuilderBase;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobAsyncClient;
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobClientBuilder;
+import com.azure.storage.blob.BlobContainerAsyncClient;
+import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceAsyncClient;
+import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -42,18 +48,20 @@ public class AzureBackupModule extends AbstractModule {
 
   @Provides
   @Singleton
-  BlobServiceAsyncClient provideBlobServiceClient() {
-    return new BlobServiceClientBuilder()
-        .endpoint("https://cassydev.blob.core.windows.net/indetail-cassy-test") // input string directly for testing
-        .credential(new DefaultAzureCredentialBuilder().build())
+  BlobContainerAsyncClient provideBlobAsyncClient() {
+    BlobServiceAsyncClient service = new BlobServiceClientBuilder()
+        .connectionString("DefaultEndpointsProtocol=https;AccountName=cassydev;AccountKey=z7Eo2vQhE9y0VH0AE5O3GdgqrS6AnPdojRf08p+LSvbjMm1sr4hqJhXm8RPU4Cz1fxGUOlXAkzJxM61h5Rierw==;EndpointSuffix=core.windows.net")
         .buildAsyncClient();
+    return service.getBlobContainerAsyncClient("indetail-cassy-test");
+
   }
 
-  @Provides
-  @Singleton
-  BlobAsyncClient provideBlobClient(BlobServiceAsyncClient serviceAsyncClient) {
-    return serviceAsyncClient
-        .getBlobContainerAsyncClient("indetail-cassy-test") // input string directly for testing
-        .getBlobAsyncClient("myblob"); // input string directly for testing
-  }
+//  @Provides
+//  @Singleton
+//  BlobAsyncClient provideBlobClient() {
+//    return new BlobClientBuilder()
+//        .connectionString("DefaultEndpointsProtocol=https;AccountName=cassydev;AccountKey=z7Eo2vQhE9y0VH0AE5O3GdgqrS6AnPdojRf08p+LSvbjMm1sr4hqJhXm8RPU4Cz1fxGUOlXAkzJxM61h5Rierw==;EndpointSuffix=core.windows.net")
+//        .blobName("myblob")
+//        .buildAsyncClient();
+//  }
 }

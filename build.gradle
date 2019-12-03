@@ -64,9 +64,11 @@ dependencies {
     compile group: 'com.palantir.giraffe', name: 'giraffe-ssh', version: '0.10.0'
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.27.2.1'
     compile group: 'dnsjava', name: 'dnsjava', version: '2.1.9'
-    // The azure sdk use a netty version which conflicts with
+    // TODO: The azure sdk use a netty version which conflicts with
     // group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: "${nettyTcNativeVersion}"
     // so okhttp (azure-core-http-okhttp) is used as http client instead
+    // However, using okhttp causes an IOException to be thrown when downloading files,
+    // so we will need to think of a different way to resolve this conflict.
     compile(group: 'com.azure', name: 'azure-storage-blob', version: '12.0.0') {
         exclude group: 'com.azure', module: 'azure-core-http-netty'
     }

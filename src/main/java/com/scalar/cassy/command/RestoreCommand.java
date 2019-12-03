@@ -4,6 +4,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.service.AwsS3RestoreModule;
+import com.scalar.cassy.service.AzureBackupModule;
+import com.scalar.cassy.service.AzureRestoreModule;
 import com.scalar.cassy.service.RestoreService;
 import java.util.Arrays;
 import java.util.Properties;
@@ -40,7 +42,8 @@ public class RestoreCommand extends AbstractCommand {
     props.setProperty(RestoreConfig.SNAPSHOT_ONLY, Boolean.toString(snapshotOnly));
 
     // TODO: switching modules depending on the specified store_type
-    Injector injector = Guice.createInjector(new AwsS3RestoreModule());
+//    Injector injector = Guice.createInjector(new AwsS3RestoreModule());
+    Injector injector = Guice.createInjector(new AzureRestoreModule());
 
     try (RestoreService service = injector.getInstance(RestoreService.class)) {
       Arrays.asList(keyspaces.split(","))
