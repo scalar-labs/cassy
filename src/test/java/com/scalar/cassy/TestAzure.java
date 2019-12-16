@@ -11,7 +11,7 @@ import org.junit.Test;
 public class TestAzure {
 
   private static final String CONNECTION_STRING =
-      "DefaultEndpointsProtocol=https;AccountName=cassydev;AccountKey=z7Eo2vQhE9y0VH0AE5O3GdgqrS6AnPdojRf08p+LSvbjMm1sr4hqJhXm8RPU4Cz1fxGUOlXAkzJxM61h5Rierw==;EndpointSuffix=core.windows.net";
+      "DefaultEndpointsProtocol=https;AccountName=cassydev;AccountKey=yXdz8inmyiXO4vmgrrcaLbhRyRJ51VXROCt+cWfitjY1YlqEUkbPduf2o5uc+kknZh8ApRlT6NDyRVjfBbmeLw==;EndpointSuffix=core.windows.net";
   private static final String CONTAINER_NAME = "indetail-cassy-test";
 
   @Test
