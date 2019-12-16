@@ -59,18 +59,11 @@ dependencies {
     compile group: 'io.grpc', name: 'grpc-stub', version: "${grpcVersion}"
     compile group: 'com.google.protobuf', name: 'protobuf-java-util', version: "${protobufVersion}"
     compileOnly group: 'javax.annotation', name: 'javax.annotation-api', version: '1.2'
-//    compile group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: "${nettyTcNativeVersion}"
     compile group: 'io.grpc', name: 'grpc-services', version: "${grpcVersion}"
     compile group: 'com.palantir.giraffe', name: 'giraffe-ssh', version: '0.10.0'
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.27.2.1'
     compile group: 'dnsjava', name: 'dnsjava', version: '2.1.9'
-    // TODO: The azure sdk use a netty version which conflicts with
-    // group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: "${nettyTcNativeVersion}"
-    // so okhttp (azure-core-http-okhttp) is used as http client instead
-    // However, using okhttp causes an IOException to be thrown when downloading files,
-    // so we will need to think of a different way to resolve this conflict.
-    compile group: 'com.azure', name: 'azure-storage-blob', version: '12.0.0'
-//    compile group: 'com.azure', name: 'azure-core-http-okhttp', version: '1.0.0'
+    compile group: 'com.azure', name: 'azure-storage-blob', version: '12.1.0'
     compile group: 'com.azure', name: 'azure-identity', version: '1.0.0'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.1'

@@ -41,8 +41,8 @@ public class AzureFileUploader implements FileUploader {
     files.forEach(
         p -> {
           String key = BackupPath.create(config, p.toString());
-          if (requiresUpload(key, p)) {
             String filePath = Paths.get(config.getDataDir(), p.toString()).toFile().getPath();
+          if (requiresUpload(key, Paths.get(filePath))) {
             logger.info("Uploading file " + count + "/" + files.size() + " " + filePath);
             count.getAndIncrement();
             toBeUploaded.add(
@@ -63,7 +63,7 @@ public class AzureFileUploader implements FileUploader {
   }
 
   @Override
-  public void close() throws Exception {}
+  public void close() {}
 
   @VisibleForTesting
   private boolean requiresUpload(String key, Path file) {
@@ -71,7 +71,6 @@ public class AzureFileUploader implements FileUploader {
       BlobAsyncClient client = blobContainerClient.getBlobAsyncClient(key);
       Optional<BlobProperties> blobProperties = client.getProperties().blockOptional();
 
-      // TODO: running backup for the first time will work, but second time will result in an IOException even though the file still exists
       if(blobProperties.isPresent() && blobProperties.get().getBlobSize() == Files.size(file)) {
         return false;
       }
@@ -85,3 +84,4 @@ public class AzureFileUploader implements FileUploader {
     return true;
   }
 }
+

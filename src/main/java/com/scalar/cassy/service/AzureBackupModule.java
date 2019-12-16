@@ -50,18 +50,10 @@ public class AzureBackupModule extends AbstractModule {
   @Singleton
   BlobContainerAsyncClient provideBlobAsyncClient() {
     BlobServiceAsyncClient service = new BlobServiceClientBuilder()
-        .connectionString("DefaultEndpointsProtocol=https;AccountName=cassydev;AccountKey=yXdz8inmyiXO4vmgrrcaLbhRyRJ51VXROCt+cWfitjY1YlqEUkbPduf2o5uc+kknZh8ApRlT6NDyRVjfBbmeLw==;EndpointSuffix=core.windows.net")
+        .connectionString(System.getenv("AZURE_STORAGE_CONNECTION_STRING"))
         .buildAsyncClient();
     return service.getBlobContainerAsyncClient("indetail-cassy-test");
 
   }
-
-//  @Provides
-//  @Singleton
-//  BlobAsyncClient provideBlobClient() {
-//    return new BlobClientBuilder()
-//        .connectionString("DefaultEndpointsProtocol=https;AccountName=cassydev;AccountKey=z7Eo2vQhE9y0VH0AE5O3GdgqrS6AnPdojRf08p+LSvbjMm1sr4hqJhXm8RPU4Cz1fxGUOlXAkzJxM61h5Rierw==;EndpointSuffix=core.windows.net")
-//        .blobName("myblob")
-//        .buildAsyncClient();
-//  }
 }
+

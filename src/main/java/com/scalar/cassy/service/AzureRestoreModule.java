@@ -23,9 +23,9 @@ public class AzureRestoreModule extends AbstractModule {
   BlobContainerAsyncClient provideBlobAsyncClient() {
     BlobServiceAsyncClient service =
         new BlobServiceClientBuilder()
-            .connectionString(
-                "DefaultEndpointsProtocol=https;AccountName=cassydev;AccountKey=z7Eo2vQhE9y0VH0AE5O3GdgqrS6AnPdojRf08p+LSvbjMm1sr4hqJhXm8RPU4Cz1fxGUOlXAkzJxM61h5Rierw==;EndpointSuffix=core.windows.net")
+            .connectionString(System.getenv("AZURE_STORAGE_CONNECTION_STRING"))
             .buildAsyncClient();
     return service.getBlobContainerAsyncClient("indetail-cassy-test");
   }
 }
+

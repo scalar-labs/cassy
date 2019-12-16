@@ -60,7 +60,6 @@ public class AzureFileDownloader implements FileDownloader {
   }
 
   @Override
-  public void close() {
-    System.out.println("CLOSING THE AZURE DOWNLOADER");
-  }
+  public void close() {}
 }
+
