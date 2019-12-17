@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class AzureFileDownloader implements FileDownloader {
   private static final Logger logger = LoggerFactory.getLogger(AzureFileDownloader.class);
-  private final BlobContainerAsyncClient blobContainerClient;
+  private BlobContainerAsyncClient blobContainerClient;
 
   @Inject
   public AzureFileDownloader(BlobContainerAsyncClient blobContainerClient) {
@@ -29,10 +29,8 @@ public class AzureFileDownloader implements FileDownloader {
   @Override
   public void download(RestoreConfig config) {
     String key = BackupPath.create(config, config.getKeyspace());
-    ListBlobsOptions options = new ListBlobsOptions().setPrefix(key);
-    PagedFlux<BlobItem> blobItemPagedFlux = blobContainerClient.listBlobs(options);
     List<CompletableFuture> futures = new ArrayList<>();
-    blobItemPagedFlux
+    blobContainerClient.listBlobs(new ListBlobsOptions().setPrefix(key))
         .toIterable()
         .forEach(
             b -> {
