@@ -36,9 +36,19 @@ public class BackupCommand extends AbstractCommand {
     props.setProperty(BackupConfig.BACKUP_TYPE, Integer.toString(backupType));
 
     BackupType type = BackupType.getByType(backupType);
-    // TODO: switching modules depending on the specified store_type
-//    Injector injector = Guice.createInjector(new AwsS3BackupModule(type, dataDir, snapshotId));
-    Injector injector = Guice.createInjector(new AzureBackupModule(type, dataDir, snapshotId));
+
+    Injector injector;
+    switch (storeType) {
+      case AWS_S3:
+        injector = Guice.createInjector(new AwsS3BackupModule(type, dataDir, snapshotId));
+        break;
+      case AZURE:
+        injector = Guice.createInjector(new AzureBackupModule(type, dataDir, snapshotId));
+        break;
+      default:
+        throw new UnsupportedOperationException(
+            "The storage type " + storeType + " is not implemented");
+    }
 
     try (BackupService service = injector.getInstance(BackupService.class)) {
       Arrays.asList(keyspaces.split(","))

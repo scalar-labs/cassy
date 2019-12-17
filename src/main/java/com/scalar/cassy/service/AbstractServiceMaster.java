@@ -16,6 +16,7 @@ public abstract class AbstractServiceMaster {
   protected final String TARGET_IP_OPTION = "--target-ip=";
   protected final String DATA_DIR_OPTION = "--data-dir=";
   protected final String STORE_BASE_URI_OPTION = "--store-base-uri=";
+  protected final String STORE_TYPE_OPTION = "--store-type";
   protected final String KEYSPACES_OPTION = "--keyspaces=";
   protected final CassyServerConfig config;
   protected final ClusterInfoRecord clusterInfo;

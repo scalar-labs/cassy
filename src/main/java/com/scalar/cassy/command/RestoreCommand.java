@@ -3,6 +3,7 @@ package com.scalar.cassy.command;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.scalar.cassy.config.RestoreConfig;
+import com.scalar.cassy.service.AwsS3BackupModule;
 import com.scalar.cassy.service.AwsS3RestoreModule;
 import com.scalar.cassy.service.AzureBackupModule;
 import com.scalar.cassy.service.AzureRestoreModule;
@@ -41,9 +42,18 @@ public class RestoreCommand extends AbstractCommand {
     props.setProperty(RestoreConfig.RESTORE_TYPE, Integer.toString(restoreType));
     props.setProperty(RestoreConfig.SNAPSHOT_ONLY, Boolean.toString(snapshotOnly));
 
-    // TODO: switching modules depending on the specified store_type
-//    Injector injector = Guice.createInjector(new AwsS3RestoreModule());
-    Injector injector = Guice.createInjector(new AzureRestoreModule());
+    Injector injector;
+    switch (storeType) {
+      case AWS_S3:
+        injector = Guice.createInjector(new AwsS3RestoreModule());
+        break;
+      case AZURE:
+        injector = Guice.createInjector(new AzureRestoreModule());
+        break;
+      default:
+        throw new UnsupportedOperationException(
+            "The storage type " + storeType + " is not implemented");
+    }
 
     try (RestoreService service = injector.getInstance(RestoreService.class)) {
       Arrays.asList(keyspaces.split(","))

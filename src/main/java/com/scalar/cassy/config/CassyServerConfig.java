@@ -12,7 +12,6 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class CassyServerConfig {
-  private final Properties props;
   protected static final String PREFIX = "scalar.cassy.server.";
   public static final String PORT = PREFIX + "port";
   public static final String JMX_PORT = PREFIX + "jmx_port";
@@ -20,14 +19,17 @@ public class CassyServerConfig {
   public static final String SSH_PRIVATE_KEY_PATH = PREFIX + "ssh_private_key_path";
   public static final String SLAVE_COMMAND_PATH = PREFIX + "slave_command_path";
   public static final String STORAGE_BASE_URI = PREFIX + "storage_base_uri";
+  public static final String STORAGE_TYPE = PREFIX + "storage_type";
   public static final String METADATA_DB_URL = PREFIX + "metadata_db_url";
   public static final String SRV_SERVICE_URL = PREFIX + "srv_service_url";
+  private final Properties props;
   private int port = 20051;
   private int jmxPort = 7199;
   private String sshUser;
   private String sshPrivateKeyPath;
   private String slaveCommandPath;
   private String storageBaseUri;
+  private StorageType storageType;
   private String metadataDbUrl;
   private Optional<String> srvServiceUrl;
 
@@ -74,6 +76,8 @@ public class CassyServerConfig {
     return storageBaseUri;
   }
 
+  public StorageType getStorageType() { return storageType; }
+
   public String getMetadataDbUrl() {
     return metadataDbUrl;
   }
@@ -95,6 +99,8 @@ public class CassyServerConfig {
     sshPrivateKeyPath = props.getProperty(SSH_PRIVATE_KEY_PATH);
     checkArgument(props.getProperty(SLAVE_COMMAND_PATH) != null);
     slaveCommandPath = props.getProperty(SLAVE_COMMAND_PATH);
+    checkArgument(props.getProperty(STORAGE_TYPE) != null);
+    storageType = StorageType.valueOf(props.getProperty(STORAGE_TYPE));
     checkArgument(props.getProperty(STORAGE_BASE_URI) != null);
     storageBaseUri = props.getProperty(STORAGE_BASE_URI);
     checkArgument(props.getProperty(METADATA_DB_URL) != null);
