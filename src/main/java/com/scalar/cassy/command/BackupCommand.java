@@ -46,7 +46,7 @@ public class BackupCommand extends AbstractCommand {
       case FILE_SYSTEM:
         injector = Guice
             .createInjector(
-                new FileSystemBackupModule(type, dataDir, snapshotId, URI.create(storeBaseUri)));
+                new FileSystemBackupModule(type, dataDir, snapshotId));
         break;
       default:
         throw new UnsupportedOperationException(
