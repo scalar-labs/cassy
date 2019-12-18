@@ -1,14 +1,6 @@
 package com.scalar.cassy.service;
 
-import com.azure.identity.CredentialBuilderBase;
-import com.azure.identity.DefaultAzureCredentialBuilder;
-import com.azure.storage.blob.BlobAsyncClient;
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobClientBuilder;
 import com.azure.storage.blob.BlobContainerAsyncClient;
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobServiceAsyncClient;
-import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -25,11 +17,13 @@ public class AzureBackupModule extends AbstractModule {
   private final BackupType type;
   private final String dataDir;
   private final String snapshotId;
+  private final String storeBaseUri;
 
-  public AzureBackupModule(BackupType type, String dataDir, String snapshotId) {
+  public AzureBackupModule(BackupType type, String dataDir, String snapshotId, String storeBaseUri) {
     this.type = type;
     this.dataDir = dataDir;
     this.snapshotId = snapshotId;
+    this.storeBaseUri = storeBaseUri;
   }
 
   @Override
@@ -49,11 +43,13 @@ public class AzureBackupModule extends AbstractModule {
   @Provides
   @Singleton
   BlobContainerAsyncClient provideBlobAsyncClient() {
-    BlobServiceAsyncClient service = new BlobServiceClientBuilder()
+    if (System.getenv("AZURE_STORAGE_CONNECTION_STRING") == null) {
+      throw new IllegalArgumentException(
+          "Please set the environment variable \'AZURE_STORAGE_CONNECTION_STRING\'.");
+    }
+    return new BlobServiceClientBuilder()
         .connectionString(System.getenv("AZURE_STORAGE_CONNECTION_STRING"))
-        .buildAsyncClient();
-    return service.getBlobContainerAsyncClient("indetail-cassy-test");
-
+        .buildAsyncClient()
+        .getBlobContainerAsyncClient(storeBaseUri);
   }
 }
-

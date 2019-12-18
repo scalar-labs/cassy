@@ -3,9 +3,7 @@ package com.scalar.cassy.command;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.scalar.cassy.config.RestoreConfig;
-import com.scalar.cassy.service.AwsS3BackupModule;
 import com.scalar.cassy.service.AwsS3RestoreModule;
-import com.scalar.cassy.service.AzureBackupModule;
 import com.scalar.cassy.service.AzureRestoreModule;
 import com.scalar.cassy.service.RestoreService;
 import java.util.Arrays;
@@ -48,7 +46,7 @@ public class RestoreCommand extends AbstractCommand {
         injector = Guice.createInjector(new AwsS3RestoreModule());
         break;
       case AZURE:
-        injector = Guice.createInjector(new AzureRestoreModule());
+        injector = Guice.createInjector(new AzureRestoreModule(storeBaseUri));
         break;
       default:
         throw new UnsupportedOperationException(

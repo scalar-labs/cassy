@@ -4,7 +4,6 @@ import com.azure.storage.blob.BlobAsyncClient;
 import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.BlobStorageException;
-import com.azure.storage.blob.models.ParallelTransferOptions;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.scalar.cassy.config.BackupConfig;
@@ -18,11 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
 
 public class AzureFileUploader implements FileUploader {
   private static final Logger logger = LoggerFactory.getLogger(AzureFileUploader.class);
@@ -41,14 +38,14 @@ public class AzureFileUploader implements FileUploader {
     files.forEach(
         p -> {
           String key = BackupPath.create(config, p.toString());
-            String filePath = Paths.get(config.getDataDir(), p.toString()).toFile().getPath();
-          if (requiresUpload(key, Paths.get(filePath))) {
+          Path filePath = Paths.get(config.getDataDir(), p.toString());
+          if (requiresUpload(key, filePath)) {
             logger.info("Uploading file " + count + "/" + files.size() + " " + filePath);
             count.getAndIncrement();
             toBeUploaded.add(
                 blobContainerClient
                     .getBlobAsyncClient(key)
-                    .uploadFromFile(filePath, true)
+                    .uploadFromFile(filePath.toString(), true)
                     .doOnError(FileTransferException::new)
                     .toFuture());
           }
@@ -71,7 +68,7 @@ public class AzureFileUploader implements FileUploader {
       BlobAsyncClient client = blobContainerClient.getBlobAsyncClient(key);
       Optional<BlobProperties> blobProperties = client.getProperties().blockOptional();
 
-      if(blobProperties.isPresent() && blobProperties.get().getBlobSize() == Files.size(file)) {
+      if (blobProperties.isPresent() && blobProperties.get().getBlobSize() == Files.size(file)) {
         return false;
       }
     } catch (IOException e) {
@@ -80,8 +77,8 @@ public class AzureFileUploader implements FileUploader {
       if (e.getStatusCode() == 404) {
         return true;
       }
+      throw new FileTransferException(e);
     }
     return true;
   }
 }
-

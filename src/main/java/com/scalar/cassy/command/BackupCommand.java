@@ -43,7 +43,7 @@ public class BackupCommand extends AbstractCommand {
         injector = Guice.createInjector(new AwsS3BackupModule(type, dataDir, snapshotId));
         break;
       case AZURE:
-        injector = Guice.createInjector(new AzureBackupModule(type, dataDir, snapshotId));
+        injector = Guice.createInjector(new AzureBackupModule(type, dataDir, snapshotId, storeBaseUri));
         break;
       default:
         throw new UnsupportedOperationException(
