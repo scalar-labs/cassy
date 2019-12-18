@@ -18,6 +18,7 @@ public class AzureBackupModule extends AbstractModule {
   private final String dataDir;
   private final String snapshotId;
   private final String storeBaseUri;
+  public static final String AZURE_STORAGE_CONNECTION_STRING = "AZURE_STORAGE_CONNECTION_STRING";
 
   public AzureBackupModule(BackupType type, String dataDir, String snapshotId, String storeBaseUri) {
     this.type = type;
@@ -43,12 +44,12 @@ public class AzureBackupModule extends AbstractModule {
   @Provides
   @Singleton
   BlobContainerAsyncClient provideBlobAsyncClient() {
-    if (System.getenv("AZURE_STORAGE_CONNECTION_STRING") == null) {
+    if (System.getenv(AZURE_STORAGE_CONNECTION_STRING) == null) {
       throw new IllegalArgumentException(
-          "Please set the environment variable \'AZURE_STORAGE_CONNECTION_STRING\'.");
+          "Please set the environment variable '" + AZURE_STORAGE_CONNECTION_STRING + "'.");
     }
     return new BlobServiceClientBuilder()
-        .connectionString(System.getenv("AZURE_STORAGE_CONNECTION_STRING"))
+        .connectionString(System.getenv(AZURE_STORAGE_CONNECTION_STRING))
         .buildAsyncClient()
         .getBlobContainerAsyncClient(storeBaseUri);
   }

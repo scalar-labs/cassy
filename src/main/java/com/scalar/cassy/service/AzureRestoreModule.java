@@ -1,5 +1,7 @@
 package com.scalar.cassy.service;
 
+import static com.scalar.cassy.service.AzureBackupModule.AZURE_STORAGE_CONNECTION_STRING;
+
 import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.google.inject.AbstractModule;
@@ -23,12 +25,12 @@ public class AzureRestoreModule extends AbstractModule {
   @Provides
   @Singleton
   BlobContainerAsyncClient provideBlobAsyncClient() {
-    if (System.getenv("AZURE_STORAGE_CONNECTION_STRING") == null) {
+    if (System.getenv(AZURE_STORAGE_CONNECTION_STRING) == null) {
       throw new IllegalArgumentException(
-          "Please set the environment variable \'AZURE_STORAGE_CONNECTION_STRING\'.");
+          "Please set the environment variable '" + AZURE_STORAGE_CONNECTION_STRING + "'.");
     }
     return new BlobServiceClientBuilder()
-        .connectionString(System.getenv("AZURE_STORAGE_CONNECTION_STRING"))
+        .connectionString(System.getenv(AZURE_STORAGE_CONNECTION_STRING))
         .buildAsyncClient()
         .getBlobContainerAsyncClient(storeBaseUri);
   }
