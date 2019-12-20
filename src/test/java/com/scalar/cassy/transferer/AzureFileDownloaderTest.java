@@ -95,8 +95,6 @@ public class AzureFileDownloaderTest {
 
     // Assert
     verify(future1).get();
-    assertThat(future1.get()).isEqualTo(blobProperties1);
     verify(future2).get();
-    assertThat(future2.get()).isEqualTo(blobProperties2);
   }
 }
