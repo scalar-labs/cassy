@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 
-public class AzureFileDownloaderTest {
+public class AzureBlobFileDownloaderTest {
   private static final String KEYSPACE_DIR = "keyspace1";
   private static final String ANY_CLUSTER_ID = "cluster_id";
   private static final String ANY_SNAPSHOT_ID = "snapshot_id";

@@ -33,7 +33,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import reactor.core.publisher.Mono;
 
-public class AzureFileUploaderTest {
+public class AzureBlobFileUploaderTest {
   private static final String DATA_DIR = "/tmp/" + UUID.randomUUID();
   private static final String KEYSPACE_DIR = "keyspace1";
   private static final String TABLE_DIR = "standard1-xxx";
