@@ -35,6 +35,8 @@ public class AzureFileDownloaderTest {
   private static final String ANY_TARGET_IP = "target_ip";
   private static final String ANY_TMP_DATA_DIR = "tmp_data_dir";
   private static final String ANY_STOREBASE_URI = "container_name";
+  private static final String BLOB_ITEM_1 = "blobitem1";
+  private static final String BLOB_ITEM_2 = "blobitem2";
   @Mock private BlobContainerAsyncClient containerClient;
   @Mock private BlobAsyncClient blobClient;
   private AzureFileDownloader downloader;
@@ -65,8 +67,8 @@ public class AzureFileDownloaderTest {
   }
 
   private List<BlobItem> getMockedList() {
-    BlobItem blobItem = new BlobItem().setName("blobitem1");
-    BlobItem blobItem2 = new BlobItem().setName("blobitem2");
+    BlobItem blobItem = new BlobItem().setName(BLOB_ITEM_1);
+    BlobItem blobItem2 = new BlobItem().setName(BLOB_ITEM_2);
     List<BlobItem> list = new ArrayList<>();
     list.add(blobItem);
     list.add(blobItem2);
@@ -93,8 +95,8 @@ public class AzureFileDownloaderTest {
     downloader.download(config);
 
     // Assert
-    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), "blobitem1").toString());
-    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), "blobitem2").toString());
+    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), BLOB_ITEM_1).toString());
+    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), BLOB_ITEM_2).toString());
     verify(future1).get();
     verify(future2).get();
   }
@@ -122,8 +124,8 @@ public class AzureFileDownloaderTest {
         .hasCause(toThrow);
 
     // Assert
-    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), "blobitem1").toString());
-    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), "blobitem2").toString());
+    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), BLOB_ITEM_1).toString());
+    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), BLOB_ITEM_2).toString());
     verify(future2, never()).get();
   }
 }
