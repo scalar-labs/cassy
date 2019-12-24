@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,15 +47,14 @@ public class AzureFileUploader implements FileUploader {
                 blobContainerClient
                     .getBlobAsyncClient(key)
                     .uploadFromFile(filePath.toString(), true)
-                    .doOnError(FileTransferException::new)
                     .toFuture());
           }
         });
     for (CompletableFuture future : toBeUploaded) {
       try {
         future.get();
-      } catch (Exception e) {
-        e.printStackTrace();
+      } catch (InterruptedException | ExecutionException e) {
+        throw new FileTransferException(e);
       }
     }
   }
@@ -63,7 +63,7 @@ public class AzureFileUploader implements FileUploader {
   public void close() {}
 
   @VisibleForTesting
-  private boolean requiresUpload(String key, Path file) {
+  boolean requiresUpload(String key, Path file) {
     try {
       BlobAsyncClient client = blobContainerClient.getBlobAsyncClient(key);
       Optional<BlobProperties> blobProperties = client.getProperties().blockOptional();

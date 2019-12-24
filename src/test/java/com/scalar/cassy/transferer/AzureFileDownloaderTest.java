@@ -1,10 +1,9 @@
 package com.scalar.cassy.transferer;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -16,6 +15,7 @@ import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.scalar.cassy.config.BackupType;
 import com.scalar.cassy.config.RestoreConfig;
+import com.scalar.cassy.exception.FileTransferException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 
@@ -77,13 +78,11 @@ public class AzureFileDownloaderTest {
     // Arrange
     RestoreConfig config =
         new RestoreConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_TMP_DATA_DIR));
-    List<BlobItem> mockedList = getMockedList();
     when(containerClient.listBlobs(any(ListBlobsOptions.class))).thenReturn(pagedFlux);
-    when(pagedFlux.toIterable()).thenReturn(mockedList);
+    when(pagedFlux.toIterable()).thenReturn(getMockedList());
     when(containerClient.getBlobAsyncClient(anyString())).thenReturn(blobClient);
-    when(blobClient.downloadToFile(Paths.get(config.getDataDir(), mockedList.get(0).getName()).toString()))
-        .thenReturn(blobPropertiesMono1);
-    when(blobClient.downloadToFile(Paths.get(config.getDataDir(), mockedList.get(1).getName()).toString()))
+    when(blobClient.downloadToFile(anyString()))
+        .thenReturn(blobPropertiesMono1)
         .thenReturn(blobPropertiesMono2);
     when(blobPropertiesMono1.toFuture()).thenReturn(future1);
     when(blobPropertiesMono2.toFuture()).thenReturn(future2);
@@ -94,7 +93,37 @@ public class AzureFileDownloaderTest {
     downloader.download(config);
 
     // Assert
+    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), "blobitem1").toString());
+    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), "blobitem2").toString());
     verify(future1).get();
     verify(future2).get();
+  }
+
+  @Test
+  public void download_InterruptedExceptionThrown_ShouldThrowFileTransferException()
+      throws Exception {
+    // Arrange
+    RestoreConfig config =
+        new RestoreConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_TMP_DATA_DIR));
+    InterruptedException toThrow = Mockito.mock(InterruptedException.class);
+    when(containerClient.listBlobs(any(ListBlobsOptions.class))).thenReturn(pagedFlux);
+    when(pagedFlux.toIterable()).thenReturn(getMockedList());
+    when(containerClient.getBlobAsyncClient(anyString())).thenReturn(blobClient);
+    when(blobClient.downloadToFile(anyString()))
+        .thenReturn(blobPropertiesMono1)
+        .thenReturn(blobPropertiesMono2);
+    when(blobPropertiesMono1.toFuture()).thenReturn(future1);
+    when(blobPropertiesMono2.toFuture()).thenReturn(future2);
+    when(future1.get()).thenThrow(toThrow);
+
+    // Act
+    assertThatThrownBy(() -> downloader.download(config))
+        .isInstanceOf(FileTransferException.class)
+        .hasCause(toThrow);
+
+    // Assert
+    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), "blobitem1").toString());
+    verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), "blobitem2").toString());
+    verify(future2, never()).get();
   }
 }
