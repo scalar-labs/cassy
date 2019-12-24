@@ -1,6 +1,6 @@
 package com.scalar.cassy.service;
 
-import static com.scalar.cassy.service.AzureBlobBackupModule.CONNECTION_STRING;
+import static com.scalar.cassy.service.AzureBackupModule.AZURE_STORAGE_CONNECTION_STRING;
 
 import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
@@ -10,10 +10,10 @@ import com.google.inject.Singleton;
 import com.scalar.cassy.transferer.AzureFileDownloader;
 import com.scalar.cassy.transferer.FileDownloader;
 
-public class AzureBlobRestoreModule extends AbstractModule {
+public class AzureRestoreModule extends AbstractModule {
   private final String storeBaseUri;
 
-  public AzureBlobRestoreModule(String storeBaseUri) {
+  public AzureRestoreModule(String storeBaseUri) {
     this.storeBaseUri = storeBaseUri;
   }
 
@@ -25,12 +25,12 @@ public class AzureBlobRestoreModule extends AbstractModule {
   @Provides
   @Singleton
   BlobContainerAsyncClient provideBlobAsyncClient() {
-    if (System.getenv(CONNECTION_STRING) == null) {
+    if (System.getenv(AZURE_STORAGE_CONNECTION_STRING) == null) {
       throw new IllegalArgumentException(
-          "Please set the environment variable '" + CONNECTION_STRING + "'.");
+          "Please set the environment variable '" + AZURE_STORAGE_CONNECTION_STRING + "'.");
     }
     return new BlobServiceClientBuilder()
-        .connectionString(System.getenv(CONNECTION_STRING))
+        .connectionString(System.getenv(AZURE_STORAGE_CONNECTION_STRING))
         .buildAsyncClient()
         .getBlobContainerAsyncClient(storeBaseUri);
   }
