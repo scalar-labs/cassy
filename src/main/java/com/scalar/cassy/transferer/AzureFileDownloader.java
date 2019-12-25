@@ -1,8 +1,6 @@
 package com.scalar.cassy.transferer;
 
-import com.azure.core.http.rest.PagedFlux;
 import com.azure.storage.blob.BlobContainerAsyncClient;
-import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.google.inject.Inject;
 import com.scalar.cassy.config.RestoreConfig;
@@ -30,7 +28,8 @@ public class AzureFileDownloader implements FileDownloader {
   public void download(RestoreConfig config) {
     String key = BackupPath.create(config, config.getKeyspace());
     List<CompletableFuture> futures = new ArrayList<>();
-    blobContainerClient.listBlobs(new ListBlobsOptions().setPrefix(key))
+    blobContainerClient
+        .listBlobs(new ListBlobsOptions().setPrefix(key))
         .toIterable()
         .forEach(
             b -> {
@@ -60,4 +59,3 @@ public class AzureFileDownloader implements FileDownloader {
   @Override
   public void close() {}
 }
-
