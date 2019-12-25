@@ -52,3 +52,4 @@ public class AwsS3BackupModule extends AbstractModule {
     return AmazonS3ClientBuilder.defaultClient();
   }
 }
+
