@@ -29,4 +29,3 @@ public class AwsS3RestoreModule extends AbstractModule {
     return AmazonS3ClientBuilder.defaultClient();
   }
 }
-
