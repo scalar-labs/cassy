@@ -100,7 +100,7 @@ public class CassyServerConfig {
     checkArgument(props.getProperty(SLAVE_COMMAND_PATH) != null);
     slaveCommandPath = props.getProperty(SLAVE_COMMAND_PATH);
     checkArgument(props.getProperty(STORAGE_TYPE) != null);
-    storageType = StorageType.valueOf(props.getProperty(STORAGE_TYPE));
+    storageType = StorageType.valueOf(props.getProperty(STORAGE_TYPE).toUpperCase());
     checkArgument(props.getProperty(STORAGE_BASE_URI) != null);
     storageBaseUri = props.getProperty(STORAGE_BASE_URI);
     checkArgument(props.getProperty(METADATA_DB_URL) != null);
