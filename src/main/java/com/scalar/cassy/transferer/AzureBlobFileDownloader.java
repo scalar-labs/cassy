@@ -15,12 +15,12 @@ import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AzureFileDownloader implements FileDownloader {
-  private static final Logger logger = LoggerFactory.getLogger(AzureFileDownloader.class);
+public class AzureBlobFileDownloader implements FileDownloader {
+  private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileDownloader.class);
   private BlobContainerAsyncClient blobContainerClient;
 
   @Inject
-  public AzureFileDownloader(BlobContainerAsyncClient blobContainerClient) {
+  public AzureBlobFileDownloader(BlobContainerAsyncClient blobContainerClient) {
     this.blobContainerClient = blobContainerClient;
   }
 
