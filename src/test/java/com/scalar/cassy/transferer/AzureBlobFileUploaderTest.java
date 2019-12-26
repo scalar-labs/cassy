@@ -33,7 +33,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import reactor.core.publisher.Mono;
 
-public class AzureFileUploaderTest {
+public class AzureBlobFileUploaderTest {
   private static final String DATA_DIR = "/tmp/" + UUID.randomUUID();
   private static final String KEYSPACE_DIR = "keyspace1";
   private static final String TABLE_DIR = "standard1-xxx";
@@ -50,7 +50,7 @@ public class AzureFileUploaderTest {
   private static final FileSystem fs = FileSystems.getDefault();
   @Mock private BlobContainerAsyncClient containerClient;
   @Mock private BlobAsyncClient blobClient;
-  @Spy @InjectMocks private AzureFileUploader uploader;
+  @Spy @InjectMocks private AzureBlobFileUploader uploader;
   @Mock private Mono<Void> voidMono1;
   @Mock private Mono<Void> voidMono2;
   @Mock CompletableFuture<Void> future1;

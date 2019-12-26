@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 
-public class AzureFileDownloaderTest {
+public class AzureBlobFileDownloaderTest {
   private static final String KEYSPACE_DIR = "keyspace1";
   private static final String ANY_CLUSTER_ID = "cluster_id";
   private static final String ANY_SNAPSHOT_ID = "snapshot_id";
@@ -39,7 +39,7 @@ public class AzureFileDownloaderTest {
   private static final String BLOB_ITEM_2 = "blobitem2";
   @Mock private BlobContainerAsyncClient containerClient;
   @Mock private BlobAsyncClient blobClient;
-  private AzureFileDownloader downloader;
+  private AzureBlobFileDownloader downloader;
   @Mock private PagedFlux<BlobItem> pagedFlux;
   @Mock private Mono<BlobProperties> blobPropertiesMono1;
   @Mock private Mono<BlobProperties> blobPropertiesMono2;
@@ -51,7 +51,7 @@ public class AzureFileDownloaderTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    downloader = new AzureFileDownloader(this.containerClient);
+    downloader = new AzureBlobFileDownloader(this.containerClient);
   }
 
   public Properties getProperties(BackupType type, String dataDir) {

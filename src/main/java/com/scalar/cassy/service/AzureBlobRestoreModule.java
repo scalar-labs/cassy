@@ -7,7 +7,7 @@ import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.scalar.cassy.transferer.AzureFileDownloader;
+import com.scalar.cassy.transferer.AzureBlobFileDownloader;
 import com.scalar.cassy.transferer.FileDownloader;
 
 public class AzureBlobRestoreModule extends AbstractModule {
@@ -19,7 +19,7 @@ public class AzureBlobRestoreModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    bind(FileDownloader.class).to(AzureFileDownloader.class).in(Singleton.class);
+    bind(FileDownloader.class).to(AzureBlobFileDownloader.class).in(Singleton.class);
   }
 
   @Provides

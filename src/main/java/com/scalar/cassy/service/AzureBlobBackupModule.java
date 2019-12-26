@@ -6,7 +6,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.scalar.cassy.config.BackupType;
-import com.scalar.cassy.transferer.AzureFileUploader;
+import com.scalar.cassy.transferer.AzureBlobFileUploader;
 import com.scalar.cassy.transferer.FileUploader;
 import com.scalar.cassy.traverser.FileTraverser;
 import com.scalar.cassy.traverser.IncrementalBackupTraverser;
@@ -29,7 +29,7 @@ public class AzureBlobBackupModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    bind(FileUploader.class).to(AzureFileUploader.class).in(Singleton.class);
+    bind(FileUploader.class).to(AzureBlobFileUploader.class).in(Singleton.class);
   }
 
   @Provides

@@ -22,12 +22,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AzureFileUploader implements FileUploader {
-  private static final Logger logger = LoggerFactory.getLogger(AzureFileUploader.class);
+public class AzureBlobFileUploader implements FileUploader {
+  private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileUploader.class);
   private final BlobContainerAsyncClient blobContainerClient;
 
   @Inject
-  public AzureFileUploader(BlobContainerAsyncClient blobContainerClient) {
+  public AzureBlobFileUploader(BlobContainerAsyncClient blobContainerClient) {
     this.blobContainerClient = blobContainerClient;
   }
 
