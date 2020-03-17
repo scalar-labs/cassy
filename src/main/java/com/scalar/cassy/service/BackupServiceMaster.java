@@ -108,6 +108,7 @@ public class BackupServiceMaster extends AbstractServiceMaster {
             DATA_DIR_OPTION + clusterInfo.getDataDir(),
             STORE_TYPE_OPTION + config.getStorageType(),
             STORE_BASE_URI_OPTION + config.getStorageBaseUri(),
+            STORE_TYPE_OPTION + config.getStorageType(),
             KEYSPACES_OPTION + String.join(",", clusterInfo.getKeyspaces()),
             BACKUP_TYPE_OPTION + type.get());
 

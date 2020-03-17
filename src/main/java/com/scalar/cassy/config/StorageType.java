@@ -1,5 +1,5 @@
 package com.scalar.cassy.config;
 
 public enum StorageType {
-  AWS_S3, FILE_SYSTEM
+  AWS_S3, AZURE_BLOB, FILE_SYSTEM
 }

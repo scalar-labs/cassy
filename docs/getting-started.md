@@ -158,7 +158,7 @@ If `target_ips` is omitted, it will restore the specified backups to all the nod
 Note that there should be no data, commitlogs, hints in a node that is being recovered, and the Cassandra daemon should be stopped.
 
 ```
-$ grpcurl -plaintext -d '{"snapshot_id": "SNAPSHOT-ID", "restore_type": 2, "cluster_id": "CLUSTER-ID", "target_ips": ["192.168.0.11]}' 192.168.0.254:20051 rpc.Cassy.RestoreBackup
+$ grpcurl -plaintext -d '{"snapshot_id": "SNAPSHOT-ID", "restore_type": 2, "cluster_id": "CLUSTER-ID", "target_ips": ["192.168.0.11"]}' 192.168.0.254:20051 rpc.Cassy.RestoreBackup
 // Start up Cassandra and do repair
 ```
 

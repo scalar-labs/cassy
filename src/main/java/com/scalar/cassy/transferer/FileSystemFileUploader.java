@@ -77,6 +77,5 @@ public class FileSystemFileUploader implements FileUploader {
 
   @Override
   public void close() throws Exception {
-
   }
 }

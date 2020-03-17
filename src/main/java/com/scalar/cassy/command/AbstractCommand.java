@@ -37,8 +37,9 @@ public abstract class AbstractCommand implements Callable<Void> {
       names = {"--store-type"},
       required = true,
       paramLabel = "STORE_TYPE",
-      description = "The store type [AWS_S3, FILE_SYSTEM]")
+      description = "The store type [AWS_S3, FILE_SYSTEM, AZURE_STORAGE_BLOB]")
   protected StorageType storeType;
+
   @CommandLine.Option(
       names = {"--store-base-uri"},
       required = true,

@@ -4,6 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.service.AwsS3RestoreModule;
+import com.scalar.cassy.service.AzureBlobRestoreModule;
 import com.scalar.cassy.service.FileSystemRestoreModule;
 import com.scalar.cassy.service.RestoreService;
 import java.net.URI;
@@ -41,11 +42,13 @@ public class RestoreCommand extends AbstractCommand {
     props.setProperty(RestoreConfig.RESTORE_TYPE, Integer.toString(restoreType));
     props.setProperty(RestoreConfig.SNAPSHOT_ONLY, Boolean.toString(snapshotOnly));
 
-    // TODO: switching modules depending on the specified store_type
     Injector injector;
     switch (storeType) {
       case AWS_S3:
         injector = Guice.createInjector(new AwsS3RestoreModule());
+        break;
+      case AZURE_BLOB:
+        injector = Guice.createInjector(new AzureBlobRestoreModule(storeBaseUri));
         break;
       case FILE_SYSTEM:
         injector = Guice.createInjector(new FileSystemRestoreModule(URI.create(storeBaseUri)));
@@ -54,6 +57,7 @@ public class RestoreCommand extends AbstractCommand {
         throw new UnsupportedOperationException(
             "The storage type " + storeType + " is not implemented");
     }
+
     try (RestoreService service = injector.getInstance(RestoreService.class)) {
       Arrays.asList(keyspaces.split(","))
           .forEach(

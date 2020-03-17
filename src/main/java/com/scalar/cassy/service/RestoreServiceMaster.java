@@ -63,6 +63,7 @@ public class RestoreServiceMaster extends AbstractServiceMaster {
     arguments.add(DATA_DIR_OPTION + clusterInfo.getDataDir());
     arguments.add(STORE_TYPE_OPTION + config.getStorageType());
     arguments.add(STORE_BASE_URI_OPTION + config.getStorageBaseUri());
+    arguments.add(STORE_TYPE_OPTION + config.getStorageType());
     arguments.add(KEYSPACES_OPTION + String.join(",", clusterInfo.getKeyspaces()));
     arguments.add(RESTORE_TYPE_OPTION + type.get());
     if (snapshotOnly) {
