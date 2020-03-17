@@ -27,3 +27,6 @@ hs_err_pid*
 build
 *.iml
 *.db
+
+# out files
+out/

@@ -43,7 +43,7 @@ def protocVersion = '3.6.0'
 def nettyTcNativeVersion = '2.0.7.Final'
 
 dependencies {
-    compile (group: 'org.apache.cassandra', name: 'cassandra-all', version: '3.11.4') {
+    compile(group: 'org.apache.cassandra', name: 'cassandra-all', version: '3.11.4') {
         exclude group: 'io.netty', module: 'netty-all'
     }
     compile group: 'com.google.guava', name: 'guava', version: '27.1-jre'
@@ -59,11 +59,12 @@ dependencies {
     compile group: 'io.grpc', name: 'grpc-stub', version: "${grpcVersion}"
     compile group: 'com.google.protobuf', name: 'protobuf-java-util', version: "${protobufVersion}"
     compileOnly group: 'javax.annotation', name: 'javax.annotation-api', version: '1.2'
-    compile group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: "${nettyTcNativeVersion}"
     compile group: 'io.grpc', name: 'grpc-services', version: "${grpcVersion}"
     compile group: 'com.palantir.giraffe', name: 'giraffe-ssh', version: '0.10.0'
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.27.2.1'
     compile group: 'dnsjava', name: 'dnsjava', version: '2.1.9'
+    compile group: 'com.azure', name: 'azure-storage-blob', version: '12.1.0'
+    compile group: 'com.azure', name: 'azure-identity', version: '1.0.0'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.1'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.16.0'
@@ -90,8 +91,8 @@ task javadocJar(type: Jar) {
 }
 
 task testJar(type: Jar) {
-  classifier = 'tests'
-  from sourceSets.test.output
+    classifier = 'tests'
+    from sourceSets.test.output
 }
 
 task integrationTest(type: Test) {
