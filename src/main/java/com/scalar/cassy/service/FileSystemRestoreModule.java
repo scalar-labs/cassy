@@ -7,7 +7,6 @@ import com.scalar.cassy.transferer.FileSystemFileDownloader;
 import java.net.URI;
 
 public class FileSystemRestoreModule extends AbstractModule {
-
   private final URI storageURI;
 
   public FileSystemRestoreModule(URI storageURI) {

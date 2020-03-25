@@ -1,7 +1,6 @@
 package com.scalar.cassy.transferer;
 
 import com.scalar.cassy.config.BackupConfig;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 

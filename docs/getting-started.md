@@ -69,9 +69,8 @@ scalar.cassy.server.srv_service_url=_app._tcp.your-service.com
 ```
 
 #### File system storage specific requirements
-The storage machine need to be accessible via ssh from the slave node performing the backup. Similarly, 
-to the ssh configuration between the master and slave node, place a SSH private key without passphrase in the slave
-and the corresponding public key in the storage machine. 
+The storage machine need to be accessible via ssh from the slave node performing the backup. Place a SSH private key 
+without passphrase in the slave ssh folder `~/.ssh/id_rsa` and the corresponding public key in the storage machine. 
 
 
 ## Use

@@ -76,7 +76,9 @@ public class CassyServerConfig {
     return storageBaseUri;
   }
 
-  public StorageType getStorageType() { return storageType; }
+  public StorageType getStorageType() {
+    return storageType;
+  }
 
   public String getMetadataDbUrl() {
     return metadataDbUrl;
@@ -106,6 +108,5 @@ public class CassyServerConfig {
     checkArgument(props.getProperty(METADATA_DB_URL) != null);
     metadataDbUrl = props.getProperty(METADATA_DB_URL);
     srvServiceUrl = Optional.ofNullable(props.getProperty(SRV_SERVICE_URL));
-
   }
 }

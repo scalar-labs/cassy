@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FileSystemFileDownloader extends FileSystemTransfererBase implements FileDownloader {
-
   private static final Logger logger = LoggerFactory.getLogger(FileSystemFileUploader.class);
 
   @Override

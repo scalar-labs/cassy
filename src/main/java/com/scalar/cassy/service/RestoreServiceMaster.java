@@ -15,7 +15,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class RestoreServiceMaster extends AbstractServiceMaster {
-
   public static final String RESTORE_COMMAND = "cassy-restore";
   private static final String RESTORE_TYPE_OPTION = "--restore-type=";
   private static final String SNAPSHOT_ONLY_OPTION = "--snapshot-only";

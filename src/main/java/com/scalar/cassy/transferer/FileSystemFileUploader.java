@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FileSystemFileUploader extends FileSystemTransfererBase implements FileUploader {
-
   private static final Logger logger = LoggerFactory.getLogger(FileSystemFileUploader.class);
   private final HostControlSystem hostConnection;
 
