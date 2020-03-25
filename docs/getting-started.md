@@ -58,6 +58,8 @@ scalar.cassy.server.slave_command_path=/path/to/cassy/build/install/cassy/bin
 
 # URI of a blob store to manage backup files 
 scalar.cassy.server.storage_base_uri=s3://your-bucket
+# When using the remote file system
+# scalar.cassy.server.storage_base_uri=ssh://user@host:/path/to/folder
 
 # URL of JDBC for managing some metadata such as backup and restore histories
 scalar.cassy.server.metadata_db_url=jdbc:sqlite:cassy.db
@@ -65,6 +67,12 @@ scalar.cassy.server.metadata_db_url=jdbc:sqlite:cassy.db
 # URL of SRV record. It is used to know and pause Cassandra application nodes to take a cluster-wide snapshot. If you don't use the feature, it can be omitted or the value can be left blank.
 scalar.cassy.server.srv_service_url=_app._tcp.your-service.com
 ```
+
+#### File system storage specific requirements
+The storage machine need to be accessible via ssh from the slave node performing the backup. Similarly, 
+to the ssh configuration between the master and slave node, place a SSH private key without passphrase in the slave
+and the corresponding public key in the storage machine. 
+
 
 ## Use
 
