@@ -8,6 +8,7 @@ import com.scalar.cassy.service.AwsS3BackupModule;
 import com.scalar.cassy.service.AzureBlobBackupModule;
 import com.scalar.cassy.service.BackupService;
 import com.scalar.cassy.service.FileSystemBackupModule;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Properties;
 import picocli.CommandLine;
@@ -49,7 +50,9 @@ public class BackupCommand extends AbstractCommand {
                 new AzureBlobBackupModule(type, dataDir, snapshotId, storeBaseUri));
         break;
       case FILE_SYSTEM:
-        injector = Guice.createInjector(new FileSystemBackupModule(type, dataDir, snapshotId));
+        injector =
+            Guice.createInjector(
+                new FileSystemBackupModule(type, dataDir, snapshotId, URI.create(storeBaseUri)));
         break;
       default:
         throw new UnsupportedOperationException(

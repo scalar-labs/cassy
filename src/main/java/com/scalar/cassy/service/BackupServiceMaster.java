@@ -106,7 +106,6 @@ public class BackupServiceMaster extends AbstractServiceMaster {
             SNAPSHOT_ID_OPTION + backupKey.getSnapshotId(),
             TARGET_IP_OPTION + backupKey.getTargetIp(),
             DATA_DIR_OPTION + clusterInfo.getDataDir(),
-            STORE_TYPE_OPTION + config.getStorageType(),
             STORE_BASE_URI_OPTION + config.getStorageBaseUri(),
             STORE_TYPE_OPTION + config.getStorageType(),
             KEYSPACES_OPTION + String.join(",", clusterInfo.getKeyspaces()),

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.placer.Placer;
 import com.scalar.cassy.transferer.FileDownloader;
+import com.scalar.cassy.transferer.FileSystemFileDownloader;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -19,6 +20,12 @@ public class RestoreService implements AutoCloseable {
 
   public void restore(RestoreConfig config) {
     downloader.download(config);
+
+    // This downloader preserve the file structure when creating the backup so placing the file is
+    // not necessary after the download
+    if (!(downloader instanceof FileSystemFileDownloader)) {
+      return;
+    }
     placer.place(config);
   }
 
