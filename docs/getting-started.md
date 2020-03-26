@@ -59,7 +59,7 @@ scalar.cassy.server.slave_command_path=/path/to/cassy/build/install/cassy/bin
 # URI of a aws s3 blob store to manage backup files 
 scalar.cassy.server.storage_base_uri=s3://your-bucket
 # If instead you want to use a regular file system as a storage
-# scalar.cassy.server.storage_base_uri=ssh://user@host:/path/to/folder
+# scalar.cassy.server.storage_base_uri=ssh://user@host/path/to/folder
 
 # URL of JDBC for managing some metadata such as backup and restore histories
 scalar.cassy.server.metadata_db_url=jdbc:sqlite:cassy.db
