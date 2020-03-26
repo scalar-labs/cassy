@@ -7,7 +7,7 @@ import com.scalar.cassy.config.BaseConfig;
 import java.io.IOException;
 import java.net.URI;
 
-public class FileSystemTransfererBase {
+public abstract class FileSystemTransfererBase {
   /**
    * Wrapper used to execute a command. It was created to facilitate testing.
    *
