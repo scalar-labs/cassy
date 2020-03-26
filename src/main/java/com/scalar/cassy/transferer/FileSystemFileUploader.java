@@ -36,9 +36,9 @@ public class FileSystemFileUploader extends FileSystemTransfererBase implements 
       Path sourceDir = Paths.get(config.getDataDir(), config.getKeyspace());
       logger.info(String.format("Uploading keyspace \"%s\"", config.getKeyspace()));
       long uploadStart = System.currentTimeMillis();
-      // Create keyspace folder structure on remote file system
+      // Create snapshot folder structure on the remote file system
       createDirectories(destinationDir);
-      //       Copy keyspace files
+      // Copy keyspace files
       executeCommand(
           Commands.get(
               "rsync",
