@@ -23,7 +23,7 @@ public class RestoreService implements AutoCloseable {
 
     // This downloader preserve the file structure when creating the backup so placing the file is
     // not necessary after the download
-    if (!(downloader instanceof FileSystemFileDownloader)) {
+    if (downloader instanceof FileSystemFileDownloader) {
       return;
     }
     placer.place(config);
