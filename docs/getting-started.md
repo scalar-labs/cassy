@@ -56,9 +56,9 @@ scalar.cassy.server.ssh_private_key_path=/path/to/.ssh/id_rsa
 # Path to the bin directory of Cassy in each Cassandra nodes (Cassy assumes all Cassandra nodes install Cassy in the same directory)
 scalar.cassy.server.slave_command_path=/path/to/cassy/build/install/cassy/bin
 
-# URI of a blob store to manage backup files 
+# URI of a aws s3 blob store to manage backup files 
 scalar.cassy.server.storage_base_uri=s3://your-bucket
-# When using the remote file system
+# If instead you want to use a regular file system as a storage
 # scalar.cassy.server.storage_base_uri=ssh://user@host:/path/to/folder
 
 # URL of JDBC for managing some metadata such as backup and restore histories
