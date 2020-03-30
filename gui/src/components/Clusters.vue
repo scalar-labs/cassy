@@ -21,10 +21,11 @@
                 <td>{{c.cluster_name}}</td>
                 <td>{{ parseInt(c.created_at) | moment("YYYY/M/d, h:mm a")}}</td>
                 <td>{{ parseInt(c.updated_at) | moment("YYYY/M/d h:mm a")}}</td>
-                <td><button type="button" class="btn btn-primary">Manage</button></td>
+                <td><button type="button" class="btn btn-secondary">Manage</button></td>
             </tr>
             </tbody>
         </table>
+        <div class="row justify-content-end"><button class="btn btn-primary">Add Cluster</button></div>
     </div>
 </template>
 
