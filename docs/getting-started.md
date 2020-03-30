@@ -38,7 +38,7 @@ The following actions are also required:
 
 ## Configure
 
-To run Casssy properly, it is required to create a property file.
+To run Cassy properly, it is required to create a property file.
 Here is a sample configuration file. Please see the comments above each entry for the meaning of the configuration.
 ```  
 # Port number of Cassy master. If not specified port 20051 is used by default.
@@ -56,7 +56,7 @@ scalar.cassy.server.ssh_private_key_path=/path/to/.ssh/id_rsa
 # Path to the bin directory of Cassy in each Cassandra nodes (Cassy assumes all Cassandra nodes install Cassy in the same directory)
 scalar.cassy.server.slave_command_path=/path/to/cassy/build/install/cassy/bin
 
-# URI of a blob store to manage backup files 
+# URI of a blob store to manage backup files.(If the storage device is Azura, specify the name of the container)  
 scalar.cassy.server.storage_base_uri=s3://your-bucket
 
 # URL of JDBC for managing some metadata such as backup and restore histories
