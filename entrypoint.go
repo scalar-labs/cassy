@@ -14,7 +14,7 @@ import (
 
 var (
 	endpoint = flag.String("cassy server endpoint", "localhost:20051", "endpoint of Cassy server")
-	mode     = flag.Bool("dev", false, "enable this option to run as dev server")
+	devMode     = flag.Bool("dev", false, "enable this option to run as dev server")
 )
 
 func run() error {
@@ -30,7 +30,7 @@ func run() error {
 		return err
 	}
 
-	if *mode {
+	if *devMode {
 		return http.ListenAndServe(":8090", allowCORS(mux))
 	} else {
 		return http.ListenAndServe(":8080", mux)
