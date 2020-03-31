@@ -21,7 +21,11 @@
                 <td>{{c.cluster_name}}</td>
                 <td>{{ parseInt(c.created_at) | moment("YYYY/M/d, h:mm a")}}</td>
                 <td>{{ parseInt(c.updated_at) | moment("YYYY/M/d h:mm a")}}</td>
-                <td><button type="button" class="btn btn-secondary">Manage</button></td>
+                <td><button
+                        type="button"
+                        class="btn btn-secondary"
+                        @click="viewBackups(c.cluster_id)"
+                >Manage</button></td>
             </tr>
             </tbody>
         </table>
@@ -36,5 +40,10 @@
         type: Object,
       },
     },
+    methods: {
+      viewBackups(cluster_id) {
+        this.$router.push(`/clusters/${cluster_id}/backups`);
+      }
+    }
   };
 </script>
