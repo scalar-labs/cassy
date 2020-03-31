@@ -59,12 +59,29 @@ scalar.cassy.server.slave_command_path=/path/to/cassy/build/install/cassy/bin
 # URI of a blob store to manage backup files.
 scalar.cassy.server.storage_base_uri=s3://your-bucket
 
+# Type of storage that Cassy uses to store backup files (aws_s3, azure_blob)
+scalar.cassy.server.storage_type=aws_s3
+
 # URL of JDBC for managing some metadata such as backup and restore histories
 scalar.cassy.server.metadata_db_url=jdbc:sqlite:cassy.db
 
 # URL of SRV record. It is used to know and pause Cassandra application nodes to take a cluster-wide snapshot. If you don't use the feature, it can be omitted or the value can be left blank.
 scalar.cassy.server.srv_service_url=_app._tcp.your-service.com
 ```
+### Storage type configuration
+To change the storage that Cassy uses to store backup files, the following properties of the configuration file will need to be modified:
+1. `storage_base_uri`: the URI to your S3 bucket or Azure blob.
+2. `storage_type`: an Enum that tells Cassy which service to use. You can select `aws_s3` for Amazon S3, or `azure_blob` for Azure Blob.
+
+#### Azure-specific requirements
+To use Azure Blob, you will also need to set an environment variable on your system. Navigate to the Azure portal and [retrieve the connection string.](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string#view-and-copy-a-connection-string)
+
+Once you have copied the `connection_string`, use the following command to set your environment variable.
+```
+export AZURE_STORAGE_CONNECTION_STRING=[your-connection-string]
+```
+
+Cassy will use this environment variable as a credential to access your storage blob.
 
 ## Use
 
