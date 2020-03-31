@@ -70,7 +70,7 @@ scalar.cassy.server.srv_service_url=_app._tcp.your-service.com
 ```
 ### Storage type configuration
 To change the storage that Cassy uses to store backup files, the following properties of the configuration file will need to be modified:
-1. `storage_base_uri`: the url to your S3 bucket or Azure blob.
+1. `storage_base_uri`: the URI to your S3 bucket or Azure blob.
 2. `storage_type`: an Enum that tells Cassy which service to use. You can select `aws_s3` for Amazon S3, or `azure_blob` for Azure Blob.
 
 #### Azure-specific requirements
