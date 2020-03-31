@@ -13,7 +13,7 @@ Of-course, you need a well-configured Cassandra cluster that you can manage. The
 * Set `LOCAL_JMX=no` for enabling remote JMX and set `com.sun.management.jmxremote.authenticate=false` to disable authentication in cassandra-env.sh since the current version does not support JMX authentication. (Please do not expose the JMX port to the internet.)
 
 Furthermore, the following configurations are recommended (but not required) to be updated.
-* Set `incremental_backups=true` in casssandra.yaml if you want to use incremental backups.
+* Set `incremental_backups=true` in cassandra.yaml if you want to use incremental backups.
 
 From here, it assumes there is a multi-node Cassandra cluster (192.168.0.10, ...) and a node for running the Cassy master daemon (192.168.0.254).
 
@@ -38,7 +38,7 @@ The following actions are also required:
 
 ## Configure
 
-To run Casssy properly, it is required to create a property file.
+To run Cassy properly, it is required to create a property file.
 Here is a sample configuration file. Please see the comments above each entry for the meaning of the configuration.
 ```  
 # Port number of Cassy master. If not specified port 20051 is used by default.
@@ -56,7 +56,7 @@ scalar.cassy.server.ssh_private_key_path=/path/to/.ssh/id_rsa
 # Path to the bin directory of Cassy in each Cassandra nodes (Cassy assumes all Cassandra nodes install Cassy in the same directory)
 scalar.cassy.server.slave_command_path=/path/to/cassy/build/install/cassy/bin
 
-# URI of a blob store to manage backup files 
+# URI of a blob store to manage backup files.
 scalar.cassy.server.storage_base_uri=s3://your-bucket
 
 # URL of JDBC for managing some metadata such as backup and restore histories
@@ -76,7 +76,7 @@ $ sqlite3 cassy.db < scripts/db.schema
 Let's start a Cassy master with the configuration file `backup-server.properties`.
 
 ```
-$ build/install/cassy/bin/cassy-server --config ./cassy-server.properties
+$ build/install/cassy/bin/cassy-server --config ./conf/cassy.properties
 ```
 
 Now you can run backup and restore through gRPC APIs or HTTP/1.1 REST APIs. For gRPC APIs, you can do it easily with [grpcurl](https://github.com/fullstorydev/grpcurl).
@@ -100,10 +100,10 @@ You can also view your cluster information that you registered with `ListCluster
 $ grpcurl -plaintext 192.168.0.254:20051 rpc.Cassy.ListClusters
 
 # Show only the specified cluster.
-$ grpcurl -plaintext -d '{"cluster_id": "CLUSTER-ID"}' 192.168.0.254:20051 rpc.Cassy.registerCluster
+$ grpcurl -plaintext -d '{"cluster_id": "CLUSTER-ID"}' 192.168.0.254:20051 rpc.Cassy.ListClusters
 
 # List three recently registered clusters.
-$ grpcurl -plaintext -d '{"limit": 3}' 192.168.0.254:20051 rpc.Cassy.registerCluster
+$ grpcurl -plaintext -d '{"limit": 3}' 192.168.0.254:20051 rpc.Cassy.ListClusters
 ```
 
 ### Take backups
