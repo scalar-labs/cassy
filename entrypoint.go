@@ -14,9 +14,11 @@ import (
 
 var (
 	endpoint = flag.String("cassy server endpoint", "localhost:20051", "endpoint of Cassy server")
+	devMode     = flag.Bool("dev", false, "enable this option to run as dev server")
 )
 
 func run() error {
+	flag.Parse()
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -28,7 +30,18 @@ func run() error {
 		return err
 	}
 
-	return http.ListenAndServe(":8080", mux)
+	if *devMode {
+		return http.ListenAndServe(":8090", allowCORS(mux))
+	} else {
+		return http.ListenAndServe(":8080", mux)
+	}
+}
+
+func allowCORS(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		h.ServeHTTP(w, r)
+	})
 }
 
 func main() {
