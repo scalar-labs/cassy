@@ -1,7 +1,5 @@
 package com.scalar.cassy.service;
 
-import com.azure.storage.blob.BlobContainerAsyncClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -14,17 +12,15 @@ import com.scalar.cassy.traverser.SnapshotTraverser;
 import java.nio.file.Paths;
 
 public class AzureBlobBackupModule extends AbstractModule {
+
   private final BackupType type;
   private final String dataDir;
   private final String snapshotId;
-  private final String storeBaseUri;
-  public static final String CONNECTION_STRING = "AZURE_STORAGE_CONNECTION_STRING";
 
-  public AzureBlobBackupModule(BackupType type, String dataDir, String snapshotId, String storeBaseUri) {
+  public AzureBlobBackupModule(BackupType type, String dataDir, String snapshotId) {
     this.type = type;
     this.dataDir = dataDir;
     this.snapshotId = snapshotId;
-    this.storeBaseUri = storeBaseUri;
   }
 
   @Override
@@ -39,18 +35,5 @@ public class AzureBlobBackupModule extends AbstractModule {
       return new IncrementalBackupTraverser(Paths.get(dataDir));
     }
     return new SnapshotTraverser(Paths.get(dataDir), snapshotId);
-  }
-
-  @Provides
-  @Singleton
-  BlobContainerAsyncClient provideBlobAsyncClient() {
-    if (System.getenv(CONNECTION_STRING) == null) {
-      throw new IllegalArgumentException(
-          "Please set the environment variable '" + CONNECTION_STRING + "'.");
-    }
-    return new BlobServiceClientBuilder()
-        .connectionString(System.getenv(CONNECTION_STRING))
-        .buildAsyncClient()
-        .getBlobContainerAsyncClient(storeBaseUri);
   }
 }
