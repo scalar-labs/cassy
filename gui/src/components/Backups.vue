@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <h4 class="mt-3">View Backups</h4>
-        <table class="table table-borderless table-striped">
+        <table class="table table-borderless table-striped text-nowrap text-center">
             <thead>
             <tr>
                 <th scope="col">#</th>
@@ -18,7 +18,7 @@
                     v-for="(b, index) in backups.entries"
                     :key="index"
             >
-                <th scope="row">{{index + 1}}</th>
+                <td scope="row">{{index + 1}}</td>
                 <td>{{b.snapshot_id}}</td>
                 <td>{{b.target_ip}}</td>
                 <td>{{ parseInt(b.created_at) | moment("YYYY/M/d, h:mm a")}}</td>
