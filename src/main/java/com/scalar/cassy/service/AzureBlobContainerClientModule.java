@@ -7,7 +7,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
-public class AzureBlobContainerClientModule extends AbstractModule {
+public abstract class AzureBlobContainerClientModule extends AbstractModule {
   public static final String CONNECTION_STRING = "AZURE_STORAGE_CONNECTION_STRING";
   private final String storeBaseUri;
 

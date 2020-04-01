@@ -1,13 +1,14 @@
 package com.scalar.cassy.service;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.scalar.cassy.transferer.AzureBlobFileDownloader;
 import com.scalar.cassy.transferer.FileDownloader;
 
-public class AzureBlobRestoreModule extends AbstractModule {
+public class AzureBlobRestoreModule extends AzureBlobContainerClientModule {
 
-  public AzureBlobRestoreModule() {}
+  public AzureBlobRestoreModule(String storeBaseUri) {
+    super(storeBaseUri);
+  }
 
   @Override
   protected void configure() {

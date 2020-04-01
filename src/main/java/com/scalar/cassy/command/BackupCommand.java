@@ -6,7 +6,6 @@ import com.scalar.cassy.config.BackupConfig;
 import com.scalar.cassy.config.BackupType;
 import com.scalar.cassy.service.AwsS3BackupModule;
 import com.scalar.cassy.service.AzureBlobBackupModule;
-import com.scalar.cassy.service.AzureBlobContainerClientModule;
 import com.scalar.cassy.service.BackupService;
 import java.util.Arrays;
 import java.util.Properties;
@@ -46,8 +45,7 @@ public class BackupCommand extends AbstractCommand {
       case AZURE_BLOB:
         injector =
             Guice.createInjector(
-                new AzureBlobBackupModule(type, dataDir, snapshotId),
-                new AzureBlobContainerClientModule(storeBaseUri));
+                new AzureBlobBackupModule(type, dataDir, snapshotId, storeBaseUri));
         break;
       default:
         throw new UnsupportedOperationException(

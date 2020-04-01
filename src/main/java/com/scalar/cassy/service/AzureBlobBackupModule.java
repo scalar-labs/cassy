@@ -1,6 +1,5 @@
 package com.scalar.cassy.service;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.scalar.cassy.config.BackupType;
@@ -11,13 +10,15 @@ import com.scalar.cassy.traverser.IncrementalBackupTraverser;
 import com.scalar.cassy.traverser.SnapshotTraverser;
 import java.nio.file.Paths;
 
-public class AzureBlobBackupModule extends AbstractModule {
+public class AzureBlobBackupModule extends AzureBlobContainerClientModule {
 
   private final BackupType type;
   private final String dataDir;
   private final String snapshotId;
 
-  public AzureBlobBackupModule(BackupType type, String dataDir, String snapshotId) {
+  public AzureBlobBackupModule(
+      BackupType type, String dataDir, String snapshotId, String storeBaseUri) {
+    super(storeBaseUri);
     this.type = type;
     this.dataDir = dataDir;
     this.snapshotId = snapshotId;
