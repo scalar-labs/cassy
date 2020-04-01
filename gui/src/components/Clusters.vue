@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <h4 class="mt-3">View Clusters</h4>
-        <table class="table table-borderless table-striped">
+        <table class="table table-borderless text-center text-nowrap table-striped">
             <thead>
             <tr>
                 <th scope="col">#</th>
