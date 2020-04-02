@@ -74,7 +74,7 @@ To change the storage that Cassy uses to store backup files, the following prope
 2. `storage_type`: an Enum that tells Cassy which service to use. You can select `aws_s3` for Amazon S3, or `azure_blob` for Azure Blob.
 
 #### Azure-specific requirements
-To use an Azure Blob container, you will also need to set an environment variable on your system. Navigate to the Azure portal and [retrieve the connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string#view-and-copy-a-connection-string) of your blob.
+To use an Azure Blob Storage container, you will also need to set an environment variable on your system. Navigate to the Azure portal and retrieve the [connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string#view-and-copy-a-connection-string) of your container.
 
 Once you have copied the `connection_string`, use the following command to set your environment variable.
 ```
