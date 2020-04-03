@@ -26,7 +26,13 @@
                 <td>
                     <button
                             type="button"
-                            class="btn btn-secondary"
+                            class="btn btn-secondary mx-1"
+                            @click="viewRestoreInfo(b.snapshot_id)"
+                    >View
+                    </button>
+                    <button
+                            type="button"
+                            class="btn btn-success mx-1"
                             data-toggle="modal"
                             data-target="#restoreCluster"
                             @click="$emit('emitSnapshotId', b.snapshot_id)"
@@ -49,5 +55,10 @@
         type: Object,
       },
     },
+    methods: {
+      viewRestoreInfo(snapshot_id) {
+        this.$router.push(`/clusters/${this.$route.params.cluster_id}/data/${snapshot_id}`)
+      }
+    }
   };
 </script>
