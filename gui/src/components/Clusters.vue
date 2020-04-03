@@ -30,8 +30,8 @@
             </tr>
             </tbody>
         </table>
-        <div class="row justify-content-end" data-toggle="modal" data-target="#registerCluster">
-            <button class="btn btn-primary">Add Cluster</button>
+        <div class="row justify-content-end">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#registerCluster">Add Cluster</button>
         </div>
     </div>
 </template>

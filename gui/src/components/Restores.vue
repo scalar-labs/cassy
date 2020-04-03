@@ -27,7 +27,7 @@
             </tbody>
         </table>
         <div class="row justify-content-end">
-            <button class="btn btn-secondary" @click="goBack">Back</button>
+            <button class="btn btn-outline-secondary" @click="goBack">Back</button>
         </div>
     </div>
 </template>

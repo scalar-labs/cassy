@@ -43,7 +43,8 @@
             </tbody>
         </table>
         <div class="row justify-content-end">
-            <button class="btn btn-primary" data-toggle="modal" data-target="#registerBackup">Create Backup</button>
+            <button class="btn btn-outline-secondary mx-1" @click="goBack">Back</button>
+            <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerBackup">Create Backup</button>
         </div>
     </div>
 </template>
@@ -58,6 +59,9 @@
     methods: {
       viewRestoreInfo(snapshot_id) {
         this.$router.push(`/clusters/${this.$route.params.cluster_id}/data/${snapshot_id}`)
+      },
+      goBack() {
+        this.$router.back();
       }
     }
   };
