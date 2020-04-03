@@ -1,7 +1,7 @@
 <template>
     <div>
         <Backups :backups="backups" @emitSnapshotId="setSnapshotId($event)" />
-        <CreateBackup :clusters="Clusters" :cluster_id="cluster_id" @updateBackupList="fetchBackups"/>
+        <CreateBackup :clusters="clusters" :cluster_id="cluster_id" @updateBackupList="fetchBackups"/>
         <RestoreCluster :cluster_id="cluster_id" :snapshot_id="snapshot_id" />
     </div>
 </template>
