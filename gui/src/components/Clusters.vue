@@ -1,10 +1,9 @@
 <template>
     <div>
-        <h4 class="mt-3">View Clusters</h4>
+        <h4 class="mt-3">Clusters</h4>
         <table class="table table-borderless text-center text-nowrap table-striped">
             <thead>
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">ID</th>
                 <th scope="col">Name</th>
                 <th scope="col">Created At</th>
@@ -16,7 +15,6 @@
                     v-for="(c, index) in clusters.entries"
                     :key="index"
             >
-                <th scope="row">{{index + 1}}</th>
                 <td>{{c.cluster_id}}</td>
                 <td>{{c.cluster_name}}</td>
                 <td>{{ parseInt(c.created_at) | moment('YYYY/M/d, h:mm a')}}</td>

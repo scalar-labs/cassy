@@ -1,7 +1,7 @@
 <template>
     <div>
         <Clusters :clusters="clusters"/>
-        <RegisterCluster />
+        <RegisterCluster @updateClusterList="fetchClusters"/>
     </div>
 </template>
 
@@ -22,12 +22,17 @@
       };
     },
     mounted() {
-      this.$api.get('clusters/')
-      .then((response) => {
-        if (response.status === 200) {
-          this.clusters = response.data;
-        }
-      });
+      this.fetchClusters();
     },
+    methods: {
+      fetchClusters() {
+        this.$api.get('clusters/')
+        .then((response) => {
+          if (response.status === 200) {
+            this.clusters = response.data;
+          }
+        });
+      }
+    }
   };
 </script>

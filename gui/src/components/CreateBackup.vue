@@ -20,8 +20,11 @@
                             </select>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" data-toggle="modal" data-target="#registerBackup"
-                                    @click="createBackup">Create Backup
+                            <button class="btn btn-primary"
+                                    data-toggle="modal"
+                                    data-target="#registerBackup"
+                                    @click="createBackup"
+                            >Create Backup
                             </button>
                         </div>
                     </form>
@@ -34,9 +37,6 @@
 <script>
   export default {
     props: {
-      clusters: {
-        type: Object,
-      },
       cluster_id: String
     },
     methods: {
@@ -44,7 +44,12 @@
         this.$api.post(`clusters/${this.cluster_id}/backups`, {
           cassandra_host: '127.0.0.1',
           backup_type: document.getElementById('backupTypeSelect').value,
-        });
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            this.$emit('updateBackupList')
+          }
+        })
       },
     },
   };

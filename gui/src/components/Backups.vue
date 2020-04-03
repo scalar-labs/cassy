@@ -1,10 +1,9 @@
 <template>
     <div>
-        <h4>View Backups</h4>
+        <h4>Backups</h4>
         <table class="table table-borderless table-striped text-nowrap text-center">
             <thead>
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">Snapshot ID</th>
                 <th scope="col">Target IP</th>
                 <th scope="col">Created At</th>
@@ -18,7 +17,6 @@
                     v-for="(b, index) in backups.entries"
                     :key="index"
             >
-                <td scope="row">{{index + 1}}</td>
                 <td>{{b.snapshot_id}}</td>
                 <td>{{b.target_ip}}</td>
                 <td>{{ parseInt(b.created_at) | moment('YYYY/M/d, h:mm a')}}</td>
@@ -29,6 +27,9 @@
                     <button
                             type="button"
                             class="btn btn-secondary"
+                            data-toggle="modal"
+                            data-target="#restoreCluster"
+                            @click="$emit('emitSnapshotId', b.snapshot_id)"
                     >Restore
                     </button>
                 </td>
@@ -48,6 +49,5 @@
         type: Object,
       },
     },
-    methods: {},
   };
 </script>
