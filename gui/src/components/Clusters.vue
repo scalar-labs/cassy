@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div>
         <h4 class="mt-3">View Clusters</h4>
         <table class="table table-borderless text-center text-nowrap table-striped">
             <thead>
@@ -19,17 +19,22 @@
                 <th scope="row">{{index + 1}}</th>
                 <td>{{c.cluster_id}}</td>
                 <td>{{c.cluster_name}}</td>
-                <td>{{ parseInt(c.created_at) | moment("YYYY/M/d, h:mm a")}}</td>
-                <td>{{ parseInt(c.updated_at) | moment("YYYY/M/d h:mm a")}}</td>
-                <td><button
-                        type="button"
-                        class="btn btn-secondary"
-                        @click="viewBackups(c.cluster_id)"
-                >Manage</button></td>
+                <td>{{ parseInt(c.created_at) | moment('YYYY/M/d, h:mm a')}}</td>
+                <td>{{ parseInt(c.updated_at) | moment('YYYY/M/d h:mm a')}}</td>
+                <td>
+                    <button
+                            type="button"
+                            class="btn btn-secondary"
+                            @click="viewBackups(c.cluster_id)"
+                    >Manage
+                    </button>
+                </td>
             </tr>
             </tbody>
         </table>
-        <div class="row justify-content-end"><button class="btn btn-primary">Add Cluster</button></div>
+        <div class="row justify-content-end" data-toggle="modal" data-target="#registerCluster">
+            <button class="btn btn-primary">Add Cluster</button>
+        </div>
     </div>
 </template>
 
@@ -43,7 +48,7 @@
     methods: {
       viewBackups(cluster_id) {
         this.$router.push(`/clusters/${cluster_id}/backups`);
-      }
-    }
+      },
+    },
   };
 </script>

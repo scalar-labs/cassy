@@ -1,6 +1,6 @@
 <template>
-    <div class="container">
-        <h4 class="mt-3">View Backups</h4>
+    <div>
+        <h4>View Backups</h4>
         <table class="table table-borderless table-striped text-nowrap text-center">
             <thead>
             <tr>
@@ -21,18 +21,23 @@
                 <td scope="row">{{index + 1}}</td>
                 <td>{{b.snapshot_id}}</td>
                 <td>{{b.target_ip}}</td>
-                <td>{{ parseInt(b.created_at) | moment("YYYY/M/d, h:mm a")}}</td>
-                <td>{{ parseInt(b.updated_at) | moment("YYYY/M/d h:mm a")}}</td>
+                <td>{{ parseInt(b.created_at) | moment('YYYY/M/d, h:mm a')}}</td>
+                <td>{{ parseInt(b.updated_at) | moment('YYYY/M/d h:mm a')}}</td>
                 <td>{{b.backup_type}}</td>
                 <td>{{b.status}}</td>
-                <td><button
-                        type="button"
-                        class="btn btn-secondary"
-                >Restore</button></td>
+                <td>
+                    <button
+                            type="button"
+                            class="btn btn-secondary"
+                    >Restore
+                    </button>
+                </td>
             </tr>
             </tbody>
         </table>
-        <div class="row justify-content-end"><button class="btn btn-primary">Create Backup</button></div>
+        <div class="row justify-content-end">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#registerBackup">Create Backup</button>
+        </div>
     </div>
 </template>
 
@@ -43,7 +48,6 @@
         type: Object,
       },
     },
-    methods: {
-    }
+    methods: {},
   };
 </script>
