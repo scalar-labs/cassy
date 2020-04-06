@@ -1,5 +1,6 @@
 package com.scalar.cassy.db;
 
+import com.google.inject.Inject;
 import com.scalar.cassy.config.RestoreType;
 import com.scalar.cassy.exception.DatabaseException;
 import com.scalar.cassy.rpc.OperationStatus;
@@ -37,6 +38,7 @@ public class RestoreHistory {
   private final PreparedStatement selectRecentByHost;
   private final PreparedStatement selectRecentBySnapshot;
 
+  @Inject
   public RestoreHistory(Connection connection) {
     this.connection = connection;
     try {

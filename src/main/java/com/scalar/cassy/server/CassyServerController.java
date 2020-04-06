@@ -1,6 +1,7 @@
 package com.scalar.cassy.server;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.inject.Inject;
 import com.scalar.cassy.config.BackupType;
 import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.RestoreType;
@@ -57,6 +58,7 @@ public final class CassyServerController extends CassyImplBase {
   private static final String NON_CLUSTER_BACKUP =
       "The specified backup is not a cluster-wide backup.";
 
+  @Inject
   public CassyServerController(
       CassyServerConfig config,
       DatabaseAccessor database,
