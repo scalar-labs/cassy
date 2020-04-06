@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,23 +32,25 @@ public class AzureBlobFileUploader implements FileUploader {
 
   @Override
   public void upload(List<Path> files, BackupConfig config) {
-    AtomicInteger count = new AtomicInteger();
-    count.getAndIncrement();
+    Path dataDir = Paths.get(config.getDataDir());
     List<CompletableFuture> toBeUploaded = new ArrayList<>();
+
     files.forEach(
         p -> {
-          String key = BackupPath.create(config, p.toString());
-          Path filePath = Paths.get(config.getDataDir(), p.toString());
-          if (requiresUpload(key, filePath)) {
-            logger.info("Uploading file " + count + "/" + files.size() + " " + filePath);
-            count.getAndIncrement();
+          Path relative = dataDir.relativize(p);
+          String key = BackupPath.create(config, relative.toString());
+          if (requiresUpload(key, p)) {
+            logger.info("Uploading " + p);
             toBeUploaded.add(
                 blobContainerClient
                     .getBlobAsyncClient(key)
-                    .uploadFromFile(filePath.toString(), true)
+                    .uploadFromFile(p.toString(), true)
                     .toFuture());
+          } else {
+            logger.info(p + " has been already uploaded.");
           }
         });
+
     for (CompletableFuture future : toBeUploaded) {
       try {
         future.get();

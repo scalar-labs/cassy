@@ -47,14 +47,12 @@ public class AwsS3FileUploaderTest {
   private static final String ANY_CLUSTER_ID = "cluster_id";
   private static final String ANY_SNAPSHOT_ID = "snapshot_id";
   private static final String ANY_TARGET_IP = "target_ip";
-  private static final String ANY_DATA_DIR = "data_dir";
   private static final String ANY_S3_URI = "s3://scalar";
   private static final Joiner joiner = Joiner.on("/").skipNulls();
   private static final FileSystem fs = FileSystems.getDefault();
-  private AmazonS3URI s3Uri;
-  // @Mock private FileTraverser traverser;
   @Mock private TransferManager manager;
   @Mock private AmazonS3 s3;
+  @Mock private AmazonS3URI s3Uri;
   @Mock private Upload upload;
   @Spy @InjectMocks private AwsS3FileUploader uploader;
 
@@ -69,7 +67,6 @@ public class AwsS3FileUploaderTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    this.s3Uri = new AmazonS3URI(ANY_S3_URI);
   }
 
   public Properties getProperties(BackupType type, String dataDir) {
@@ -87,10 +84,11 @@ public class AwsS3FileUploaderTest {
   @Test
   public void upload_LocalPathsAndConfigGiven_ShouldUploadProperly() throws InterruptedException {
     // Arrange
-    BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_DATA_DIR));
+    BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, DATA_DIR));
     when(upload.getDescription()).thenReturn("anything");
     when(upload.getState()).thenReturn(Transfer.TransferState.Completed);
     when(manager.upload(anyString(), anyString(), any(File.class))).thenReturn(upload);
+    when(s3Uri.getBucket()).thenReturn(ANY_S3_URI);
     doReturn(true).when(uploader).requiresUpload(anyString(), anyString(), any(Path.class));
     List<Path> paths = getListOfSnapshotFiles();
 
@@ -98,16 +96,17 @@ public class AwsS3FileUploaderTest {
     uploader.upload(paths, config);
 
     // Assert
+    Path dataDir = Paths.get(DATA_DIR);
     verify(manager)
         .upload(
             s3Uri.getBucket(),
-            BackupPath.create(config, paths.get(0).toString()),
-            Paths.get(config.getDataDir(), paths.get(0).toString()).toFile());
+            BackupPath.create(config, dataDir.relativize(paths.get(0)).toString()),
+            paths.get(0).toFile());
     verify(manager)
         .upload(
             s3Uri.getBucket(),
-            BackupPath.create(config, paths.get(1).toString()),
-            Paths.get(config.getDataDir(), paths.get(1).toString()).toFile());
+            BackupPath.create(config, dataDir.relativize(paths.get(1)).toString()),
+            paths.get(1).toFile());
     verify(upload, times(2)).waitForCompletion();
   }
 
@@ -115,9 +114,10 @@ public class AwsS3FileUploaderTest {
   public void upload_AmazonServiceExceptionThrown_ShouldThrowFileTransferException()
       throws InterruptedException {
     // Arrange
-    BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_DATA_DIR));
+    BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, DATA_DIR));
     AmazonServiceException toThrow = Mockito.mock(AmazonServiceException.class);
     when(manager.upload(anyString(), anyString(), any(File.class))).thenThrow(toThrow);
+    when(s3Uri.getBucket()).thenReturn(ANY_S3_URI);
     doReturn(true).when(uploader).requiresUpload(anyString(), anyString(), any(Path.class));
     List<Path> paths = getListOfSnapshotFiles();
 
@@ -127,11 +127,12 @@ public class AwsS3FileUploaderTest {
         .hasCause(toThrow);
 
     // Assert
+    Path dataDir = Paths.get(DATA_DIR);
     verify(manager)
         .upload(
             s3Uri.getBucket(),
-            BackupPath.create(config, paths.get(0).toString()),
-            Paths.get(config.getDataDir(), paths.get(0).toString()).toFile());
+            BackupPath.create(config, dataDir.relativize(paths.get(0)).toString()),
+            paths.get(0).toFile());
     verify(upload, never()).waitForCompletion();
   }
 }
