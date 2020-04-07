@@ -90,10 +90,18 @@ public class SnapshotTraverserTest {
     // Assert
     assertThat(files)
         .containsOnly(
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_1, SNAPSHOT_DIR, SNAPSHOT_ID, FILE1)),
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_1, SNAPSHOT_DIR, SNAPSHOT_ID, FILE2)),
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_2, SNAPSHOT_DIR, SNAPSHOT_ID, FILE1)),
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_2, SNAPSHOT_DIR, SNAPSHOT_ID, FILE2)));
+            fs.getPath(
+                joiner.join(
+                    DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_1, SNAPSHOT_DIR, SNAPSHOT_ID, FILE1)),
+            fs.getPath(
+                joiner.join(
+                    DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_1, SNAPSHOT_DIR, SNAPSHOT_ID, FILE2)),
+            fs.getPath(
+                joiner.join(
+                    DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_2, SNAPSHOT_DIR, SNAPSHOT_ID, FILE1)),
+            fs.getPath(
+                joiner.join(
+                    DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_2, SNAPSHOT_DIR, SNAPSHOT_ID, FILE2)));
   }
 
   @Test
@@ -106,7 +114,11 @@ public class SnapshotTraverserTest {
     // Assert
     assertThat(files)
         .containsOnly(
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_2, SNAPSHOT_DIR, SNAPSHOT_ID, FILE1)),
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_2, SNAPSHOT_DIR, SNAPSHOT_ID, FILE2)));
+            fs.getPath(
+                joiner.join(
+                    DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_2, SNAPSHOT_DIR, SNAPSHOT_ID, FILE1)),
+            fs.getPath(
+                joiner.join(
+                    DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_2, SNAPSHOT_DIR, SNAPSHOT_ID, FILE2)));
   }
 }

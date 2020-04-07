@@ -18,6 +18,7 @@ import com.scalar.cassy.exception.FileTransferException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -44,7 +45,6 @@ public class AzureBlobFileUploaderTest {
   private static final String ANY_CLUSTER_ID = "cluster_id";
   private static final String ANY_SNAPSHOT_ID = "snapshot_id";
   private static final String ANY_TARGET_IP = "target_ip";
-  private static final String ANY_DATA_DIR = "data_dir";
   private static final String ANY_STOREBASE_URI = "container_name";
   private static final Joiner joiner = Joiner.on("/").skipNulls();
   private static final FileSystem fs = FileSystems.getDefault();
@@ -86,10 +86,12 @@ public class AzureBlobFileUploaderTest {
   @Test
   public void upload_LocalPathsAndConfigGiven_ShouldUploadProperly() throws Exception {
     // Arrange
-    BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_DATA_DIR));
+    BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, DATA_DIR));
     doReturn(true).when(uploader).requiresUpload(anyString(), any(Path.class));
     when(containerClient.getBlobAsyncClient(anyString())).thenReturn(blobClient);
-    when(blobClient.uploadFromFile(anyString(), anyBoolean())).thenReturn(voidMono1).thenReturn(voidMono2);
+    when(blobClient.uploadFromFile(anyString(), anyBoolean()))
+        .thenReturn(voidMono1)
+        .thenReturn(voidMono2);
     when(voidMono1.toFuture()).thenReturn(future1);
     when(voidMono2.toFuture()).thenReturn(future2);
     when(future1.get()).thenReturn(mockVoid1);
@@ -100,8 +102,13 @@ public class AzureBlobFileUploaderTest {
     uploader.upload(paths, config);
 
     // Assert
-    verify(blobClient).uploadFromFile(config.getDataDir() + paths.get(0).toString(), true);
-    verify(blobClient).uploadFromFile(config.getDataDir() + paths.get(1).toString(), true);
+    Path dataDir = Paths.get(DATA_DIR);
+    verify(containerClient)
+        .getBlobAsyncClient(BackupPath.create(config, dataDir.relativize(paths.get(0)).toString()));
+    verify(containerClient)
+        .getBlobAsyncClient(BackupPath.create(config, dataDir.relativize(paths.get(1)).toString()));
+    verify(blobClient).uploadFromFile(paths.get(0).toString(), true);
+    verify(blobClient).uploadFromFile(paths.get(1).toString(), true);
     verify(future1).get();
     verify(future2).get();
   }
@@ -109,11 +116,13 @@ public class AzureBlobFileUploaderTest {
   @Test
   public void upload_ExecutionExceptionThrown_ShouldThrowFileTransferException() throws Exception {
     // Arrange
-    BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_DATA_DIR));
+    BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, DATA_DIR));
     ExecutionException toThrow = Mockito.mock(ExecutionException.class);
     doReturn(true).when(uploader).requiresUpload(anyString(), any(Path.class));
     when(containerClient.getBlobAsyncClient(anyString())).thenReturn(blobClient);
-    when(blobClient.uploadFromFile(anyString(), anyBoolean())).thenReturn(voidMono1).thenReturn(voidMono2);
+    when(blobClient.uploadFromFile(anyString(), anyBoolean()))
+        .thenReturn(voidMono1)
+        .thenReturn(voidMono2);
     when(voidMono1.toFuture()).thenReturn(future1);
     when(voidMono2.toFuture()).thenReturn(future2);
     when(future1.get()).thenThrow(toThrow);
@@ -125,8 +134,13 @@ public class AzureBlobFileUploaderTest {
         .hasCause(toThrow);
 
     // Assert
-    verify(blobClient).uploadFromFile(config.getDataDir() + paths.get(0).toString(), true);
-    verify(blobClient).uploadFromFile(config.getDataDir() + paths.get(1).toString(), true);
+    Path dataDir = Paths.get(DATA_DIR);
+    verify(containerClient)
+        .getBlobAsyncClient(BackupPath.create(config, dataDir.relativize(paths.get(0)).toString()));
+    verify(containerClient)
+        .getBlobAsyncClient(BackupPath.create(config, dataDir.relativize(paths.get(1)).toString()));
+    verify(blobClient).uploadFromFile(paths.get(0).toString(), true);
+    verify(blobClient).uploadFromFile(paths.get(1).toString(), true);
     verify(future2, never()).get();
   }
 }

@@ -23,31 +23,33 @@ public class AwsS3FileUploader implements FileUploader {
   private static final Logger logger = LoggerFactory.getLogger(AwsS3FileUploader.class);
   private final TransferManager manager;
   private final AmazonS3 s3;
+  private final AmazonS3URI s3Uri;
 
   @Inject
-  public AwsS3FileUploader(TransferManager manager, AmazonS3 s3) {
+  public AwsS3FileUploader(TransferManager manager, AmazonS3 s3, AmazonS3URI s3Uri) {
     this.manager = manager;
     this.s3 = s3;
+    this.s3Uri = s3Uri;
   }
 
   @Override
   public void upload(List<Path> files, BackupConfig config) {
-    AmazonS3URI s3Uri = new AmazonS3URI(config.getStoreBaseUri());
+    Path dataDir = Paths.get(config.getDataDir());
 
     List<Upload> uploads = new ArrayList<>();
     files.forEach(
         p -> {
-          String key = BackupPath.create(config, p.toString());
-          Path file = Paths.get(config.getDataDir(), p.toString());
-          if (requiresUpload(s3Uri.getBucket(), key, file)) {
-            logger.info("Uploading " + file);
+          Path relative = dataDir.relativize(p);
+          String key = BackupPath.create(config, relative.toString());
+          if (requiresUpload(s3Uri.getBucket(), key, p)) {
+            logger.info("Uploading " + p);
             try {
-              uploads.add(manager.upload(s3Uri.getBucket(), key, file.toFile()));
+              uploads.add(manager.upload(s3Uri.getBucket(), key, p.toFile()));
             } catch (RuntimeException e) {
               throw new FileTransferException(e);
             }
           } else {
-            logger.info(file + " has been already uploaded.");
+            logger.info(p + " has been already uploaded.");
           }
         });
 
