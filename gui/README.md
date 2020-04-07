@@ -10,7 +10,7 @@ See the [Getting Started](../docs/getting-started.md) to set up your Cassy confi
 
 Once you have started Cassy, go to the root folder and run the following command to start the HTTP/1.1 server.
 ```
-./entrypoint -dev
+./entrypoint -mode=dev
 ```
 Next, start the development server by navigating to the [gui](../gui) folder and executing the following command.
 ```
