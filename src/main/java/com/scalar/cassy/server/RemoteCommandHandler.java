@@ -1,6 +1,7 @@
 package com.scalar.cassy.server;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.inject.Inject;
 import com.scalar.cassy.db.DatabaseAccessor;
 import com.scalar.cassy.exception.RemoteExecutionException;
 import com.scalar.cassy.remotecommand.RemoteCommandContext;
@@ -17,6 +18,7 @@ public class RemoteCommandHandler implements Runnable {
   private final BlockingQueue<RemoteCommandContext> futures;
   private final DatabaseAccessor database;
 
+  @Inject
   public RemoteCommandHandler(
       BlockingQueue<RemoteCommandContext> futures, DatabaseAccessor database) {
     this.futures = futures;
