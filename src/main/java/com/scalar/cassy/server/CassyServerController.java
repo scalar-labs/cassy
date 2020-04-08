@@ -1,6 +1,7 @@
 package com.scalar.cassy.server;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.inject.Inject;
 import com.scalar.cassy.config.BackupType;
 import com.scalar.cassy.config.CassyServerConfig;
@@ -29,6 +30,7 @@ import com.scalar.cassy.rpc.RestoreStatusListingResponse;
 import com.scalar.cassy.service.ApplicationPauser;
 import com.scalar.cassy.service.BackupKey;
 import com.scalar.cassy.service.BackupServiceMaster;
+import com.scalar.cassy.service.MetadataDbBackupService;
 import com.scalar.cassy.service.RestoreServiceMaster;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -37,6 +39,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
@@ -45,9 +50,11 @@ import org.slf4j.LoggerFactory;
 @Immutable
 public final class CassyServerController extends CassyImplBase {
   private static final Logger logger = LoggerFactory.getLogger(CassyServerController.class);
+  private final ExecutorService executorService = Executors.newSingleThreadExecutor();
   private final CassyServerConfig config;
   private final DatabaseAccessor database;
   private final BlockingQueue<RemoteCommandContext> commandQueue;
+  private final MetadataDbBackupService metadataDbBackupService;
   private static final String NO_CASSANDRA_HOST = "cassandra_host is not set correctly.";
   private static final String NODES_UNAVAILABLE = "All the required nodes are not available.";
   private static final String NO_SNAPSHOT_ID =
@@ -62,10 +69,12 @@ public final class CassyServerController extends CassyImplBase {
   public CassyServerController(
       CassyServerConfig config,
       DatabaseAccessor database,
-      BlockingQueue<RemoteCommandContext> commandQueue) {
+      BlockingQueue<RemoteCommandContext> commandQueue,
+      MetadataDbBackupService metadataDbBackupService) {
     this.config = config;
     this.database = database;
     this.commandQueue = commandQueue;
+    this.metadataDbBackupService = metadataDbBackupService;
   }
 
   @Override
@@ -250,6 +259,9 @@ public final class CassyServerController extends CassyImplBase {
       updateBackupStatus(backupKeys, type, OperationStatus.FAILED);
     }
 
+    // it will backup metadata database to a specified storage
+    backupMetadata();
+
     builder
         .setStatus(OperationStatus.STARTED)
         .setClusterId(backupKeys.get(0).getClusterId())
@@ -422,6 +434,29 @@ public final class CassyServerController extends CassyImplBase {
     } else {
       backupKeys.forEach(backupKey -> database.getRestoreHistory().update(backupKey, status));
     }
+  }
+
+  private void backupMetadata() {
+    executorService.submit(
+        () -> {
+          while (true) {
+            // it will wait for statuses to be updated
+            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+            if (commandQueue.isEmpty()) {
+              break;
+            }
+          }
+          try {
+            metadataDbBackupService.backup().get();
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            // ignore errors
+            logger.warn(e.getMessage(), e);
+          } catch (Exception e) {
+            // ignore errors
+            logger.warn(e.getMessage(), e);
+          }
+        });
   }
 
   private <T> void setError(StreamObserver<T> responseObserver, Status status, String message) {

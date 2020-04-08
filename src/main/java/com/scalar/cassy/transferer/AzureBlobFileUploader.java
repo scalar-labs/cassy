@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,20 @@ public class AzureBlobFileUploader implements FileUploader {
   @Inject
   public AzureBlobFileUploader(BlobContainerAsyncClient blobContainerClient) {
     this.blobContainerClient = blobContainerClient;
+  }
+
+  @Override
+  public Future<Void> upload(Path file, String key) {
+    if (!requiresUpload(key, file)) {
+      logger.info(file + " has been already uploaded.");
+      return CompletableFuture.completedFuture(null);
+    }
+
+    logger.info("Uploading " + file);
+    return blobContainerClient
+        .getBlobAsyncClient(key)
+        .uploadFromFile(file.toString(), true)
+        .toFuture();
   }
 
   @Override
