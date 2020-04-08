@@ -16,11 +16,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AwsS3FileUploader implements FileUploader {
   private static final Logger logger = LoggerFactory.getLogger(AwsS3FileUploader.class);
+  private static final int NUM_THREADS = 3;
+  private final ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
   private final TransferManager manager;
   private final AmazonS3 s3;
   private final AmazonS3URI s3Uri;
@@ -30,6 +36,21 @@ public class AwsS3FileUploader implements FileUploader {
     this.manager = manager;
     this.s3 = s3;
     this.s3Uri = s3Uri;
+  }
+
+  @Override
+  public Future<Void> upload(Path file, String key) {
+    if (!requiresUpload(s3Uri.getBucket(), key, file)) {
+      logger.info(file + " has been already uploaded.");
+      return CompletableFuture.completedFuture(null);
+    }
+
+    logger.info("Uploading " + file);
+    return executorService.submit(
+        () -> {
+          manager.upload(s3Uri.getBucket(), key, file.toFile()).waitForCompletion();
+          return null;
+        });
   }
 
   @Override
@@ -59,6 +80,7 @@ public class AwsS3FileUploader implements FileUploader {
             u.waitForCompletion();
             logger.info(u.getDescription() + " - " + u.getState().name());
           } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new FileTransferException(e);
           }
         });
