@@ -81,10 +81,10 @@ public class IncrementalBackupTraverserTest {
     // Assert
     assertThat(files)
         .containsOnly(
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_1, BACKUP_DIR, FILE1)),
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_1, BACKUP_DIR, FILE2)),
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_2, BACKUP_DIR, FILE1)),
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_2, BACKUP_DIR, FILE2)));
+            fs.getPath(joiner.join(DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_1, BACKUP_DIR, FILE1)),
+            fs.getPath(joiner.join(DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_1, BACKUP_DIR, FILE2)),
+            fs.getPath(joiner.join(DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_2, BACKUP_DIR, FILE1)),
+            fs.getPath(joiner.join(DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_2, BACKUP_DIR, FILE2)));
   }
 
   @Test
@@ -97,7 +97,7 @@ public class IncrementalBackupTraverserTest {
     // Assert
     assertThat(files)
         .containsOnly(
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_2, BACKUP_DIR, FILE1)),
-            fs.getPath(joiner.join(KEYSPACE_DIR_1, TABLE_DIR_2, BACKUP_DIR, FILE2)));
+            fs.getPath(joiner.join(DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_2, BACKUP_DIR, FILE1)),
+            fs.getPath(joiner.join(DATA_DIR, KEYSPACE_DIR_1, TABLE_DIR_2, BACKUP_DIR, FILE2)));
   }
 }

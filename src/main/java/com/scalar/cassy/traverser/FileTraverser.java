@@ -39,7 +39,7 @@ public abstract class FileTraverser {
           }
         });
 
-    return filePaths.stream().map(f -> dataDir.relativize(f)).collect(Collectors.toList());
+    return filePaths;
   }
 
   private List<Path> traverseTable(Path keyspace, String table) {

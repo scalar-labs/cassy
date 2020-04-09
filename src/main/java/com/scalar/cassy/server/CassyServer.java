@@ -1,23 +1,17 @@
 package com.scalar.cassy.server;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.scalar.cassy.config.CassyServerConfig;
-import com.scalar.cassy.db.BackupHistory;
-import com.scalar.cassy.db.ClusterInfo;
-import com.scalar.cassy.db.DatabaseAccessor;
-import com.scalar.cassy.db.RestoreHistory;
-import com.scalar.cassy.remotecommand.RemoteCommandContext;
 import com.scalar.cassy.rpc.CassyGrpc.CassyImplBase;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
@@ -28,27 +22,21 @@ public final class CassyServer extends CassyImplBase {
   private static final Logger logger = LoggerFactory.getLogger(CassyServer.class);
   private final CassyServerConfig config;
   private io.grpc.Server server;
-  private Connection connection;
+  private Injector injector;
   private ExecutorService handlerService;
 
   public CassyServer(CassyServerConfig config) {
     this.config = config;
   }
 
-  private void start() throws IOException, SQLException {
-    connection = DriverManager.getConnection(config.getMetadataDbUrl());
-    DatabaseAccessor database =
-        new DatabaseAccessor(
-            new BackupHistory(connection),
-            new RestoreHistory(connection),
-            new ClusterInfo(connection));
-    BlockingQueue commandQueue = new LinkedBlockingQueue<RemoteCommandContext>();
+  private void start() throws IOException {
+    injector = Guice.createInjector(new CassyServerModule(config));
     handlerService = Executors.newFixedThreadPool(1);
-    handlerService.submit(new RemoteCommandHandler(commandQueue, database));
+    handlerService.submit(injector.getInstance(RemoteCommandHandler.class));
 
     ServerBuilder builder =
         ServerBuilder.forPort(config.getPort())
-            .addService(new CassyServerController(config, database, commandQueue))
+            .addService(injector.getInstance(CassyServerController.class))
             .addService(ProtoReflectionService.newInstance());
 
     server = builder.build().start();
@@ -69,7 +57,7 @@ public final class CassyServer extends CassyImplBase {
     if (server != null) {
       server.shutdown();
       try {
-        connection.close();
+        injector.getInstance(Connection.class).close();
       } catch (SQLException e) {
         // ignore
       }
@@ -84,7 +72,7 @@ public final class CassyServer extends CassyImplBase {
     }
   }
 
-  public static void main(String[] args) throws IOException, InterruptedException, SQLException {
+  public static void main(String[] args) throws IOException, InterruptedException {
     CassyServerConfig config = null;
     for (int i = 0; i < args.length; ++i) {
       if ("--config".equals(args[i])) {
