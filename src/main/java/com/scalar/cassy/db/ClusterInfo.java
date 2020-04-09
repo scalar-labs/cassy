@@ -1,5 +1,6 @@
 package com.scalar.cassy.db;
 
+import com.google.inject.Inject;
 import com.scalar.cassy.exception.DatabaseException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,6 +26,7 @@ public class ClusterInfo {
   private final PreparedStatement selectByCluster;
   private final PreparedStatement selectRecent;
 
+  @Inject
   public ClusterInfo(Connection connection) {
     this.connection = connection;
     try {
