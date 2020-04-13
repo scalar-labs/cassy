@@ -30,7 +30,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
   public void download(RestoreConfig config) {
     String key = BackupPath.create(config, config.getKeyspace());
 
-    logger.info("Downloading files of '" + config.getKeyspace() + "' keyspace");
+    logger.info("Downloading " + blobContainerClient.getBlobContainerName() + "/" + key);
     List<Mono<BlobProperties>> filesToBeDownloaded = new ArrayList<>();
     Iterable<BlobItem> keyspaceBlobs =
         blobContainerClient.listBlobs(new ListBlobsOptions().setPrefix(key + "/")).toIterable();
@@ -47,15 +47,15 @@ public class AzureBlobFileDownloader implements FileDownloader {
               .downloadToFile(destFile.toString())
               .doOnSuccess(
                   blobProperties -> logger.info("Download file succeeded : " + destFile.toString()))
-              .doOnError(error -> logger.error("Download failed : " + destFile.toString(), error)));
+              .doOnError(
+                  error -> {
+                    throw new FileTransferException(
+                        "Download file failed : " + destFile.toString(), error);
+                  }));
     }
 
     // Start asynchronously all downloads and wait for all of them to complete
-    try {
-      Mono.when(filesToBeDownloaded).block();
-    } catch (Exception e) {
-      throw new FileTransferException(e);
-    }
+    Mono.when(filesToBeDownloaded).block();
   }
 
   @Override

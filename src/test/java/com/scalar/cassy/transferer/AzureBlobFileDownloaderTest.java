@@ -93,8 +93,7 @@ public class AzureBlobFileDownloaderTest {
     // Act
     assertThatThrownBy(() -> downloader.download(config))
         .isInstanceOf(FileTransferException.class)
-        .hasMessageContaining(toThrow.getMessage())
-        .hasCauseInstanceOf(RuntimeException.class);
+        .hasCauseInstanceOf(IOException.class);
 
     // Assert
     verify(blobClient).downloadToFile(Paths.get(config.getDataDir(), file1.getName()).toString());
