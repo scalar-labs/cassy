@@ -7,6 +7,10 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.palantir.graal" version "0.6.0-114-gfe95739"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -78,6 +82,33 @@ test {
 
 javadoc {
     options.addStringOption("notimestamp", "com.scalar.cassy")
+}
+
+task installCassyServer(type: Exec) {
+    graal {
+        mainClass 'com.scalar.cassy.server.CassyServer'
+        outputName 'cassy-server-graal'
+    }
+
+    commandLine './gradlew', 'nativeImage'
+}
+
+task installCassyBackup(type: Exec) {
+    graal {
+        mainClass 'com.scalar.cassy.command.BackupCommand'
+        outputName 'cassy-backup-graal'
+    }
+
+    commandLine './gradlew', 'nativeImage'
+}
+
+task installCassyRestore(type: Exec) {
+    graal {
+        mainClass 'com.scalar.cassy.command.RestoreCommand'
+        outputName 'cassy-restore-graal'
+    }
+
+    commandLine './gradlew', 'nativeImage'
 }
 
 task sourcesJar(type: Jar) {
