@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 public class AzureBlobFileUploader implements FileUploader {
   private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileUploader.class);
@@ -48,31 +48,28 @@ public class AzureBlobFileUploader implements FileUploader {
   @Override
   public void upload(List<Path> files, BackupConfig config) {
     Path dataDir = Paths.get(config.getDataDir());
-    List<CompletableFuture> toBeUploaded = new ArrayList<>();
-
-    files.forEach(
-        p -> {
-          Path relative = dataDir.relativize(p);
-          String key = BackupPath.create(config, relative.toString());
-          if (requiresUpload(key, p)) {
-            logger.info("Uploading " + p);
-            toBeUploaded.add(
-                blobContainerClient
-                    .getBlobAsyncClient(key)
-                    .uploadFromFile(p.toString(), true)
-                    .toFuture());
-          } else {
-            logger.info(p + " has been already uploaded.");
-          }
-        });
-
-    for (CompletableFuture future : toBeUploaded) {
-      try {
-        future.get();
-      } catch (InterruptedException | ExecutionException e) {
-        throw new FileTransferException(e);
+    List<Mono<Void>> toBeUploaded = new ArrayList<>();
+    for (Path filePath : files) {
+      Path relative = dataDir.relativize(filePath);
+      String key = BackupPath.create(config, relative.toString());
+      if (requiresUpload(key, filePath)) {
+        logger.info("Uploading " + filePath);
+        toBeUploaded.add(
+            blobContainerClient
+                .getBlobAsyncClient(key)
+                .uploadFromFile(filePath.toString(), true)
+                .doOnSuccess(blobProperties -> logger.info("Upload file succeeded : " + filePath))
+                .doOnError(
+                    error -> {
+                      throw new FileTransferException("Upload file failed : " + filePath, error);
+                    }));
+      } else {
+        logger.info(filePath + " has been already uploaded.");
       }
     }
+
+    // Start asynchronously all uploads and wait for all of them to complete
+    Mono.when(toBeUploaded).block();
   }
 
   @Override

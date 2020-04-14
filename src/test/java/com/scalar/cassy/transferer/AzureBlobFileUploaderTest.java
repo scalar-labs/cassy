@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,13 +22,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import reactor.core.publisher.Mono;
@@ -51,12 +47,6 @@ public class AzureBlobFileUploaderTest {
   @Mock private BlobContainerAsyncClient containerClient;
   @Mock private BlobAsyncClient blobClient;
   @Spy @InjectMocks private AzureBlobFileUploader uploader;
-  @Mock private Mono<Void> voidMono1;
-  @Mock private Mono<Void> voidMono2;
-  @Mock CompletableFuture<Void> future1;
-  @Mock CompletableFuture<Void> future2;
-  @Mock Void mockVoid1;
-  @Mock Void mockVoid2;
 
   private static List<Path> getListOfSnapshotFiles() {
     return Arrays.asList(
@@ -84,18 +74,12 @@ public class AzureBlobFileUploaderTest {
   }
 
   @Test
-  public void upload_LocalPathsAndConfigGiven_ShouldUploadProperly() throws Exception {
+  public void upload_LocalPathsAndConfigGiven_ShouldUploadProperly() {
     // Arrange
     BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, DATA_DIR));
     doReturn(true).when(uploader).requiresUpload(anyString(), any(Path.class));
     when(containerClient.getBlobAsyncClient(anyString())).thenReturn(blobClient);
-    when(blobClient.uploadFromFile(anyString(), anyBoolean()))
-        .thenReturn(voidMono1)
-        .thenReturn(voidMono2);
-    when(voidMono1.toFuture()).thenReturn(future1);
-    when(voidMono2.toFuture()).thenReturn(future2);
-    when(future1.get()).thenReturn(mockVoid1);
-    when(future2.get()).thenReturn(mockVoid2);
+    when(blobClient.uploadFromFile(anyString(), anyBoolean())).thenReturn(Mono.empty());
     List<Path> paths = getListOfSnapshotFiles();
 
     // Act
@@ -109,29 +93,23 @@ public class AzureBlobFileUploaderTest {
         .getBlobAsyncClient(BackupPath.create(config, dataDir.relativize(paths.get(1)).toString()));
     verify(blobClient).uploadFromFile(paths.get(0).toString(), true);
     verify(blobClient).uploadFromFile(paths.get(1).toString(), true);
-    verify(future1).get();
-    verify(future2).get();
   }
 
   @Test
-  public void upload_ExecutionExceptionThrown_ShouldThrowFileTransferException() throws Exception {
+  public void upload_ExecutionExceptionThrown_ShouldThrowFileTransferException() {
     // Arrange
+    List<Path> paths = getListOfSnapshotFiles();
     BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, DATA_DIR));
-    ExecutionException toThrow = Mockito.mock(ExecutionException.class);
+    RuntimeException toThrow = new RuntimeException("foo message");
     doReturn(true).when(uploader).requiresUpload(anyString(), any(Path.class));
     when(containerClient.getBlobAsyncClient(anyString())).thenReturn(blobClient);
-    when(blobClient.uploadFromFile(anyString(), anyBoolean()))
-        .thenReturn(voidMono1)
-        .thenReturn(voidMono2);
-    when(voidMono1.toFuture()).thenReturn(future1);
-    when(voidMono2.toFuture()).thenReturn(future2);
-    when(future1.get()).thenThrow(toThrow);
-    List<Path> paths = getListOfSnapshotFiles();
+    when(blobClient.uploadFromFile(paths.get(0).toString(), true)).thenReturn(Mono.empty());
+    when(blobClient.uploadFromFile(paths.get(1).toString(), true)).thenReturn(Mono.error(toThrow));
 
     // Act
     assertThatThrownBy(() -> uploader.upload(paths, config))
         .isInstanceOf(FileTransferException.class)
-        .hasCause(toThrow);
+        .hasCauseInstanceOf(toThrow.getClass());
 
     // Assert
     Path dataDir = Paths.get(DATA_DIR);
@@ -141,6 +119,5 @@ public class AzureBlobFileUploaderTest {
         .getBlobAsyncClient(BackupPath.create(config, dataDir.relativize(paths.get(1)).toString()));
     verify(blobClient).uploadFromFile(paths.get(0).toString(), true);
     verify(blobClient).uploadFromFile(paths.get(1).toString(), true);
-    verify(future2, never()).get();
   }
 }
