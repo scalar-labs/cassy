@@ -84,34 +84,25 @@ javadoc {
     options.addStringOption("notimestamp", "com.scalar.cassy")
 }
 
-task installCassyServer(type: Exec) {
+if ("$type"=="server") {
+    println 'hello server'
     graal {
         mainClass 'com.scalar.cassy.server.CassyServer'
         outputName 'cassy-server-graal'
     }
-
-    commandLine './gradlew', 'nativeImage'
+} else if ("$type"=="backup") {
+    println 'hello backup'
+    graal {
+        mainClass 'com.scalar.cassy.command.BackupCommand'
+        outputName 'cassy-backup-graal'
+    }
+} else if ("$type"=="restore") {
+    println 'hello restore'
+    graal {
+        mainClass 'com.scalar.cassy.command.RestoreCommand'
+        outputName 'cassy-restore-graal'
+    }
 }
-
-//task installCassyBackup(type: Exec) {
-//    graal {
-//        mainClass 'com.scalar.cassy.command.BackupCommand'
-//        outputName 'cassy-backup-graal'
-//    }
-//
-//    commandLine './gradlew', 'nativeImage'
-//}
-//
-//task installCassyRestore(type: Exec) {
-//    graal {
-//        mainClass 'com.scalar.cassy.command.RestoreCommand'
-//        outputName 'cassy-restore-graal'
-//    }
-//
-//    commandLine './gradlew', 'nativeImage'
-//}
-
-
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
