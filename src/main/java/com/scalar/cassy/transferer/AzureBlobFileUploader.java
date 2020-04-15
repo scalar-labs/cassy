@@ -61,7 +61,7 @@ public class AzureBlobFileUploader implements FileUploader {
                 .doOnSuccess(blobProperties -> logger.info("Upload succeeded : " + filePath))
                 .doOnError(
                     error -> {
-                      throw new FileTransferException("Upload file failed : " + filePath, error);
+                      throw new FileTransferException("Upload failed : " + filePath, error);
                     }));
       } else {
         logger.info(filePath + " has been already uploaded.");
