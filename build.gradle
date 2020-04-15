@@ -84,24 +84,26 @@ javadoc {
     options.addStringOption("notimestamp", "com.scalar.cassy")
 }
 
-if ("$type"=="server") {
-    println 'hello server'
-    graal {
-        mainClass 'com.scalar.cassy.server.CassyServer'
-        outputName 'cassy-server-graal'
-    }
-} else if ("$type"=="backup") {
-    println 'hello backup'
-    graal {
-        mainClass 'com.scalar.cassy.command.BackupCommand'
-        outputName 'cassy-backup-graal'
-    }
-} else if ("$type"=="restore") {
-    println 'hello restore'
-    graal {
-        mainClass 'com.scalar.cassy.command.RestoreCommand'
-        outputName 'cassy-restore-graal'
-    }
+if (project.hasProperty('type')) {
+    if ("$type"=="server") {
+        println 'hello server'
+        graal {
+            mainClass 'com.scalar.cassy.server.CassyServer'
+            outputName 'cassy-server-graal'
+        }
+    } else if ("$type"=="backup") {
+        println 'hello backup'
+        graal {
+            mainClass 'com.scalar.cassy.command.BackupCommand'
+            outputName 'cassy-backup-graal'
+        }
+    } else if ("$type"=="restore") {
+        println 'hello restore'
+        graal {
+            mainClass 'com.scalar.cassy.command.RestoreCommand'
+            outputName 'cassy-restore-graal'
+        }
+}
 }
 
 task sourcesJar(type: Jar) {
