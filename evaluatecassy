@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+localhost=127.0.0.1
+cassyPort=20051
+
+counter=1
+total=20
+while [[ ${counter} -le ${total} ]]
+do
+echo Loop ${counter} of ${total}
+# Register Cluster
+grpcurl -plaintext -d '{"cassandra_host": "127.0.0.1"}' ${localhost}:${cassyPort} rpc.Cassy.RegisterCluster > /dev/null 2>&1
+grpcurl -plaintext ${localhost}:${cassyPort} rpc.Cassy.ListClusters > /dev/null 2>&1
+
+# Backup
+grpcurl -plaintext -d '{"cluster_id": "Test Cluster-08598f37-4220-41a9-9fe5-97b288c62770", "backup_type": 2}' ${localhost}:${cassyPort} rpc.Cassy.TakeBackup > /dev/null 2>&1
+grpcurl -plaintext -d '{"cluster_id": "Test Cluster-08598f37-4220-41a9-9fe5-97b288c62770", "target_ips": ["127.0.0.1"], "backup_type": 2}' ${localhost}:${cassyPort} rpc.Cassy.TakeBackup > /dev/null 2>&1
+grpcurl -plaintext -d '{"cluster_id": "Test Cluster-08598f37-4220-41a9-9fe5-97b288c62770", "snapshot_id": "38a772a2-4fc8-4874-b9d2-c652184c823e", "backup_type": 3}' ${localhost}:${cassyPort} rpc.Cassy.TakeBackup > /dev/null 2>&1
+grpcurl -plaintext -d '{"cluster_id": "Test Cluster-08598f37-4220-41a9-9fe5-97b288c62770", "backup_type": 1}' ${localhost}:${cassyPort} rpc.Cassy.TakeBackup > /dev/null 2>&1
+
+# List Backup
+grpcurl -plaintext -d '{"limit": 3, "cluster_id": "Test Cluster-08598f37-4220-41a9-9fe5-97b288c62770"}' ${localhost}:${cassyPort} rpc.Cassy.ListBackups > /dev/null 2>&1
+grpcurl -plaintext -d '{"snapshot_id": "38a772a2-4fc8-4874-b9d2-c652184c823e", "restore_type": 2, "cluster_id": "Test Cluster-08598f37-4220-41a9-9fe5-97b288c62770"}' ${localhost}:${cassyPort} rpc.Cassy.RestoreBackup > /dev/null 2>&1
+grpcurl -plaintext -d '{"snapshot_id": "38a772a2-4fc8-4874-b9d2-c652184c823e", "restore_type": 2, "cluster_id": "Test Cluster-08598f37-4220-41a9-9fe5-97b288c62770", "target_ips": ["127.0.0.1"]}' ${localhost}:${cassyPort} rpc.Cassy.RestoreBackup > /dev/null 2>&1
+
+# List Statuses
+grpcurl -plaintext -d '{"limit": 3, "cluster_id": "Test Cluster-08598f37-4220-41a9-9fe5-97b288c62770"}' ${localhost}:${cassyPort} rpc.Cassy.ListRestoreStatuses > /dev/null 2>&1
+((counter++))
+done

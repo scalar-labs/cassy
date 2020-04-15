@@ -93,23 +93,25 @@ task installCassyServer(type: Exec) {
     commandLine './gradlew', 'nativeImage'
 }
 
-task installCassyBackup(type: Exec) {
-    graal {
-        mainClass 'com.scalar.cassy.command.BackupCommand'
-        outputName 'cassy-backup-graal'
-    }
+//task installCassyBackup(type: Exec) {
+//    graal {
+//        mainClass 'com.scalar.cassy.command.BackupCommand'
+//        outputName 'cassy-backup-graal'
+//    }
+//
+//    commandLine './gradlew', 'nativeImage'
+//}
+//
+//task installCassyRestore(type: Exec) {
+//    graal {
+//        mainClass 'com.scalar.cassy.command.RestoreCommand'
+//        outputName 'cassy-restore-graal'
+//    }
+//
+//    commandLine './gradlew', 'nativeImage'
+//}
 
-    commandLine './gradlew', 'nativeImage'
-}
 
-task installCassyRestore(type: Exec) {
-    graal {
-        mainClass 'com.scalar.cassy.command.RestoreCommand'
-        outputName 'cassy-restore-graal'
-    }
-
-    commandLine './gradlew', 'nativeImage'
-}
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
