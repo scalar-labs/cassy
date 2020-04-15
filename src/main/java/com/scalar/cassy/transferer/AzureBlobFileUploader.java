@@ -58,7 +58,7 @@ public class AzureBlobFileUploader implements FileUploader {
             blobContainerClient
                 .getBlobAsyncClient(key)
                 .uploadFromFile(filePath.toString(), true)
-                .doOnSuccess(blobProperties -> logger.info("Upload file succeeded : " + filePath))
+                .doOnSuccess(blobProperties -> logger.info("Upload succeeded : " + filePath))
                 .doOnError(
                     error -> {
                       throw new FileTransferException("Upload file failed : " + filePath, error);
