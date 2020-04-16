@@ -18,7 +18,7 @@
                 </div>
             </nav>
         </header>
-        <div class="container p-3 mb-5 pb-5">
+        <div class="container-fluid p-3 mb-5 pb-5">
             <router-view/>
         </div>
         <footer class="">

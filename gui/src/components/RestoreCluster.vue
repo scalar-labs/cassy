@@ -3,7 +3,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Restore Backup</h5>
+                    <h5 class="modal-title">Restore From Backup</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -13,9 +13,8 @@
                         <div class="form-group">
                             <label for="restoreTypeSelect">Select restore type</label>
                             <select class="custom-select" id="restoreTypeSelect" @change="setRestoreType">
-                                <option selected>Restore To</option>
+                                <option selected value="2">Node</option>
                                 <option value="1">Cluster</option>
-                                <option value="2">Node</option>
                             </select>
                         </div>
                         <div class="form-group" v-if="restore_type === '2'">
@@ -23,10 +22,14 @@
                             <textarea class="form-control" id="targetIpsTextArea" rows="3"
                                       placeholder="192.168.0.1, 192.168.0.2, 192.168.0.3">
                             </textarea>
-                            <small class="form-text text-muted">Enter the node IP addresses separated by a comma.</small>
+                            <small class="form-text text-muted">Enter the node IP addresses separated by a
+                                comma.</small>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" data-toggle="modal" data-target="#restoreCluster"
+                            <button class="btn btn-outline-secondary mx-1" data-toggle="modal"
+                                    data-target="#restoreCluster">Cancel
+                            </button>
+                            <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#restoreCluster"
                                     @click="restoreBackup()">Restore Backup
                             </button>
                         </div>
@@ -40,25 +43,34 @@
 <script>
   export default {
     props: {
-      cluster_id: String,
-      snapshot_id: String
+      cluster: {},
+      snapshot_id: String,
     },
     data() {
       return {
-        restore_type: String
-      }
+        restore_type: '2',
+      };
     },
     methods: {
       setRestoreType() {
-        this.restore_type = document.getElementById('restoreTypeSelect').value
+        let el = document.getElementById('restoreTypeSelect');
+        if (el) {
+          this.restore_type = el.value;
+        }
       },
       parseTargetIps() {
-        return document.getElementById('targetIpsTextArea').value.replace(/\s+/g, '').split(",")
+        let el = document.getElementById('targetIpsTextArea');
+        if (el) {
+          let targetIps = el.value;
+          if (targetIps) {
+            return targetIps.replace(/\s+/g, '').split(',');
+          }
+        }
       },
       restoreBackup() {
-        this.$api.put(`clusters/${this.cluster_id}/data/${this.snapshot_id}`, {
+        this.$api.put(`clusters/${this.cluster.cluster_id}/data/${this.snapshot_id}`, {
           restore_type: this.restore_type,
-          target_ips: this.parseTargetIps()
+          target_ips: this.parseTargetIps(),
         });
       },
     },

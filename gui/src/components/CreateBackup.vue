@@ -13,9 +13,8 @@
                         <div class="form-group">
                             <label for="backupTypeSelect">Select a backup type</label>
                             <select class="custom-select" id="backupTypeSelect" @change="setBackupType">
-                                <option selected>Backup Type</option>
+                                <option selected value="2">Snapshot</option>
                                 <option value="1">Cluster-Wide</option>
-                                <option value="2">Snapshot</option>
                                 <option value="3">Incremental</option>
                             </select>
                         </div>
@@ -34,7 +33,12 @@
                             </select>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary"
+                            <button class="btn btn-outline-secondary mx-1"
+                                    data-toggle="modal"
+                                    data-target="#registerBackup"
+                            >Cancel
+                            </button>
+                            <button class="btn btn-primary mx-1"
                                     data-toggle="modal"
                                     data-target="#registerBackup"
                                     @click="createBackup"
@@ -51,41 +55,39 @@
 <script>
   export default {
     props: {
-      cluster_id: String,
+      cluster: {},
       backups: {},
     },
     data() {
       return {
-        backup_type: String,
+        backup_type: "2",
         snapshot_id: String,
         target_ips: Array,
       };
     },
     methods: {
       setBackupType() {
-        let element = document.getElementById('backupTypeSelect');
-        if (!element) {
+        let el = document.getElementById('backupTypeSelect');
+        if (!el) {
           return null;
         }
-        this.backup_type = element.value;
+        this.backup_type = el.value;
       },
       setSnapshotId() {
-        let element = document.getElementById('snapshotIdSelect');
-        if (!element) {
-          return null;
+        let el = document.getElementById('snapshotIdSelect');
+        if (el) {
+          this.snapshot_id = el.value;
         }
-        this.snapshot_id = element.value;
       },
       parseTargetIps() {
-        let element = document.getElementById('targetIpsTextArea');
-        if (!element) {
-          return null;
+        let el = document.getElementById('targetIpsTextArea');
+        if (el) {
+          let targetIps = el.value;
+          if (targetIps) {
+            targetIps = targetIps.replace(/\s+/g, '').split(',');
+          }
+          return targetIps;
         }
-        let targetIps = element.value;
-        if (targetIps) {
-          targetIps = targetIps.replace(/\s+/g, '').split(',');
-        }
-        return targetIps;
       },
       createBackup() {
         let targetIps = this.parseTargetIps();
@@ -99,7 +101,7 @@
           data.snapshot_id = this.snapshot_id
         }
 
-        this.$api.post(`clusters/${this.cluster_id}/backups`, data).then((response) => {
+        this.$api.post(`clusters/${this.cluster.cluster_id}/backups`, data).then((response) => {
           if (response.status === 200) {
             this.$emit('updateBackupList');
           }

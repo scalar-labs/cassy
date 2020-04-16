@@ -19,8 +19,8 @@
             >
                 <td>{{r.snapshot_id}}</td>
                 <td>{{r.target_ip}}</td>
-                <td>{{ parseInt(r.created_at) | moment('YYYY/M/d, h:mm a')}}</td>
-                <td>{{ parseInt(r.updated_at) | moment('YYYY/M/d h:mm a')}}</td>
+                <td>{{ parseInt(r.created_at) | moment('YYYY/M/D, h:mm a')}}</td>
+                <td>{{ parseInt(r.updated_at) | moment('YYYY/M/D, h:mm a')}}</td>
                 <td>{{r.restore_type}}</td>
                 <td>{{r.status}}</td>
             </tr>
