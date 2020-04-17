@@ -10,22 +10,24 @@ jsonTakeBackupSnapshot="{\"cluster_id\": \"$clusterID\", \"snapshot_id\": \"${sn
 counter=1
 total=20
 echo "sad: ${jsonTakeBackup}"
+grpcurl -plaintext -d '{"cassandra_host": "192.168.65.2"}' 127.0.0.1:20051 rpc.Cassy.RegisterCluster
+grpcurl -plaintext 127.0.0.1:20051 rpc.Cassy.ListClusters
 while [[ ${counter} -le ${total} ]]
 do
 echo Loop ${counter} of ${total}
 # Register Cluster
-grpcurl -plaintext -d '{"cassandra_host": "127.0.0.1"}' ${localhost}:${cassyPort} rpc.Cassy.RegisterCluster > /dev/null 2>&1
-grpcurl -plaintext ${localhost}:${cassyPort} rpc.Cassy.ListClusters > /dev/null 2>&1
+grpcurl -plaintext -d '{"cassandra_host": "127.0.0.1"}' ${localhost}:${cassyPort} rpc.Cassy.RegisterCluster
+grpcurl -plaintext ${localhost}:${cassyPort} rpc.Cassy.ListClusters
 
-# Backup
-grpcurl -plaintext -d "${jsonTakeBackup}" ${localhost}:${cassyPort} rpc.Cassy.TakeBackup
-grpcurl -plaintext -d "${jsonTakeBackupIP}" ${localhost}:${cassyPort} rpc.Cassy.TakeBackup
-grpcurl -plaintext -d "${jsonTakeBackupSnapshot}" ${localhost}:${cassyPort} rpc.Cassy.TakeBackup > /dev/null 2>&1
-#
-## List Backup
-grpcurl -plaintext -d "{\"limit\": 3, \"cluster_id\": \"${clusterID}\"}" ${localhost}:${cassyPort} rpc.Cassy.ListBackups > /dev/null 2>&1
-grpcurl -plaintext -d "{\"snapshot_id\": \"${snapShotID}\", \"restore_type\": 2, \"cluster_id\": \"${clusterID}\"}" ${localhost}:${cassyPort} rpc.Cassy.RestoreBackup > /dev/null 2>&1
-grpcurl -plaintext -d "{\"snapshot_id\": \"${snapShotID}\", \"restore_type\": 2, \"cluster_id\": \"${clusterID}\", \"target_ips\": [\"${localhost}\"]}" ${localhost}:${cassyPort} rpc.Cassy.RestoreBackup > /dev/null 2>&1
+## Backup
+#grpcurl -plaintext -d "${jsonTakeBackup}" ${localhost}:${cassyPort} rpc.Cassy.TakeBackup
+#grpcurl -plaintext -d "${jsonTakeBackupIP}" ${localhost}:${cassyPort} rpc.Cassy.TakeBackup
+#grpcurl -plaintext -d "${jsonTakeBackupSnapshot}" ${localhost}:${cassyPort} rpc.Cassy.TakeBackup > /dev/null 2>&1
+##
+### List Backup
+#grpcurl -plaintext -d "{\"limit\": 3, \"cluster_id\": \"${clusterID}\"}" ${localhost}:${cassyPort} rpc.Cassy.ListBackups > /dev/null 2>&1
+#grpcurl -plaintext -d "{\"snapshot_id\": \"${snapShotID}\", \"restore_type\": 2, \"cluster_id\": \"${clusterID}\"}" ${localhost}:${cassyPort} rpc.Cassy.RestoreBackup > /dev/null 2>&1
+#grpcurl -plaintext -d "{\"snapshot_id\": \"${snapShotID}\", \"restore_type\": 2, \"cluster_id\": \"${clusterID}\", \"target_ips\": [\"${localhost}\"]}" ${localhost}:${cassyPort} rpc.Cassy.RestoreBackup > /dev/null 2>&1
 #
 ## List Statuses
 #grpcurl -plaintext -d '{"limit": 3, "cluster_id": "Test Cluster-08598f37-4220-41a9-9fe5-97b288c62770"}' ${localhost}:${cassyPort} rpc.Cassy.ListRestoreStatuses > /dev/null 2>&1
