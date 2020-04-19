@@ -88,16 +88,19 @@ if (project.hasProperty('type')) {
         graal {
             mainClass 'com.scalar.cassy.server.CassyServer'
             outputName 'cassy-server-graal'
+            option '--no-server'
         }
     } else if ("$type"=="backup") {
         graal {
             mainClass 'com.scalar.cassy.command.BackupCommand'
             outputName 'cassy-backup-graal'
+            option '--no-server'
         }
     } else if ("$type"=="restore") {
         graal {
             mainClass 'com.scalar.cassy.command.RestoreCommand'
             outputName 'cassy-restore-graal'
+            option '--no-server'
         }
 }
 }
