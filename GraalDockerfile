@@ -1,12 +1,8 @@
-#FROM openjdk:8u212-jdk-stretch AS builder
 FROM oracle/graalvm-ce:19.2.0
 WORKDIR /opt/graalvm
 RUN gu install native-image
 
 RUN mkdir -p /opt/cassy
-#RUN apt-get update && apt-get install build-essential -y
-#RUN apt-get install manpages-dev
-#RUN apt-get install libz-dev
 WORKDIR /opt/cassy
 
 COPY gradle ./gradle
