@@ -1,4 +1,4 @@
-FROM oracle/graalvm-ce:19.2.0
+FROM oracle/graalvm-ce:19.2.0 AS builder
 WORKDIR /opt/graalvm
 RUN gu install native-image
 
@@ -10,21 +10,28 @@ COPY build.gradle ./
 COPY gradlew ./gradlew
 COPY src ./src
 
-RUN ./gradlew nativeImage -Ptype=server
+RUN ./gradlew installDist
+#RUN ./gradlew nativeImage -Ptype=server
+RUN cd build/install/cassy/ && native-image --no-server -cp ".:lib/*" -H:Name=cassy_natimg -H:Path=bin/ com.scalar.cassy.server.CassyServer
 
-RUN yum install sqlite -y
+FROM oracle/openjdk:8
+
+RUN yum install sqlite
+
+WORKDIR /opt/cassy
+
+RUN mkdir -p /cassy/data && mkdir -p /cassy/conf
+
+COPY --from=builder /opt/cassy/build ./build
 COPY scripts ./scripts
 COPY conf ./conf
-COPY .ssh ./.ssh
-COPY cassy.db ./cassy.db
+COPY .aws ./.aws
 
 ENV AWS_CONFIG_FILE=./.aws/config
-RUN wget https://archive.apache.org/dist/cassandra/3.11.3/apache-cassandra-3.11.3-bin.tar.gz \
-    && tar -xzvf apache-cassandra-3.11.3-bin.tar.gz \
-    && rm -rf apache-cassandra-3.11.3-bin.tar.gz
+RUN sqlite3 ./cassy.db < ./scripts/db.schema
 
-EXPOSE 7000 7001 7199 9042 9160
-CMD ["./apache-cassandra-3.11.3/bin/cassandra", "-R"]
+VOLUME /cassy
+
 ENTRYPOINT ["/bin/sh", "scripts/entrypoint-graal.sh"]
 CMD ["--config", "/cassy/conf/cassy.properties"]
 

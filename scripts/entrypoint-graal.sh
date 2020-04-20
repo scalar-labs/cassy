@@ -8,4 +8,4 @@ if [ ! -f /cassy/conf/cassy.properties ]; then
    cp conf/cassy.properties /cassy/conf/;
 fi;
 
-build/graal/cassy-server-graal $@
+build/install/cassy/bin/cassy_natimg $@
