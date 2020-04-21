@@ -1,6 +1,7 @@
 package com.scalar.cassy.server;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.inject.Inject;
 import com.scalar.cassy.db.DatabaseAccessor;
 import com.scalar.cassy.exception.RemoteExecutionException;
 import com.scalar.cassy.remotecommand.RemoteCommandContext;
@@ -9,6 +10,7 @@ import com.scalar.cassy.rpc.OperationStatus;
 import com.scalar.cassy.service.BackupServiceMaster;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ public class RemoteCommandHandler implements Runnable {
   private final BlockingQueue<RemoteCommandContext> futures;
   private final DatabaseAccessor database;
 
+  @Inject
   public RemoteCommandHandler(
       BlockingQueue<RemoteCommandContext> futures, DatabaseAccessor database) {
     this.futures = futures;
@@ -28,7 +31,11 @@ public class RemoteCommandHandler implements Runnable {
     while (true) {
       RemoteCommandContext future = null;
       try {
-        future = futures.take();
+        future = futures.peek();
+        if (future == null) {
+          Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+          continue;
+        }
         RemoteCommandResult result = Uninterruptibles.getUninterruptibly(future.getFuture());
         if (result.getExitStatus() != 0) {
           throw new RemoteExecutionException(
@@ -47,6 +54,7 @@ public class RemoteCommandHandler implements Runnable {
           } catch (IOException e) {
             // ignore
           }
+          futures.remove();
         }
       }
     }
