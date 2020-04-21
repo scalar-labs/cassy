@@ -9,13 +9,18 @@ import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.palantir.giraffe.host.HostControlSystem;
 import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.StorageType;
 import com.scalar.cassy.remotecommand.RemoteCommandContext;
 import com.scalar.cassy.transferer.AwsS3FileUploader;
 import com.scalar.cassy.transferer.AzureBlobFileUploader;
+import com.scalar.cassy.transferer.FileSystemFileUploader;
 import com.scalar.cassy.transferer.FileUploader;
 import com.scalar.cassy.util.AzureUtil;
+import com.scalar.cassy.util.GiraffeUtil;
+import java.io.IOException;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -35,6 +40,8 @@ public class CassyServerModule extends AbstractModule {
       bind(FileUploader.class).to(AwsS3FileUploader.class).in(Singleton.class);
     } else if (config.getStorageType().equals(StorageType.AZURE_BLOB)) {
       bind(FileUploader.class).to(AzureBlobFileUploader.class).in(Singleton.class);
+    } else if (config.getStorageType().equals(StorageType.FILE_SYSTEM)) {
+      bind(FileUploader.class).to(FileSystemFileUploader.class).in(Singleton.class);
     } else {
       throw new UnsupportedOperationException(
           "The storage type " + config.getStorageType() + " is not implemented");
@@ -83,5 +90,11 @@ public class CassyServerModule extends AbstractModule {
   @Singleton
   public BlobContainerAsyncClient provideBlobContainerAsyncClient() {
     return AzureUtil.getBlobContainerAsyncClient(config.getStorageBaseUri());
+  }
+
+  @Provides
+  @Singleton
+  public HostControlSystem provideHostControlSystem() throws IOException {
+    return GiraffeUtil.openSshConnection(URI.create(config.getStorageBaseUri()));
   }
 }

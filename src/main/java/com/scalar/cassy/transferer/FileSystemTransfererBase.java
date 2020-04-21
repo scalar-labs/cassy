@@ -1,30 +1,32 @@
 package com.scalar.cassy.transferer;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.palantir.giraffe.command.Command;
-import com.palantir.giraffe.command.Commands;
-import com.scalar.cassy.config.BaseConfig;
+import com.palantir.giraffe.file.MoreFiles;
 import java.io.IOException;
-import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public abstract class FileSystemTransfererBase {
   /**
-   * Wrapper used to execute a command. It was created to facilitate testing.
+   * Wrapper used to copy a folder
    *
-   * @param command a command
+   * @param sourceDir
+   * @param destDir
    * @throws IOException
    */
   @VisibleForTesting
-  void executeCommand(Command command) throws IOException {
-    Commands.execute(command);
+  void copyFolder(Path sourceDir, Path destDir) throws IOException {
+    MoreFiles.copyRecursive(sourceDir, destDir);
   }
 
-  String getHost(BaseConfig config) {
-    URI remoteStorageURI = URI.create(config.getStoreBaseUri());
-    String userName =
-        remoteStorageURI.getUserInfo() != null
-            ? remoteStorageURI.getUserInfo()
-            : System.getProperty("user.name");
-    return String.format("%s@%s", userName, remoteStorageURI.getHost());
+  /**
+   * Wrapper used to create directories. It was created to facilitate testing.
+   *
+   * @param dir
+   * @throws IOException
+   */
+  @VisibleForTesting
+  void createDirectories(Path dir) throws IOException {
+    Files.createDirectories(dir);
   }
 }

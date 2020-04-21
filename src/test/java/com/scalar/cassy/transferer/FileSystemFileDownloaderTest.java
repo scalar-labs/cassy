@@ -1,8 +1,11 @@
 package com.scalar.cassy.transferer;
 
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
-import com.palantir.giraffe.command.Commands;
+import com.palantir.giraffe.host.HostControlSystem;
 import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.config.RestoreType;
 import java.io.IOException;
@@ -12,7 +15,6 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.UUID;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class FileSystemFileDownloaderTest {
   private static final String KEYSPACE = "keyspace1";
@@ -37,18 +39,14 @@ public class FileSystemFileDownloaderTest {
     RestoreConfig config = new RestoreConfig(getProperties());
     Path backupKeyspacePath =
         Paths.get(remoteFileSystemURI.getPath(), BackupPath.create(config, config.getKeyspace()));
-    FileSystemFileDownloader downloader = spy(new FileSystemFileDownloader());
-    String host =
-        String.format("%s@%s", remoteFileSystemURI.getUserInfo(), remoteFileSystemURI.getHost());
-    Mockito.doNothing()
-        .when(downloader)
-        .executeCommand(
-            Commands.get(
-                "rsync",
-                "-rzPe",
-                "ssh",
-                String.format("%s:%s", host, backupKeyspacePath.toAbsolutePath()),
-                config.getDataDir()));
+    HostControlSystem hcs = mock(HostControlSystem.class);
+    when(hcs.getPath(
+            remoteFileSystemURI.getPath(), BackupPath.create(config, config.getKeyspace())))
+        .thenReturn(backupKeyspacePath);
+    FileSystemFileDownloader downloader = spy(new FileSystemFileDownloader(hcs));
+    Path destDir = Paths.get(config.getDataDir(), BackupPath.create(config, config.getKeyspace()));
+    doNothing().when(downloader).createDirectories(destDir.getParent());
+    doNothing().when(downloader).copyFolder(backupKeyspacePath, destDir);
 
     // act
     downloader.download(config);

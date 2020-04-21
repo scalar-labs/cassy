@@ -1,6 +1,7 @@
 package com.scalar.cassy.transferer;
 
-import com.palantir.giraffe.command.Commands;
+import com.google.inject.Inject;
+import com.palantir.giraffe.host.HostControlSystem;
 import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.exception.FileTransferException;
 import java.io.IOException;
@@ -13,23 +14,27 @@ import org.slf4j.LoggerFactory;
 
 public class FileSystemFileDownloader extends FileSystemTransfererBase implements FileDownloader {
   private static final Logger logger = LoggerFactory.getLogger(FileSystemFileUploader.class);
+  private final HostControlSystem hostConnection;
+
+  @Inject
+  public FileSystemFileDownloader(HostControlSystem hostConnection) {
+    this.hostConnection = hostConnection;
+  }
 
   @Override
   public void download(RestoreConfig config) {
     try {
       String remoteFileSystemStoragePath = URI.create(config.getStoreBaseUri()).getPath();
       Path backupKeyspacePath =
-          Paths.get(remoteFileSystemStoragePath, BackupPath.create(config, config.getKeyspace()));
+          hostConnection.getPath(
+              remoteFileSystemStoragePath, BackupPath.create(config, config.getKeyspace()));
+      Path destDir =
+          Paths.get(config.getDataDir(), BackupPath.create(config, config.getKeyspace()));
       logger.info(String.format("Downloading keyspace \"%s\"", config.getKeyspace()));
       long start = System.currentTimeMillis();
+      createDirectories(destDir.getParent());
       // Copy keyspace files
-      executeCommand(
-          Commands.get(
-              "rsync",
-              "-rzPe",
-              "ssh",
-              String.format("%s:%s", getHost(config), backupKeyspacePath.toAbsolutePath()),
-              config.getDataDir()));
+      copyFolder(backupKeyspacePath, destDir);
       long end = System.currentTimeMillis();
       logger.info(
           "Download completed in "
@@ -40,5 +45,7 @@ public class FileSystemFileDownloader extends FileSystemTransfererBase implement
   }
 
   @Override
-  public void close() {}
+  public void close() throws IOException {
+    this.hostConnection.close();
+  }
 }

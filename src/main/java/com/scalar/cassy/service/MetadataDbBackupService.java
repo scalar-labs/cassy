@@ -40,7 +40,7 @@ public class MetadataDbBackupService {
     List<String> urls = Splitter.on(':').splitToList(config.getMetadataDbUrl());
     if (urls.get(1).equalsIgnoreCase("sqlite")) {
       Path dumpFile = sqliteBackup(Paths.get(urls.get(2)));
-      return uploader.upload(dumpFile, getKey(dumpFile).toString());
+      return uploader.upload(dumpFile, getKey(dumpFile).toString(), config.getStorageBaseUri());
     } else {
       throw new IllegalArgumentException(
           "metadata backup for " + urls.get(1) + " is not supported.");
@@ -63,7 +63,7 @@ public class MetadataDbBackupService {
   }
 
   private Path getKey(Path file) {
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
     String datetime = simpleDateFormat.format(new Date());
     return Paths.get(METADATA_BACKUP_KEY, datetime, file.getFileName().toString());
   }

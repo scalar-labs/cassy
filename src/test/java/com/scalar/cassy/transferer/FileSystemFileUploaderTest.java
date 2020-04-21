@@ -1,15 +1,20 @@
 package com.scalar.cassy.transferer;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.palantir.giraffe.command.Commands;
 import com.palantir.giraffe.host.HostControlSystem;
 import com.scalar.cassy.config.BackupConfig;
 import com.scalar.cassy.config.BackupType;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -36,7 +41,46 @@ public class FileSystemFileUploaderTest {
   }
 
   @Test
-  public void upload_CorrectParameters_ShouldBeSuccessful() throws IOException {
+  public void uploadSingleFile_WhichAlreadyExist_ShouldNotUploadFile() throws IOException {
+    // arrange
+    Path toBackup = Files.createTempFile(null, null);
+    new File(toBackup.toString()).deleteOnExit();
+
+    String key = toBackup.getFileName().toString();
+    String storeBaseConfig = "ssh://bar@127.0.0.1" + toBackup.getParent().toString();
+    HostControlSystem hostConnection = mock(HostControlSystem.class);
+    FileSystemFileUploader uploader = spy(new FileSystemFileUploader(hostConnection));
+    when(hostConnection.getPath(URI.create(storeBaseConfig).getPath(), key)).thenReturn(toBackup);
+
+    // act
+    uploader.upload(toBackup, key, storeBaseConfig);
+
+    // assert
+    verify(uploader, never()).createDirectories(any());
+    verify(uploader, never()).copyFile(any(), any());
+  }
+
+  @Test
+  public void uploadSingleFile_WhichDoesNotExist_ShouldUploadFile() throws IOException {
+    // arrange
+    Path toBackup = Files.createTempFile(null, null);
+    new File(toBackup.toString()).deleteOnExit();
+    String key = "copy_" + toBackup.getFileName().toString();
+    String storeBaseConfig = "ssh://bar@127.0.0.1" + toBackup.getParent().toString();
+    HostControlSystem hostConnection = mock(HostControlSystem.class);
+    FileSystemFileUploader uploader = spy(new FileSystemFileUploader(hostConnection));
+    when(hostConnection.getPath(URI.create(storeBaseConfig).getPath(), key)).thenReturn(toBackup);
+    Path destFile = Paths.get(toBackup.getParent().toString(), key);
+    new File(destFile.toString()).deleteOnExit();
+    doNothing().when(uploader).createDirectories(destFile);
+    doNothing().when(uploader).copyFile(toBackup, destFile);
+
+    // act
+    uploader.upload(toBackup, key, storeBaseConfig);
+  }
+
+  @Test
+  public void uploadListOfFiles_CorrectParameters_ShouldBeSuccessful() throws IOException {
     // arrange
     BackupConfig config = new BackupConfig(getProperties());
     HostControlSystem hostConnection = mock(HostControlSystem.class);
@@ -49,15 +93,7 @@ public class FileSystemFileUploaderTest {
     Path sourceDir = Paths.get(config.getDataDir(), config.getKeyspace());
     String host =
         String.format("%s@%s", remoteFileSystemURI.getUserInfo(), remoteFileSystemURI.getHost());
-    Mockito.doNothing()
-        .when(uploader)
-        .executeCommand(
-            Commands.get(
-                "rsync",
-                "-rzPe",
-                "ssh",
-                sourceDir.toAbsolutePath(),
-                String.format("%s:%s", host, remoteStoragePath.getParent().toAbsolutePath())));
+    doNothing().when(uploader).copyFolder(sourceDir, remoteStoragePath);
 
     // act
     uploader.upload(new ArrayList<>(), config);

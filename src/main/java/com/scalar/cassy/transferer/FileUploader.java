@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 
 public interface FileUploader extends AutoCloseable {
 
-  Future<Void> upload(Path file, String key);
+  Future<Void> upload(Path file, String key, String storageBaseUri);
 
   void upload(List<Path> files, BackupConfig config);
 }
