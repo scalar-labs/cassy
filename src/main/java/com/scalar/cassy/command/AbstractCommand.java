@@ -33,11 +33,12 @@ public abstract class AbstractCommand implements Callable<Void> {
       paramLabel = "DATA_DIR",
       description = "A data directory to take backups from or restore backup to")
   protected String dataDir;
+
   @CommandLine.Option(
       names = {"--store-type"},
       required = true,
       paramLabel = "STORE_TYPE",
-      description = "The store type [AWS_S3, FILE_SYSTEM, AZURE_STORAGE_BLOB]")
+      description = "The store type [AWS_S3, REMOTE_FILE_SYSTEM, AZURE_STORAGE_BLOB]")
   protected StorageType storeType;
 
   @CommandLine.Option(
