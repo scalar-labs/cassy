@@ -50,7 +50,7 @@ public class RestoreCommand extends AbstractCommand {
       case AZURE_BLOB:
         injector = Guice.createInjector(new AzureBlobRestoreModule(storeBaseUri));
         break;
-      case FILE_SYSTEM:
+      case REMOTE_FILE_SYSTEM:
         injector = Guice.createInjector(new FileSystemRestoreModule(URI.create(storeBaseUri)));
         break;
       default:

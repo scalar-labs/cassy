@@ -40,7 +40,7 @@ public class CassyServerModule extends AbstractModule {
       bind(FileUploader.class).to(AwsS3FileUploader.class).in(Singleton.class);
     } else if (config.getStorageType().equals(StorageType.AZURE_BLOB)) {
       bind(FileUploader.class).to(AzureBlobFileUploader.class).in(Singleton.class);
-    } else if (config.getStorageType().equals(StorageType.FILE_SYSTEM)) {
+    } else if (config.getStorageType().equals(StorageType.REMOTE_FILE_SYSTEM)) {
       bind(FileUploader.class).to(FileSystemFileUploader.class).in(Singleton.class);
     } else {
       throw new UnsupportedOperationException(

@@ -58,7 +58,7 @@ scalar.cassy.server.slave_command_path=/path/to/cassy/build/install/cassy/bin
 
 # URI of a blob store to manage backup files.
 scalar.cassy.server.storage_base_uri=s3://your-bucket
-# If instead you want to use a regular file system as a storage
+# If instead you want to use a remote file system as a storage
 # scalar.cassy.server.storage_base_uri=ssh://user@host/path/to/folder
 
 # Type of storage that Cassy uses to store backup files (aws_s3, azure_blob, file_storage)
@@ -85,9 +85,9 @@ export AZURE_STORAGE_CONNECTION_STRING=[your-connection-string]
 
 Cassy will use this environment variable as a credential to access your storage blob.
 
-#### File system storage specific requirements
-The storage machine need to be accessible via ssh from the slave node performing the backup. Place a SSH private key 
-without passphrase in the slave ssh folder. It is necessary to follow the following naming and location :`~/.ssh/id_rsa`. Then add the corresponding public key in the storage machine ssh folder. 
+#### Remote file system specific requirements
+The remote file system machine need to be accessible via ssh from the slave node performing the backup as well as the master node. Place a SSH private key 
+without passphrase in the ssh folder. It is necessary to follow the following naming and location :`~/.ssh/id_rsa`. Then add the corresponding public key in the storage machine ssh folder. 
 
 
 ## Use

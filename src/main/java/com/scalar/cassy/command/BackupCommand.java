@@ -50,7 +50,7 @@ public class BackupCommand extends AbstractCommand {
             Guice.createInjector(
                 new AzureBlobBackupModule(type, dataDir, snapshotId, storeBaseUri));
         break;
-      case FILE_SYSTEM:
+      case REMOTE_FILE_SYSTEM:
         injector =
             Guice.createInjector(
                 new FileSystemBackupModule(type, dataDir, snapshotId, URI.create(storeBaseUri)));
