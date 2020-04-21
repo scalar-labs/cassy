@@ -61,7 +61,7 @@ scalar.cassy.server.storage_base_uri=s3://your-bucket
 # If instead you want to use a remote file system as a storage
 # scalar.cassy.server.storage_base_uri=ssh://user@host/path/to/folder
 
-# Type of storage that Cassy uses to store backup files (aws_s3, azure_blob, file_storage)
+# Type of storage that Cassy uses to store backup files (aws_s3, azure_blob, remote_file_system)
 scalar.cassy.server.storage_type=aws_s3
 
 # URL of JDBC for managing some metadata such as backup and restore histories
