@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.placer.Placer;
 import com.scalar.cassy.transferer.FileDownloader;
-import com.scalar.cassy.transferer.FileSystemFileDownloader;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
