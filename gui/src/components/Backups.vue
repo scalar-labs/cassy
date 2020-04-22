@@ -19,7 +19,7 @@
             </tr>
             </thead>
             <tbody v-for="(b, i) in backups_by_snapshot" :key="i" class="">
-            <tr data-toggle="collapse" data-target="#accordion" class="clickable" v-for="(e, j) in b" :key="j">
+            <tr v-for="(e, j) in b" :key="j">
                 <td>{{e.snapshot_id}}</td>
                 <td>{{backupType(e.backup_type)}}</td>
                 <td>{{e.target_ip}}</td>
@@ -36,11 +36,6 @@
                             @click="$emit('emitSnapshotId', e.snapshot_id)"
                     >Restore
                     </button>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="6">
-                    <div id="accordion" class="collapse">Test Test Test</div>
                 </td>
             </tr>
             </tbody>
