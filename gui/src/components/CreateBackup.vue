@@ -19,11 +19,11 @@
                             </select>
                         </div>
                         <div class="form-group" v-if="backup_type === '2'">
-                            <label for="targetIpsTextArea">Specify nodes (Optional)</label>
-                            <textarea class="form-control" id="targetIpsTextArea" rows="3"
-                                      placeholder="192.168.0.1, 192.168.0.2, 192.168.0.3"></textarea>
-                            <small class="form-text text-muted">Enter the node IP addresses separated by a
-                                comma.</small>
+                            <label for="targetIpSelect">Specify Target IP (Optional)</label>
+                            <select class="custom-select" id="targetIpSelect">
+                                <option selected>Choose a node ...</option>
+                                <option v-for="(ip, index) in cluster.target_ips" :key="index" @change="setTargetIp">{{ip}}</option>
+                            </select>
                         </div>
                         <div class="form-group" v-if="backup_type === '3'">
                             <label for="snapshotIdSelect">Choose a Snapshot ID</label>
@@ -60,9 +60,9 @@
     },
     data() {
       return {
-        backup_type: "2",
+        backup_type: '2',
         snapshot_id: String,
-        target_ips: Array,
+        target_ip: String,
       };
     },
     methods: {
@@ -79,18 +79,14 @@
           this.snapshot_id = el.value;
         }
       },
-      parseTargetIps() {
-        let el = document.getElementById('targetIpsTextArea');
+      setTargetIp() {
+        let el = document.getElementById('targetIpSelect');
         if (el) {
-          let targetIps = el.value;
-          if (targetIps) {
-            targetIps = targetIps.replace(/\s+/g, '').split(',');
-          }
-          return targetIps;
+          this.target_ip = el.value;
         }
       },
       createBackup() {
-        let targetIps = this.parseTargetIps();
+        let targetIps = this.target_ip;
         let data = {
           backup_type: this.backup_type,
         };

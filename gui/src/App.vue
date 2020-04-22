@@ -28,3 +28,13 @@
         </footer>
     </div>
 </template>
+
+<script>
+    export default {
+      mounted: function () {
+        this.$nextTick(function () {
+          document.title = "Cassy"
+        })
+      }
+    }
+</script>

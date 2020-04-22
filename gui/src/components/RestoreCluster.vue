@@ -18,12 +18,11 @@
                             </select>
                         </div>
                         <div class="form-group" v-if="restore_type === '2'">
-                            <label for="targetIpsTextArea">Specify nodes (Optional)</label>
-                            <textarea class="form-control" id="targetIpsTextArea" rows="3"
-                                      placeholder="192.168.0.1, 192.168.0.2, 192.168.0.3">
-                            </textarea>
-                            <small class="form-text text-muted">Enter the node IP addresses separated by a
-                                comma.</small>
+                            <label for="targetIpSelect">Specify Target IP (Optional)</label>
+                            <select class="custom-select" id="targetIpSelect">
+                                <option selected>Choose a node ...</option>
+                                <option v-for="(ip, index) in cluster.target_ips" :key="index" @change="setTargetIp">{{ip}}</option>
+                            </select>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-outline-secondary mx-1" data-toggle="modal"
@@ -44,6 +43,7 @@
   export default {
     props: {
       cluster: {},
+      target_ip: String,
       snapshot_id: String,
     },
     data() {
@@ -58,20 +58,21 @@
           this.restore_type = el.value;
         }
       },
-      parseTargetIps() {
-        let el = document.getElementById('targetIpsTextArea');
+      setTargetIp() {
+        let el = document.getElementById('targetIpSelect');
         if (el) {
-          let targetIps = el.value;
-          if (targetIps) {
-            return targetIps.replace(/\s+/g, '').split(',');
-          }
+          this.target_ip = el.value;
         }
       },
       restoreBackup() {
-        this.$api.put(`clusters/${this.cluster.cluster_id}/data/${this.snapshot_id}`, {
-          restore_type: this.restore_type,
-          target_ips: this.parseTargetIps(),
-        });
+        let targetIps = this.target_ip;
+        let data = {
+          backup_type: this.backup_type,
+        };
+        if (this.backup_type === '2' && targetIps) {
+          data.target_ips = targetIps;
+        }
+        this.$api.put(`clusters/${this.cluster.cluster_id}/data/${this.snapshot_id}`, data);
       },
     },
   };

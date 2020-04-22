@@ -12,23 +12,21 @@
                 <th scope="col">Snapshot ID</th>
                 <th scope="col">Backup Type</th>
                 <th scope="col">Target IP</th>
+                <th scope="col">Created At</th>
+                <th scope="col">Updated At</th>
                 <th scope="col">Status</th>
                 <th scope="col"></th>
             </tr>
             </thead>
             <tbody v-for="(b, i) in backups_by_snapshot" :key="i" class="">
-            <tr v-for="(e, j) in b" :key="j">
+            <tr data-toggle="collapse" data-target="#accordion" class="clickable" v-for="(e, j) in b" :key="j">
                 <td>{{e.snapshot_id}}</td>
                 <td>{{backupType(e.backup_type)}}</td>
                 <td>{{e.target_ip}}</td>
+                <th class="font-weight-normal">{{ parseInt(e.created_at) | moment('YYYY/M/D, h:mm a') }}</th>
+                <th class="font-weight-normal">{{ parseInt(e.updated_at) | moment('YYYY/M/D, h:mm a') }}</th>
                 <td>{{e.status}}</td>
                 <td>
-                    <button
-                            type="button"
-                            class="btn btn-secondary mx-1"
-                            @click="viewRestoreInfo(e.snapshot_id)"
-                    >View
-                    </button>
                     <button
                             :disabled="isFailed(e.status)"
                             type="button"
@@ -38,6 +36,11 @@
                             @click="$emit('emitSnapshotId', e.snapshot_id)"
                     >Restore
                     </button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <div id="accordion" class="collapse">Test Test Test</div>
                 </td>
             </tr>
             </tbody>
@@ -62,9 +65,6 @@
       backups_by_snapshot: Array,
     },
     methods: {
-      viewRestoreInfo(snapshot_id) {
-        this.$router.push(`/clusters/${this.cluster.cluster_id}/data/${snapshot_id}`);
-      },
       goBack() {
         this.$router.back();
       },
