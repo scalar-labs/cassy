@@ -49,7 +49,7 @@ public class BackupService implements AutoCloseable {
         .forEach(
             p -> {
               try {
-                Files.delete(Paths.get(config.getDataDir(), p.toString()));
+                Files.delete(p);
               } catch (IOException e) {
                 logger.warn("removing incremental backup file " + p + " failed.", e);
               }
