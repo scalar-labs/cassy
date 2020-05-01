@@ -1,22 +1,16 @@
 package com.scalar.cassy.transferer;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.palantir.giraffe.file.MoreFiles;
+import com.scalar.cassy.util.RemoteFileSystemConnection;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public abstract class FileSystemTransfererBase {
-  /**
-   * Wrapper used to copy a folder
-   *
-   * @param sourceDir
-   * @param destDir
-   * @throws IOException
-   */
-  @VisibleForTesting
-  void copyFolder(Path sourceDir, Path destDir) throws IOException {
-    MoreFiles.copyRecursive(sourceDir, destDir);
+public abstract class RemoteFileSystemTransfererBase {
+  final RemoteFileSystemConnection hostConnection;
+
+  RemoteFileSystemTransfererBase(RemoteFileSystemConnection hostConnection) {
+    this.hostConnection = hostConnection;
   }
 
   /**

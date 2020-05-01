@@ -3,14 +3,13 @@ package com.scalar.cassy.service;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.palantir.giraffe.host.HostControlSystem;
 import com.scalar.cassy.config.BackupType;
-import com.scalar.cassy.transferer.FileSystemFileUploader;
 import com.scalar.cassy.transferer.FileUploader;
+import com.scalar.cassy.transferer.RemoteFileSystemFileUploader;
 import com.scalar.cassy.traverser.FileTraverser;
 import com.scalar.cassy.traverser.IncrementalBackupTraverser;
 import com.scalar.cassy.traverser.SnapshotTraverser;
-import com.scalar.cassy.util.GiraffeUtil;
+import com.scalar.cassy.util.RemoteFileSystemConnection;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
@@ -31,7 +30,7 @@ public class FileSystemBackupModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    bind(FileUploader.class).to(FileSystemFileUploader.class).in(Singleton.class);
+    bind(FileUploader.class).to(RemoteFileSystemFileUploader.class).in(Singleton.class);
   }
 
   @Provides
@@ -44,7 +43,7 @@ public class FileSystemBackupModule extends AbstractModule {
   }
 
   @Provides
-  HostControlSystem provideHostControlSystem() throws IOException {
-    return GiraffeUtil.openSshConnection(storageURI);
+  RemoteFileSystemConnection provideHostControlSystem() throws IOException {
+    return new RemoteFileSystemConnection(storageURI);
   }
 }
