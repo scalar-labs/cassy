@@ -32,8 +32,8 @@ public class RemoteFileSystemFileUploader extends RemoteFileSystemTransfererBase
   }
 
   @Override
-  public Future<Void> upload(Path file, String key, String storageBaseUri) {
-    String remoteFileSystemStoragePath = URI.create(storageBaseUri).getPath();
+  public Future<Void> upload(Path file, String key) {
+    String remoteFileSystemStoragePath = URI.create(hostConnection.getStoragePath()).getPath();
     Path targetFilePath =
         hostConnection.getHostControlSystem().getPath(remoteFileSystemStoragePath, key);
     File targetFile = new File(targetFilePath.toString());

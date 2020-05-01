@@ -23,7 +23,7 @@ public class RemoteFileSystemFileDownloaderTest {
   private static final String KEYSPACE = "keyspace1";
   private static final URI remoteFileSystemURI =
       URI.create("ssh://bar@192.168.2.106/home/bar/file_sys");
-  private RemoteFileSystemConnection connectionManager;
+  private RemoteFileSystemConnection hostConnection;
 
   public Properties getProperties() {
     Properties props = new Properties();
@@ -38,11 +38,11 @@ public class RemoteFileSystemFileDownloaderTest {
   }
 
   @Before
-  public void setUpConnectionManager() {
+  public void setUpHostConnection() {
     HostControlSystem hostControlSystem = Mockito.mock(HostControlSystem.class);
-    connectionManager = mock(RemoteFileSystemConnection.class);
-    when(connectionManager.getHostControlSystem()).thenReturn(hostControlSystem);
-    when(connectionManager.getStoragePath()).thenReturn(remoteFileSystemURI.getPath());
+    hostConnection = mock(RemoteFileSystemConnection.class);
+    when(hostConnection.getHostControlSystem()).thenReturn(hostControlSystem);
+    when(hostConnection.getStoragePath()).thenReturn(remoteFileSystemURI.getPath());
   }
 
   @Test
@@ -52,13 +52,13 @@ public class RemoteFileSystemFileDownloaderTest {
     Path backupKeyspacePath =
         Paths.get(remoteFileSystemURI.getPath(), BackupPath.create(config, config.getKeyspace()));
 
-    when(connectionManager
+    when(hostConnection
             .getHostControlSystem()
             .getPath(
                 remoteFileSystemURI.getPath(), BackupPath.create(config, config.getKeyspace())))
         .thenReturn(backupKeyspacePath);
     RemoteFileSystemFileDownloader downloader =
-        spy(new RemoteFileSystemFileDownloader(connectionManager));
+        spy(new RemoteFileSystemFileDownloader(hostConnection));
     Path destDir = Paths.get(config.getDataDir(), BackupPath.create(config, config.getKeyspace()));
     doNothing().when(downloader).createDirectories(destDir.getParent());
     doNothing().when(downloader).copyFolder(backupKeyspacePath, destDir);

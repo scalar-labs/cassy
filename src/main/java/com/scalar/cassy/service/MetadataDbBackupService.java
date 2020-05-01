@@ -40,7 +40,7 @@ public class MetadataDbBackupService {
     List<String> urls = Splitter.on(':').splitToList(config.getMetadataDbUrl());
     if (urls.get(1).equalsIgnoreCase("sqlite")) {
       Path dumpFile = sqliteBackup(Paths.get(urls.get(2)));
-      return uploader.upload(dumpFile, getKey(dumpFile).toString(), config.getStorageBaseUri());
+      return uploader.upload(dumpFile, getKey(dumpFile).toString());
     } else {
       throw new IllegalArgumentException(
           "metadata backup for " + urls.get(1) + " is not supported.");

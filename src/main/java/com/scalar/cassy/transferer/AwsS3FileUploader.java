@@ -39,7 +39,7 @@ public class AwsS3FileUploader implements FileUploader {
   }
 
   @Override
-  public Future<Void> upload(Path file, String key, String storageBaseUri) {
+  public Future<Void> upload(Path file, String key) {
     if (!requiresUpload(s3Uri.getBucket(), key, file)) {
       logger.info(file + " has been already uploaded.");
       return CompletableFuture.completedFuture(null);

@@ -32,7 +32,7 @@ public class AzureBlobFileUploader implements FileUploader {
   }
 
   @Override
-  public Future<Void> upload(Path file, String key, String storageBaseUri) {
+  public Future<Void> upload(Path file, String key) {
     if (!requiresUpload(key, file)) {
       logger.info(file + " has been already uploaded.");
       return CompletableFuture.completedFuture(null);

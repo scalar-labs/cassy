@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -44,7 +43,6 @@ public class FileSystemFileUploaderTest {
   private static final FileSystem fs = FileSystems.getDefault();
   private static final URI REMOTE_FILE_SYSTEM_URI =
       URI.create("ssh://bar@192.168.2.106/home/bar/file_sys");
-  private RemoteFileSystemConnection connectionManager;
 
   private static List<Path> getListOfSnapshotFiles() {
     return Arrays.asList(
@@ -66,12 +64,12 @@ public class FileSystemFileUploaderTest {
     return props;
   }
 
-  @Before
-  public void setUpConnectionManager() {
+  private RemoteFileSystemConnection setUpHostConnection(String storagePath) {
     HostControlSystem hostControlSystem = Mockito.mock(HostControlSystem.class);
-    connectionManager = mock(RemoteFileSystemConnection.class);
-    when(connectionManager.getHostControlSystem()).thenReturn(hostControlSystem);
-    when(connectionManager.getStoragePath()).thenReturn(REMOTE_FILE_SYSTEM_URI.getPath());
+    RemoteFileSystemConnection hostConnection = mock(RemoteFileSystemConnection.class);
+    when(hostConnection.getHostControlSystem()).thenReturn(hostControlSystem);
+    when(hostConnection.getStoragePath()).thenReturn(storagePath);
+    return hostConnection;
   }
 
   @Test
@@ -82,15 +80,14 @@ public class FileSystemFileUploaderTest {
 
     String key = toBackup.getFileName().toString();
     String storeBaseConfig = "ssh://bar@127.0.0.1" + toBackup.getParent().toString();
-    RemoteFileSystemFileUploader uploader =
-        spy(new RemoteFileSystemFileUploader(connectionManager));
-    when(connectionManager
-            .getHostControlSystem()
-            .getPath(URI.create(storeBaseConfig).getPath(), key))
+    RemoteFileSystemConnection hostConnection =
+        setUpHostConnection(URI.create(storeBaseConfig).getPath());
+    RemoteFileSystemFileUploader uploader = spy(new RemoteFileSystemFileUploader(hostConnection));
+    when(hostConnection.getHostControlSystem().getPath(URI.create(storeBaseConfig).getPath(), key))
         .thenReturn(toBackup);
 
     // act
-    uploader.upload(toBackup, key, storeBaseConfig);
+    uploader.upload(toBackup, key);
 
     // assert
     verify(uploader, never()).createDirectories(any());
@@ -104,11 +101,10 @@ public class FileSystemFileUploaderTest {
     new File(toBackup.toString()).deleteOnExit();
     String key = "copy_" + toBackup.getFileName().toString();
     String storeBaseConfig = "ssh://bar@127.0.0.1" + toBackup.getParent().toString();
-    RemoteFileSystemFileUploader uploader =
-        spy(new RemoteFileSystemFileUploader(connectionManager));
-    when(connectionManager
-            .getHostControlSystem()
-            .getPath(URI.create(storeBaseConfig).getPath(), key))
+    RemoteFileSystemConnection hostConnection =
+        setUpHostConnection(URI.create(storeBaseConfig).getPath());
+    RemoteFileSystemFileUploader uploader = spy(new RemoteFileSystemFileUploader(hostConnection));
+    when(hostConnection.getHostControlSystem().getPath(URI.create(storeBaseConfig).getPath(), key))
         .thenReturn(toBackup);
     Path destFile = Paths.get(toBackup.getParent().toString(), key);
     new File(destFile.toString()).deleteOnExit();
@@ -116,7 +112,7 @@ public class FileSystemFileUploaderTest {
     doNothing().when(uploader).copyFile(toBackup, destFile);
 
     // act
-    uploader.upload(toBackup, key, storeBaseConfig);
+    uploader.upload(toBackup, key);
   }
 
   @Test
@@ -124,19 +120,20 @@ public class FileSystemFileUploaderTest {
     // arrange
     List<Path> paths = getListOfSnapshotFiles();
     BackupConfig config = new BackupConfig(getProperties(BackupType.NODE_SNAPSHOT, DATA_DIR));
-    RemoteFileSystemFileUploader uploader =
-        spy(new RemoteFileSystemFileUploader(connectionManager));
+    RemoteFileSystemConnection hostConnection =
+        setUpHostConnection(REMOTE_FILE_SYSTEM_URI.getPath());
+    RemoteFileSystemFileUploader uploader = spy(new RemoteFileSystemFileUploader(hostConnection));
     String remoteFileSystemBaseDir = URI.create(config.getStoreBaseUri()).getPath();
     String relativeFilePath1 = Paths.get(DATA_DIR).relativize(paths.get(0)).toString();
     String relativeFilePath2 = Paths.get(DATA_DIR).relativize(paths.get(1)).toString();
     Path targetFile1Path = Paths.get(remoteFileSystemBaseDir, relativeFilePath1);
     Path targetFile2Path = Paths.get(remoteFileSystemBaseDir, relativeFilePath2);
-    when(connectionManager
+    when(hostConnection
             .getHostControlSystem()
             .getPath(
                 REMOTE_FILE_SYSTEM_URI.getPath(), BackupPath.create(config, relativeFilePath1)))
         .thenReturn(targetFile1Path);
-    when(connectionManager
+    when(hostConnection
             .getHostControlSystem()
             .getPath(
                 REMOTE_FILE_SYSTEM_URI.getPath(), BackupPath.create(config, relativeFilePath2)))
