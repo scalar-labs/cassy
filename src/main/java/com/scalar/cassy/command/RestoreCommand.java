@@ -2,15 +2,23 @@ package com.scalar.cassy.command;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.palantir.giraffe.file.MoreFiles;
 import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.service.AwsS3RestoreModule;
 import com.scalar.cassy.service.AzureBlobRestoreModule;
 import com.scalar.cassy.service.RestoreService;
+import com.scalar.cassy.transferer.BackupPath;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 public class RestoreCommand extends AbstractCommand {
+  private static final Logger logger = LoggerFactory.getLogger(RestoreCommand.class);
 
   @CommandLine.Option(
       names = {"--restore-type"},
@@ -54,15 +62,27 @@ public class RestoreCommand extends AbstractCommand {
     }
 
     try (RestoreService service = injector.getInstance(RestoreService.class)) {
-      Arrays.asList(keyspaces.split(","))
-          .forEach(
-              k -> {
-                props.setProperty(RestoreConfig.KEYSPACE, k);
-                service.restore(new RestoreConfig(props));
-                // TODO reporting
-              });
+      try {
+        Arrays.asList(keyspaces.split(","))
+            .forEach(
+                k -> {
+                  props.setProperty(RestoreConfig.KEYSPACE, k);
+                  service.restore(new RestoreConfig(props));
+                  // TODO reporting
+                });
+      } finally {
+        cleanUpTemporaryRestorationFiles(props);
+      }
     }
 
     return null;
+  }
+
+  private void cleanUpTemporaryRestorationFiles(Properties props) throws IOException {
+    RestoreConfig config = new RestoreConfig(props);
+    String restoreRootFolderName = BackupPath.createRoot(config);
+    Path restoreRootFolder = Paths.get(config.getDataDir(), restoreRootFolderName);
+    logger.debug("Delete temporary restoration files folder : " + restoreRootFolder);
+    MoreFiles.deleteRecursive(restoreRootFolder);
   }
 }
