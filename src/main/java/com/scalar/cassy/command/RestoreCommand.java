@@ -62,17 +62,15 @@ public class RestoreCommand extends AbstractCommand {
     }
 
     try (RestoreService service = injector.getInstance(RestoreService.class)) {
-      try {
-        Arrays.asList(keyspaces.split(","))
-            .forEach(
-                k -> {
-                  props.setProperty(RestoreConfig.KEYSPACE, k);
-                  service.restore(new RestoreConfig(props));
-                  // TODO reporting
-                });
-      } finally {
-        cleanUpTemporaryRestorationFiles(props);
-      }
+      Arrays.asList(keyspaces.split(","))
+          .forEach(
+              k -> {
+                props.setProperty(RestoreConfig.KEYSPACE, k);
+                service.restore(new RestoreConfig(props));
+                // TODO reporting
+              });
+    } finally {
+      cleanUpTemporaryRestorationFiles(props);
     }
 
     return null;
