@@ -70,17 +70,17 @@ public class RestoreCommand extends AbstractCommand {
                 // TODO reporting
               });
     } finally {
-      cleanUpTemporaryRestorationFiles(props);
+      deleteStagingDirectories(props);
     }
 
     return null;
   }
 
-  private void cleanUpTemporaryRestorationFiles(Properties props) throws IOException {
+  private void deleteStagingDirectories(Properties props) throws IOException {
     RestoreConfig config = new RestoreConfig(props);
-    String restoreRootFolderName = BackupPath.createRoot(config);
-    Path restoreRootFolder = Paths.get(config.getDataDir(), restoreRootFolderName);
-    logger.debug("Delete temporary restoration files folder : " + restoreRootFolder);
-    MoreFiles.deleteRecursive(restoreRootFolder);
+    String stagingDirectoryName = BackupPath.getType(config);
+    Path stagingDirectory = Paths.get(config.getDataDir(), stagingDirectoryName);
+    logger.debug("Delete staging directories used for restoration : " + stagingDirectory);
+    MoreFiles.deleteRecursive(stagingDirectory);
   }
 }
