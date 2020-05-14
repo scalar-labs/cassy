@@ -10,14 +10,14 @@
                 </div>
                 <div class="modal-body">
                     <form>
-                        <div class="form-group">
+                        <div v-if="backup_type === 1" class="form-group">
                             <label for="restoreTypeSelect">Select restore type</label>
-                            <select class="custom-select" id="restoreTypeSelect" @change="setRestoreType">
-                                <option selected value="2">Node</option>
+                            <select :value=restore_type.toString() class="custom-select" id="restoreTypeSelect" @change="setRestoreType">
+                                <option value="2">Node</option>
                                 <option value="1">Cluster</option>
                             </select>
                         </div>
-                        <div class="form-group" v-if="restore_type === '2'">
+                        <div class="form-group" v-if="backup_type !== 1 || restore_type === 2">
                             <label for="targetIpSelect">Specify Target IP (Optional)</label>
                             <select class="custom-select" id="targetIpSelect">
                                 <option selected>Choose a node ...</option>
@@ -45,18 +45,18 @@
       cluster: {},
       target_ip: String,
       snapshot_id: String,
-    },
-    data() {
-      return {
-        restore_type: '2',
-      };
+      backup_type: Number,
+      restore_type: Number,
+      changeRestoreType: Function,
     },
     methods: {
       setRestoreType() {
         let el = document.getElementById('restoreTypeSelect');
-        if (el) {
-          this.restore_type = el.value;
-        }
+        this.changeRestoreType(parseInt(el.value));
+        // let el = document.getElementById('restoreTypeSelect');
+        // if (el) {
+        //   this.restore_type = el.value;
+        // }
       },
       setTargetIp() {
         let el = document.getElementById('targetIpSelect');
@@ -69,7 +69,7 @@
         let data = {
           backup_type: this.backup_type,
         };
-        if (this.backup_type === '2' && targetIps) {
+        if (this.backup_type === 2 && targetIps) {
           data.target_ips = targetIps;
         }
         this.$api.put(`clusters/${this.cluster.cluster_id}/data/${this.snapshot_id}`, data);

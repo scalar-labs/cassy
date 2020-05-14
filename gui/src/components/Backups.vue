@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h5>Backups in Cluster {{cluster.cluster_id}}</h5>
+        <h5>Backups in Cluster: {{cluster.cluster_name}}</h5>
         <div class="bg-secondary text-white border rounded my-3">
             <p class="m-2">CLUSTER_ID: {{cluster.cluster_id}}</p>
             <p class="m-2">TARGET_IPS: {{cluster.target_ips}}</p>
@@ -27,13 +27,16 @@
                 <th class="font-weight-normal">{{ parseInt(e.updated_at) | moment('YYYY/M/D, h:mm a') }}</th>
                 <td>{{e.status}}</td>
                 <td>
-                    <button
-                            :disabled="isFailed(e.status)"
+                    <button v-if="e.backup_type === '1'">
+
+                    </button>
+                    <button v-if="e.backup_type !== '1'"
                             type="button"
                             class="btn btn-success mx-1"
+                            :disabled="isNotCompleted(e)"
                             data-toggle="modal"
                             data-target="#restoreCluster"
-                            @click="$emit('emitSnapshotId', e.snapshot_id)"
+                            @click="$emit('emitRestoreParams', {snapshot_id: e.snapshot_id, backup_type: e.backup_type})"
                     >Restore
                     </button>
                 </td>
@@ -74,9 +77,22 @@
           return 'Incremental';
         }
       },
-      isFailed(status) {
-        return status === 'FAILED';
-      }
+      isNotCompleted(entry) {
+        if (entry.backup_type === 1) {
+          for(let i = 0; i < this.backups_by_snapshot.length; i++) {
+            let snapshot = this.backups_by_snapshot[i];
+            for(let j = 0; j < snapshot.length; j++) {
+              if (snapshot[j].snapshot_id === entry.snapshot_id) {
+                if (snapshot[j].status !== 'COMPLETED') {
+                  return true;
+                }
+              }
+            }
+          }
+        } else {
+          return status === 'COMPLETED';
+        }
+      },
     },
   };
 </script>

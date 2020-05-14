@@ -1,8 +1,8 @@
 <template>
     <div>
-        <Backups :backups="backups" :backups_by_snapshot="backups_by_snapshot" :cluster="cluster" @emitSnapshotId="setSnapshotId($event)" />
-        <CreateBackup :cluster="cluster" :backups="backups" @updateBackupList="fetchBackups"/>
-        <RestoreCluster :cluster="cluster" :snapshot_id="snapshot_id" />
+        <Backups :backups="backups" :backups_by_snapshot="backups_by_snapshot" :cluster="cluster" @emitRestoreParams="setRestoreParams($event)" />
+        <CreateBackup :cluster="cluster" :backups="backups" :snapshot_ids="snapshot_ids" @updateBackupList="fetchBackups"/>
+        <RestoreCluster :cluster="cluster" :snapshot_id="snapshot_id" :backup_type="backup_type" :restore_type=restore_type :changeRestoreType=changeRestoreType />
     </div>
 </template>
 
@@ -24,7 +24,10 @@
           cluster: {},
           backups: {},
           backups_by_snapshot: [[]],
-          snapshot_id: ''
+          snapshot_ids: Set,
+          snapshot_id: '',
+          backup_type: 0,
+          restore_type: 2,
         };
       },
       mounted() {
@@ -38,30 +41,59 @@
         });
       },
       methods: {
+        changeRestoreType(type) {
+          this.restore_type = type;
+        },
         fetchBackups() {
           this.$api.get(`clusters/${this.cluster_id}/backups`)
           .then((response) => {
             if (response.status === 200) {
               this.backups = response.data;
-              let count = 0;
-              let sortedBackups = Object.assign({}, this.backups);
-              sortedBackups.entries.sort((a, b) => (a.snapshot_id > b.snapshot_id) ? 1 : -1);
-              let prevId = sortedBackups.entries[0].snapshot_id;
-              sortedBackups.entries.forEach(entry => {
-                if (entry.snapshot_id === prevId) {
-                  this.backups_by_snapshot[count].push(entry);
-                } else {
-                  count++;
-                  this.backups_by_snapshot[count] = [];
-                  this.backups_by_snapshot[count].push(entry);
+
+              // this code attempts to convert the backups object into a 2d array, with each index representing
+              // a unique snapshot_id
+              if (this.backups.entries) {
+                let count = 0;
+                let sortedBackups = Object.assign({}, this.backups);
+                sortedBackups.entries.sort((a, b) => (a.snapshot_id > b.snapshot_id) ? 1 : -1);
+                let prevId = sortedBackups.entries[0].snapshot_id;
+                let snapshot_ids = [];
+
+                sortedBackups.entries.forEach(entry => {
+                  snapshot_ids.push(entry.snapshot_id); // this will be used to make a Set of unique snapshot_ids
+                  if (entry.snapshot_id === prevId) {
+                    this.backups_by_snapshot[count].push(entry); // add entries to this index until the snapshot_id changes
+                  } else {
+                    count++;
+                    this.backups_by_snapshot[count] = []; // initialize this index
+                    this.backups_by_snapshot[count].push(entry);
+                  }
+                  prevId = entry.snapshot_id;
+                });
+                this.snapshot_ids = new Set(snapshot_ids); // this removes any duplicate values
+
+                // this loop will remove older incremental backups
+                for (let i = 0; i < this.backups_by_snapshot.length; i++) {
+                  let count = 0;
+                  let snapshot = this.backups_by_snapshot[i];
+                  for (let j = 0; j < snapshot.length; j++) {
+                    if (snapshot[j].backup_type === 3) {
+                      if (count > 0 && snapshot[j].target_ip === snapshot[j-1].target_ip) {
+                        this.backups_by_snapshot[i].splice(j, 1);
+                        j--;
+                      }
+                      count++;
+                    }
+                  }
                 }
-                prevId = entry.snapshot_id;
-              });
+              }
             }
           });
         },
-        setSnapshotId(snapshot_id) {
-          this.snapshot_id = snapshot_id
+        setRestoreParams(event) {
+          this.snapshot_id = event.snapshot_id;
+          this.backup_type = event.backup_type;
+          this.restore_type = 2
         }
       }
     };

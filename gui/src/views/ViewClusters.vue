@@ -1,7 +1,7 @@
 <template>
     <div>
         <Clusters :clusters="clusters"/>
-        <RegisterCluster @updateClusterList="fetchClusters"/>
+        <RegisterCluster id="registerCluster" @updateClusterList="fetchClusters"/>
     </div>
 </template>
 
@@ -9,6 +9,7 @@
   // @ is an alias to /src
   import Clusters from '../components/Clusters';
   import RegisterCluster from '../components/RegisterCluster'
+
 
   export default {
     name: 'ViewClusters',

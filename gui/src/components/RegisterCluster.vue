@@ -13,7 +13,8 @@
                     <form>
                         <div class="form-group">
                             <label for="cassandraHostInput">Cassandra host address</label>
-                            <input class="form-control" type="text" id="cassandraHostInput" placeholder="localhost">
+                            <input class="form-control" type="text" id="cassandraHostInput" ref="cassandraHostInput"
+                                   placeholder="localhost">
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" data-toggle="modal" data-target="#registerCluster"
@@ -28,18 +29,24 @@
 </template>
 
 <script>
+  import $ from 'jquery';
+
   export default {
     methods: {
       registerCluster() {
         this.$api.post('/clusters', {
           cassandra_host: document.getElementById('cassandraHostInput').value,
-        })
-        .then((response) => {
+        }).then((response) => {
           if (response.status === 200) {
-            this.$emit('updateClusterList')
+            this.$emit('updateClusterList');
           }
-        })
+        });
       },
+    },
+    mounted() {
+      $('#registerCluster').on('shown.bs.modal', function() {
+        $(this).find('#cassandraHostInput').focus();
+      });
     },
   };
 </script>

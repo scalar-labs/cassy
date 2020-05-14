@@ -29,7 +29,7 @@
                             <label for="snapshotIdSelect">Choose a Snapshot ID</label>
                             <select class="custom-select" id="snapshotIdSelect" @change="setSnapshotId">
                                 <option selected>Snapshot ID</option>
-                                <option v-for="(b, index) in backups.entries" :key="index">{{b.snapshot_id}}</option>
+                                <option v-for="(id, index) in snapshot_ids" :key="index">{{id}}</option>
                             </select>
                         </div>
                         <div class="modal-footer">
@@ -57,6 +57,7 @@
     props: {
       cluster: {},
       backups: {},
+      snapshot_ids: {}
     },
     data() {
       return {

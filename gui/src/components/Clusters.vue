@@ -17,8 +17,8 @@
             >
                 <td>{{c.cluster_id}}</td>
                 <td>{{c.cluster_name}}</td>
-                <td>{{ parseInt(c.created_at) | moment('YYYY/M/d, h:mm a')}}</td>
-                <td>{{ parseInt(c.updated_at) | moment('YYYY/M/d h:mm a')}}</td>
+                <td>{{ parseInt(c.created_at) | moment('YYYY/M/D, h:mm a')}}</td>
+                <td>{{ parseInt(c.updated_at) | moment('YYYY/M/D h:mm a')}}</td>
                 <td>
                     <button
                             type="button"
@@ -30,8 +30,8 @@
             </tr>
             </tbody>
         </table>
-        <div class="row justify-content-end">
-            <button class="btn btn-primary" data-toggle="modal" data-target="#registerCluster">Add Cluster</button>
+        <div class="row justify-content-end mr-3">
+            <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerCluster">Add Cluster</button>
         </div>
     </div>
 </template>
