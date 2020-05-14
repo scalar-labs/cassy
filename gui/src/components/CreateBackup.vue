@@ -32,14 +32,13 @@
                                 <option v-for="(id, index) in snapshot_ids" :key="index">{{id}}</option>
                             </select>
                         </div>
+                        <small v-if="failed" class="form-text text-danger">Failed to create backup. Cassy service unavailable.</small>
                         <div class="modal-footer">
                             <button class="btn btn-outline-secondary mx-1"
-                                    data-toggle="modal"
                                     data-target="#registerBackup"
                             >Cancel
                             </button>
                             <button class="btn btn-primary mx-1"
-                                    data-toggle="modal"
                                     data-target="#registerBackup"
                                     @click="createBackup"
                             >Create Backup
@@ -53,6 +52,8 @@
 </template>
 
 <script>
+  import $ from 'jquery';
+
   export default {
     props: {
       cluster: {},
@@ -64,6 +65,7 @@
         backup_type: '2',
         snapshot_id: String,
         target_ip: String,
+        failed: false,
       };
     },
     methods: {
@@ -100,8 +102,14 @@
 
         this.$api.post(`clusters/${this.cluster.cluster_id}/backups`, data).then((response) => {
           if (response.status === 200) {
+            $('#registerBackup').modal('hide');
+            this.failed = false;
             this.$emit('updateBackupList');
           }
+        })
+        .catch(error => {
+          console.log(error.response);
+            this.failed = true;
         });
       },
     },

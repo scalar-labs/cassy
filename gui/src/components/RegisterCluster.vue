@@ -15,9 +15,10 @@
                             <label for="cassandraHostInput">Cassandra host address</label>
                             <input class="form-control" type="text" id="cassandraHostInput" ref="cassandraHostInput"
                                    placeholder="localhost">
+                            <small v-if="failed" class="form-text text-danger">{{ error }}</small>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" data-toggle="modal" data-target="#registerCluster"
+                            <button class="btn btn-primary" data-target="#registerCluster"
                                     @click="registerCluster">Register
                             </button>
                         </div>
@@ -32,15 +33,38 @@
   import $ from 'jquery';
 
   export default {
+    data() {
+      return {
+        failed: false,
+        error: "",
+      }
+    },
     methods: {
       registerCluster() {
         this.$api.post('/clusters', {
           cassandra_host: document.getElementById('cassandraHostInput').value,
         }).then((response) => {
           if (response.status === 200) {
+            this.failed = false;
+            $('#registerCluster').modal('hide');
             this.$emit('updateClusterList');
           }
-        });
+        })
+        .catch(error => {
+          console.log(error);
+          console.log(error.response);
+          this.failed = true;
+          if (error.response.data.code === 13) {
+            console.log("code 13");
+            this.error = "Failed to register cluster. Please make sure Cassandra is started."
+          }
+          if (error.response.status === 503) {
+            console.log("code 14");
+            this.error = "Failed to register cluster. Cassy service unavailable."
+            console.log(this.error);
+          }
+        })
+        ;
       },
     },
     mounted() {

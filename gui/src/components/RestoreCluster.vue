@@ -12,23 +12,27 @@
                     <form>
                         <div v-if="backup_type === 1" class="form-group">
                             <label for="restoreTypeSelect">Select restore type</label>
-                            <select :value=restore_type.toString() class="custom-select" id="restoreTypeSelect" @change="setRestoreType">
-                                <option value="2">Node</option>
-                                <option value="1">Cluster</option>
+                            <select :value=restore_type.toString() class="custom-select" id="restoreTypeSelect"
+                                    @change="setRestoreType">
+                                <option value=2>Node</option>
+                                <option value=1>Cluster</option>
                             </select>
                         </div>
                         <div class="form-group" v-if="backup_type !== 1 || restore_type === 2">
                             <label for="targetIpSelect">Specify Target IP (Optional)</label>
                             <select class="custom-select" id="targetIpSelect">
                                 <option selected>Choose a node ...</option>
-                                <option v-for="(ip, index) in cluster.target_ips" :key="index" @change="setTargetIp">{{ip}}</option>
+                                <option v-for="(ip, index) in cluster.target_ips" :key="index" @change="setTargetIp">
+                                    {{ip}}
+                                </option>
                             </select>
                         </div>
+                        <small v-if="failed" class="form-text text-danger">Failed to restore backup. Cassy service unavailable.</small>
                         <div class="modal-footer">
                             <button class="btn btn-outline-secondary mx-1" data-toggle="modal"
                                     data-target="#restoreCluster">Cancel
                             </button>
-                            <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#restoreCluster"
+                            <button class="btn btn-primary mx-1" data-target="#restoreCluster"
                                     @click="restoreBackup()">Restore Backup
                             </button>
                         </div>
@@ -40,6 +44,8 @@
 </template>
 
 <script>
+  import $ from 'jquery';
+
   export default {
     props: {
       cluster: {},
@@ -49,14 +55,17 @@
       restore_type: Number,
       changeRestoreType: Function,
     },
+    data() {
+      return {
+        failed: false,
+      };
+    },
     methods: {
       setRestoreType() {
         let el = document.getElementById('restoreTypeSelect');
-        this.changeRestoreType(parseInt(el.value));
-        // let el = document.getElementById('restoreTypeSelect');
-        // if (el) {
-        //   this.restore_type = el.value;
-        // }
+        if (el) {
+          this.changeRestoreType(el.value);
+        }
       },
       setTargetIp() {
         let el = document.getElementById('targetIpSelect');
@@ -72,7 +81,16 @@
         if (this.backup_type === 2 && targetIps) {
           data.target_ips = targetIps;
         }
-        this.$api.put(`clusters/${this.cluster.cluster_id}/data/${this.snapshot_id}`, data);
+        this.$api.put(`clusters/${this.cluster.cluster_id}/data/${this.snapshot_id}`, data).then((response) => {
+          if (response.status === 200) {
+            $('#restoreCluster').modal('hide');
+            this.failed = false;
+          }
+        }).catch(error => {
+          if (error.response.data.code === 13) {
+            this.failed = true;
+          }
+        });
       },
     },
   };
