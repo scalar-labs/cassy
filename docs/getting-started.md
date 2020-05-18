@@ -17,7 +17,7 @@ Furthermore, the following configurations are recommended (but not required) to 
 
 From here, it assumes there is a multi-node Cassandra cluster (192.168.0.10, ...) and a node for running the Cassy master daemon (192.168.0.254).
 
-Lastly, the following actions for SSH are also required:
+Lastly, the following actions are also required.
 * Place a SSH private key without passphrase in the master node and a corresponding public key in each Cassandra node. 
 * Permit SSH user to access Cassandra data directory. (Use cassandra user for SSH might be the easiest way)
 
