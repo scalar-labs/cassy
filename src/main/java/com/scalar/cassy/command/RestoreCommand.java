@@ -2,15 +2,23 @@ package com.scalar.cassy.command;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.palantir.giraffe.file.MoreFiles;
 import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.service.AwsS3RestoreModule;
 import com.scalar.cassy.service.AzureBlobRestoreModule;
 import com.scalar.cassy.service.RestoreService;
+import com.scalar.cassy.transferer.BackupPath;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 public class RestoreCommand extends AbstractCommand {
+  private static final Logger logger = LoggerFactory.getLogger(RestoreCommand.class);
 
   @CommandLine.Option(
       names = {"--restore-type"},
@@ -61,8 +69,18 @@ public class RestoreCommand extends AbstractCommand {
                 service.restore(new RestoreConfig(props));
                 // TODO reporting
               });
+    } finally {
+      deleteStagingDirectories(props);
     }
 
     return null;
+  }
+
+  private void deleteStagingDirectories(Properties props) throws IOException {
+    RestoreConfig config = new RestoreConfig(props);
+    String stagingDirectoryName = BackupPath.getType(config);
+    Path stagingDirectory = Paths.get(config.getDataDir(), stagingDirectoryName);
+    logger.debug("Delete staging directories used for restoration : " + stagingDirectory);
+    MoreFiles.deleteRecursive(stagingDirectory);
   }
 }
