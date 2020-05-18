@@ -16,24 +16,14 @@ public class BackupPath {
   }
 
   public static String getType(BaseConfig config) {
-    if (config instanceof RestoreConfig) {
-      RestoreConfig restoreConfig = (RestoreConfig) config;
-      String type = NODE_BACKUP_KEY;
-      if (restoreConfig.getRestoreType().equals(RestoreType.CLUSTER)) {
-        type = CLUSTER_BACKUP_KEY;
-      }
-      return type;
+    String type = NODE_BACKUP_KEY;
+    if ((config instanceof RestoreConfig
+            && ((RestoreConfig) config).getRestoreType().equals(RestoreType.CLUSTER))
+        || (config instanceof BackupConfig
+            && ((BackupConfig) config).getBackupType().equals(BackupType.CLUSTER_SNAPSHOT))) {
+      type = CLUSTER_BACKUP_KEY;
     }
-    if (config instanceof BackupConfig) {
-      BackupConfig backupConfig = (BackupConfig) config;
-      String type = NODE_BACKUP_KEY;
-      if (backupConfig.getBackupType().equals(BackupType.CLUSTER_SNAPSHOT)) {
-        type = CLUSTER_BACKUP_KEY;
-      }
-      return type;
-    }
-    throw new UnsupportedOperationException(
-        "The " + config.getClass().getSimpleName() + " config type is not supported");
+    return type;
   }
 
   private static String create(String type, BaseConfig config, String path) {
