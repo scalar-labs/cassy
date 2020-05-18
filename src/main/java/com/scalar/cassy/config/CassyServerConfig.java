@@ -76,7 +76,9 @@ public class CassyServerConfig {
     return storageBaseUri;
   }
 
-  public StorageType getStorageType() { return storageType; }
+  public StorageType getStorageType() {
+    return storageType;
+  }
 
   public String getMetadataDbUrl() {
     return metadataDbUrl;

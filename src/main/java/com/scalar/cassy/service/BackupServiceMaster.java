@@ -19,9 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BackupServiceMaster extends AbstractServiceMaster {
+  public static final String BACKUP_COMMAND = "cassy-backup";
   private static final Logger logger = LoggerFactory.getLogger(BackupServiceMaster.class);
   private static final String BACKUP_TYPE_OPTION = "--backup-type=";
-  public static final String BACKUP_COMMAND = "cassy-backup";
   private ApplicationPauser pauser;
 
   public BackupServiceMaster(

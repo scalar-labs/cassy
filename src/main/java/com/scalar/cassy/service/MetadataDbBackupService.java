@@ -63,7 +63,7 @@ public class MetadataDbBackupService {
   }
 
   private Path getKey(Path file) {
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
     String datetime = simpleDateFormat.format(new Date());
     return Paths.get(METADATA_BACKUP_KEY, datetime, file.getFileName().toString());
   }

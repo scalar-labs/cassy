@@ -14,8 +14,12 @@ import com.scalar.cassy.config.StorageType;
 import com.scalar.cassy.remotecommand.RemoteCommandContext;
 import com.scalar.cassy.transferer.AwsS3FileUploader;
 import com.scalar.cassy.transferer.AzureBlobFileUploader;
+import com.scalar.cassy.transferer.RemoteFileSystemFileUploader;
 import com.scalar.cassy.transferer.FileUploader;
 import com.scalar.cassy.util.AzureUtil;
+import com.scalar.cassy.util.RemoteFileSystemConnection;
+import java.io.IOException;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -35,6 +39,8 @@ public class CassyServerModule extends AbstractModule {
       bind(FileUploader.class).to(AwsS3FileUploader.class).in(Singleton.class);
     } else if (config.getStorageType().equals(StorageType.AZURE_BLOB)) {
       bind(FileUploader.class).to(AzureBlobFileUploader.class).in(Singleton.class);
+    } else if (config.getStorageType().equals(StorageType.REMOTE_FILE_SYSTEM)) {
+      bind(FileUploader.class).to(RemoteFileSystemFileUploader.class).in(Singleton.class);
     } else {
       throw new UnsupportedOperationException(
           "The storage type " + config.getStorageType() + " is not implemented");
@@ -83,5 +89,11 @@ public class CassyServerModule extends AbstractModule {
   @Singleton
   public BlobContainerAsyncClient provideBlobContainerAsyncClient() {
     return AzureUtil.getBlobContainerAsyncClient(config.getStorageBaseUri());
+  }
+
+  @Provides
+  @Singleton
+  public RemoteFileSystemConnection provideRemoteFileSystemConnection() throws IOException {
+    return new RemoteFileSystemConnection(URI.create(config.getStorageBaseUri()));
   }
 }
