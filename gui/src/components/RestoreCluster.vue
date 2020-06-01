@@ -76,9 +76,9 @@
       restoreBackup() {
         let targetIps = this.target_ip;
         let data = {
-          backup_type: this.backup_type,
+          restore_type: this.restore_type,
         };
-        if (this.backup_type === 2 && targetIps) {
+        if (this.restore_type === 2 && targetIps) {
           data.target_ips = targetIps;
         }
         this.$api.put(`clusters/${this.cluster.cluster_id}/data/${this.snapshot_id}`, data).then((response) => {
