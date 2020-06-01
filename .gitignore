@@ -30,3 +30,6 @@ build
 
 # out files
 out/
+
+# executables
+entrypoint
