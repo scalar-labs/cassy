@@ -45,6 +45,7 @@
           this.restore_type = type;
         },
         fetchBackups() {
+          this.backups_by_snapshot = [[]];
           this.$api.get(`clusters/${this.cluster_id}/backups`)
           .then((response) => {
             if (response.status === 200) {

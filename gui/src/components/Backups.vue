@@ -27,9 +27,6 @@
                 <th class="font-weight-normal">{{ parseInt(e.updated_at) | moment('YYYY/M/D, h:mm a') }}</th>
                 <td>{{e.status}}</td>
                 <td>
-                    <button v-if="e.backup_type === '1'">
-
-                    </button>
                     <button v-if="e.backup_type !== '1'"
                             type="button"
                             class="btn btn-success mx-1"
@@ -90,7 +87,7 @@
             }
           }
         } else {
-          return status === 'COMPLETED';
+          return entry.status !== 'COMPLETED';
         }
       },
     },
