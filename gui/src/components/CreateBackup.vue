@@ -39,7 +39,6 @@
                             >Cancel
                             </button>
                             <button class="btn btn-primary mx-1"
-                                    data-target="#registerBackup"
                                     @click="createBackup"
                             >Create Backup
                             </button>
@@ -107,8 +106,7 @@
             this.$emit('updateBackupList');
           }
         })
-        .catch(error => {
-          console.log(error.response);
+        .catch(() => {
             this.failed = true;
         });
       },

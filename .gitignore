@@ -33,3 +33,7 @@ out/
 
 # executables
 entrypoint
+
+# dev files
+tmp/
+conf/test-cassy.properties

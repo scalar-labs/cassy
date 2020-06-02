@@ -10,15 +10,15 @@
                 </div>
                 <div class="modal-body">
                     <form>
-                        <div v-if="backup_type === 1" class="form-group">
+                        <div class="form-group">
                             <label for="restoreTypeSelect">Select restore type</label>
-                            <select :value=restore_type.toString() class="custom-select" id="restoreTypeSelect"
+                            <select :value=restore_type class="custom-select" id="restoreTypeSelect"
                                     @change="setRestoreType">
-                                <option value=2>Node</option>
-                                <option value=1>Cluster</option>
+                                <option v-for="(t, i) in availableRestoreTypes" :value="t" :key="i">{{ typeName(t) }}
+                                </option>
                             </select>
                         </div>
-                        <div class="form-group" v-if="backup_type !== 1 || restore_type === 2">
+                        <div class="form-group" v-if="restore_type === 2">
                             <label for="targetIpSelect">Specify Target IP (Optional)</label>
                             <select class="custom-select" id="targetIpSelect">
                                 <option selected>Choose a node ...</option>
@@ -27,13 +27,13 @@
                                 </option>
                             </select>
                         </div>
-                        <small v-if="failed" class="form-text text-danger">Failed to restore backup. Cassy service unavailable.</small>
+                        <small v-if="failed" class="form-text text-danger">Failed to restore backup. Cassy service
+                            unavailable.</small>
                         <div class="modal-footer">
                             <button class="btn btn-outline-secondary mx-1" data-toggle="modal"
                                     data-target="#restoreCluster">Cancel
                             </button>
-                            <button class="btn btn-primary mx-1" data-target="#restoreCluster"
-                                    @click="restoreBackup()">Restore Backup
+                            <button class="btn btn-primary mx-1" @click="showConfirmationDialogue()">Restore Backup
                             </button>
                         </div>
                     </form>
@@ -60,20 +60,20 @@
         failed: false,
       };
     },
+    computed: {
+      availableRestoreTypes: function() {
+        if (this.backup_type === 1) {
+          return [2, 1];
+        } else {
+          return [2];
+        }
+      },
+    },
     methods: {
-      setRestoreType() {
-        let el = document.getElementById('restoreTypeSelect');
-        if (el) {
-          this.changeRestoreType(el.value);
-        }
+      typeName(t) {
+        return t === 2 ? 'Node' : 'Cluster';
       },
-      setTargetIp() {
-        let el = document.getElementById('targetIpSelect');
-        if (el) {
-          this.target_ip = el.value;
-        }
-      },
-      restoreBackup() {
+      showConfirmationDialogue() {
         let targetIps = this.target_ip;
         let data = {
           restore_type: this.restore_type,
@@ -81,16 +81,22 @@
         if (this.restore_type === 2 && targetIps) {
           data.target_ips = targetIps;
         }
-        this.$api.put(`clusters/${this.cluster.cluster_id}/data/${this.snapshot_id}`, data).then((response) => {
-          if (response.status === 200) {
-            $('#restoreCluster').modal('hide');
-            this.failed = false;
-          }
-        }).catch(error => {
-          if (error.response.data.code === 13) {
-            this.failed = true;
-          }
-        });
+
+        $('#restoreCluster').modal('hide');
+        $('#confirmRestore').modal('show');
+        this.$emit('createRestoreRequestBody', data);
+      },
+      setRestoreType() {
+        let el = document.getElementById('restoreTypeSelect');
+        if (el) {
+          this.changeRestoreType(parseInt(el.value));
+        }
+      },
+      setTargetIp() {
+        let el = document.getElementById('targetIpSelect');
+        if (el) {
+          this.target_ip = el.value;
+        }
       },
     },
   };

@@ -27,7 +27,13 @@
                 <th class="font-weight-normal">{{ parseInt(e.updated_at) | moment('YYYY/M/D, h:mm a') }}</th>
                 <td>{{e.status}}</td>
                 <td>
-                    <button v-if="e.backup_type !== '1'"
+                    <button
+                            type="button"
+                            class="btn btn-secondary mx-1"
+                            @click="viewRestoreHistory(e.snapshot_id)"
+                    >View
+                    </button>
+                    <button
                             type="button"
                             class="btn btn-success mx-1"
                             :disabled="isNotCompleted(e)"
@@ -76,9 +82,9 @@
       },
       isNotCompleted(entry) {
         if (entry.backup_type === 1) {
-          for(let i = 0; i < this.backups_by_snapshot.length; i++) {
+          for (let i = 0; i < this.backups_by_snapshot.length; i++) {
             let snapshot = this.backups_by_snapshot[i];
-            for(let j = 0; j < snapshot.length; j++) {
+            for (let j = 0; j < snapshot.length; j++) {
               if (snapshot[j].snapshot_id === entry.snapshot_id) {
                 if (snapshot[j].status !== 'COMPLETED') {
                   return true;
@@ -90,6 +96,9 @@
           return entry.status !== 'COMPLETED';
         }
       },
+      viewRestoreHistory(snapshot_id) {
+        this.$router.push({ name: 'ViewRestores', params: { snapshot_id: snapshot_id} });
+      }
     },
   };
 </script>
