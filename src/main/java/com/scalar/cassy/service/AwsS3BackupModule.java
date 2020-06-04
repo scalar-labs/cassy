@@ -2,6 +2,7 @@ package com.scalar.cassy.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.google.inject.AbstractModule;
@@ -19,11 +20,14 @@ public class AwsS3BackupModule extends AbstractModule {
   private final BackupType type;
   private final String dataDir;
   private final String snapshotId;
+  private final String storeBaseUri;
 
-  public AwsS3BackupModule(BackupType type, String dataDir, String snapshotId) {
+  public AwsS3BackupModule(
+      BackupType type, String dataDir, String snapshotId, String storeBaseUri) {
     this.type = type;
     this.dataDir = dataDir;
     this.snapshotId = snapshotId;
+    this.storeBaseUri = storeBaseUri;
   }
 
   @Override
@@ -50,5 +54,11 @@ public class AwsS3BackupModule extends AbstractModule {
   @Singleton
   AmazonS3 provideAmazonS3() {
     return AmazonS3ClientBuilder.defaultClient();
+  }
+
+  @Provides
+  @Singleton
+  AmazonS3URI provideAmazonS3URI() {
+    return new AmazonS3URI(storeBaseUri);
   }
 }

@@ -17,6 +17,10 @@ Furthermore, the following configurations are recommended (but not required) to 
 
 From here, it assumes there is a multi-node Cassandra cluster (192.168.0.10, ...) and a node for running the Cassy master daemon (192.168.0.254).
 
+Lastly, the following actions are also required.
+* Place a SSH private key without passphrase in the master node and a corresponding public key in each Cassandra node. 
+* Permit SSH user to access Cassandra data directory. (Use cassandra user for SSH might be the easiest way)
+
 ## Install
 
 Cassy is not currently available on Maven, so you will need to install from the source.
@@ -30,11 +34,6 @@ $ ./gradlew installDist
 # If you want to use HTTP/1.0, you can do it with gRPC gateway
 $ go build entrypoint.go
 ```
-
-The following actions are also required:
-* Place a SSH private key without passphrase in the master node and a corresponding public key in each Cassandra node. 
-* Configure AWS config and credentials properly. (Note that the first version only supports AWS S3 as a blob store.) 
-* Permit SSH user to access Cassandra data directory. (Use cassandra user for SSH might be the easiest way)
 
 ## Configure
 
@@ -71,17 +70,18 @@ scalar.cassy.server.srv_service_url=_app._tcp.your-service.com
 ### Storage type configuration
 To change the storage that Cassy uses to store backup files, the following properties of the configuration file will need to be modified:
 1. `storage_base_uri`: the URI of your AWS S3 bucket or Azure Blob Storage container.
-2. `storage_type`: an Enum that tells Cassy which service to use. You can select `aws_s3` for Amazon S3, or `azure_blob` for Azure Blob.
+2. `storage_type`: an Enum that tells Cassy which service to use. You can select `aws_s3` for Amazon S3, or `azure_blob` for Azure Blob Storage.
 
-#### Azure-specific requirements
-To use an Azure Blob Storage container, you will also need to set an environment variable on your system. Navigate to the Azure portal and retrieve the [connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string#view-and-copy-a-connection-string) of your container.
+#### AWS-specific configuration
+To use AWS S3, you also need to configure the master node and the Cassandra nodes with one of the following ways:
+- Place your credentials in a proper location
+- Assign proper IAM roles to the instances (it is applicable only when you run them in AWS)
 
-Once you have copied the `connection_string`, use the following command to set your environment variable.
-```
-export AZURE_STORAGE_CONNECTION_STRING=[your-connection-string]
-```
-
-Cassy will use this environment variable as a credential to access your storage blob.
+#### Azure-specific configuration
+To use Azure Blob Storage, you also need to configure the master node and the Cassandra nodes with one of the following ways:
+- Specify a connection string with the environment variable ` AZURE_STORAGE_CONNECTION_STRING` (see [this](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string) for more detail)
+- Specify service principle in environment variables (Cassy uses `DefaultAzureCredential` internally. Please see [this](https://github.com/Azure/azure-sdk-for-java/blob/master/sdk/identity/azure-identity/README.md#credentials) for more detail)
+- Assign proper managed identity to the instances (Cassy uses `DefaultAzureCredential` internally. Please see [this](https://github.com/Azure/azure-sdk-for-java/blob/master/sdk/identity/azure-identity/README.md#credentials) for more detail)
 
 ## Use
 
@@ -202,5 +202,4 @@ $ grpcurl -plaintext -d '{"limit": 3, "cluster_id": "CLUSTER-ID"}' 192.168.0.254
 ## Future Work
 
 The following features are planned to be implemented in the near future.
-* Upload backup files to a specified remote filesystem or other cloud blob stores than AWS S3.
-* GUI component to make backup and restore operations even easier.
+* GUI component to make backup and restore operations even easier. 

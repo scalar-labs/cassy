@@ -38,13 +38,14 @@ public class Placer {
   private void place(List<Path> files, Path fromDir, Path toDir, int dirToFileDistance) {
     files.forEach(
         f -> {
+          Path relative = fromDir.relativize(f);
           try {
-            Path from = Paths.get(fromDir.toString(), f.toString());
-            Path tmp = Paths.get(toDir.toString(), f.getParent().toString());
+            Path from = Paths.get(fromDir.toString(), relative.toString());
+            Path tmp = Paths.get(toDir.toString(), relative.getParent().toString());
             for (int i = 0; i < dirToFileDistance; ++i) {
               tmp = tmp.getParent();
             }
-            Path to = Paths.get(tmp.toString(), f.getFileName().toString());
+            Path to = Paths.get(tmp.toString(), relative.getFileName().toString());
             Files.createDirectories(to.getParent());
             Files.move(from, to);
           } catch (IOException e) {

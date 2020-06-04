@@ -11,20 +11,19 @@ public class BackupPath {
   private static final String CLUSTER_BACKUP_KEY = "cluster-backup";
   private static final String NODE_BACKUP_KEY = "node-backup";
 
-  public static String create(BackupConfig config, String path) {
-    String type = NODE_BACKUP_KEY;
-    if (config.getBackupType().equals(BackupType.CLUSTER_SNAPSHOT)) {
-      type = CLUSTER_BACKUP_KEY;
-    }
-    return create(type, config, path);
+  public static String create(BaseConfig config, String path) {
+    return create(getType(config), config, path);
   }
 
-  public static String create(RestoreConfig config, String path) {
+  public static String getType(BaseConfig config) {
     String type = NODE_BACKUP_KEY;
-    if (config.getRestoreType().equals(RestoreType.CLUSTER)) {
+    if ((config instanceof RestoreConfig
+            && ((RestoreConfig) config).getRestoreType().equals(RestoreType.CLUSTER))
+        || (config instanceof BackupConfig
+            && ((BackupConfig) config).getBackupType().equals(BackupType.CLUSTER_SNAPSHOT))) {
       type = CLUSTER_BACKUP_KEY;
     }
-    return create(type, config, path);
+    return type;
   }
 
   private static String create(String type, BaseConfig config, String path) {

@@ -40,7 +40,8 @@ public class BackupCommand extends AbstractCommand {
     Injector injector;
     switch (storeType) {
       case AWS_S3:
-        injector = Guice.createInjector(new AwsS3BackupModule(type, dataDir, snapshotId));
+        injector =
+            Guice.createInjector(new AwsS3BackupModule(type, dataDir, snapshotId, storeBaseUri));
         break;
       case AZURE_BLOB:
         injector =
