@@ -22,7 +22,7 @@
                 <td>
                     <button
                             type="button"
-                            class="btn btn-secondary"
+                            class="btn btn-primary"
                             @click="viewBackups(c.cluster_id)"
                     >Manage
                     </button>

@@ -12,20 +12,20 @@
                     <form>
                         <div class="form-group">
                             <label for="backupTypeSelect">Select a backup type</label>
-                            <select class="custom-select" id="backupTypeSelect" @change="setBackupType">
+                            <select class="custom-select" id="backupTypeSelect" v-model="backup_type">
                                 <option selected value="2">Snapshot</option>
                                 <option value="1">Cluster-Wide</option>
                                 <option value="3">Incremental</option>
                             </select>
                         </div>
-                        <div class="form-group" v-if="backup_type === '2'">
+                        <div class="form-group" v-if="backup_type === 2">
                             <label for="targetIpSelect">Specify Target IP (Optional)</label>
-                            <select class="custom-select" id="targetIpSelect">
-                                <option selected>Choose a node ...</option>
-                                <option v-for="(ip, index) in cluster.target_ips" :key="index" @change="setTargetIp">{{ip}}</option>
+                            <select class="custom-select" id="targetIpSelect" v-model="target_ip">
+                                <option selected value="">Choose a node ...</option>
+                                <option v-for="(ip, index) in cluster.target_ips" :key="index">{{ip}}</option>
                             </select>
                         </div>
-                        <div class="form-group" v-if="backup_type === '3'">
+                        <div class="form-group" v-if="backup_type === 3">
                             <label for="snapshotIdSelect">Choose a Snapshot ID</label>
                             <select class="custom-select" id="snapshotIdSelect" @change="setSnapshotId">
                                 <option selected>Snapshot ID</option>
@@ -35,6 +35,7 @@
                         <small v-if="failed" class="form-text text-danger">Failed to create backup. Cassy service unavailable.</small>
                         <div class="modal-footer">
                             <button class="btn btn-outline-secondary mx-1"
+                                    data-toggle="modal"
                                     data-target="#registerBackup"
                             >Cancel
                             </button>
@@ -59,43 +60,35 @@
       backups: {},
       snapshot_ids: {}
     },
+    mounted() {
+      $('#registerBackup').on('hide.bs.modal', () => {
+        this.target_ip = "";
+        this.backup_type = 2;
+      });
+    },
     data() {
       return {
-        backup_type: '2',
+        backup_type: 2,
         snapshot_id: String,
-        target_ip: String,
+        target_ip: "",
         failed: false,
       };
     },
     methods: {
-      setBackupType() {
-        let el = document.getElementById('backupTypeSelect');
-        if (!el) {
-          return null;
-        }
-        this.backup_type = el.value;
-      },
       setSnapshotId() {
         let el = document.getElementById('snapshotIdSelect');
         if (el) {
           this.snapshot_id = el.value;
         }
       },
-      setTargetIp() {
-        let el = document.getElementById('targetIpSelect');
-        if (el) {
-          this.target_ip = el.value;
-        }
-      },
       createBackup() {
-        let targetIps = this.target_ip;
         let data = {
           backup_type: this.backup_type,
         };
-        if (this.backup_type === '2' && targetIps) {
-          data.target_ips = targetIps;
+        if (this.backup_type === 2 && this.target_ip) {
+          data.target_ips = this.target_ip;
         }
-        if (this.backup_type === '3' && this.snapshot_id) {
+        if (this.backup_type === 3 && this.snapshot_id) {
           data.snapshot_id = this.snapshot_id
         }
 

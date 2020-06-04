@@ -12,17 +12,16 @@
                     <form>
                         <div class="form-group">
                             <label for="restoreTypeSelect">Select restore type</label>
-                            <select :value=restore_type class="custom-select" id="restoreTypeSelect"
-                                    @change="setRestoreType">
+                            <select class="custom-select" id="restoreTypeSelect" v-model="restore_type">
                                 <option v-for="(t, i) in availableRestoreTypes" :value="t" :key="i">{{ typeName(t) }}
                                 </option>
                             </select>
                         </div>
                         <div class="form-group" v-if="restore_type === 2">
                             <label for="targetIpSelect">Specify Target IP (Optional)</label>
-                            <select class="custom-select" id="targetIpSelect">
-                                <option selected>Choose a node ...</option>
-                                <option v-for="(ip, index) in cluster.target_ips" :key="index" @change="setTargetIp">
+                            <select class="custom-select" id="targetIpSelect" v-model="target_ip">
+                                <option value="">Choose a node ...</option>
+                                <option v-for="(ip, index) in cluster.target_ips" :key="index">
                                     {{ip}}
                                 </option>
                             </select>
@@ -49,15 +48,20 @@
   export default {
     props: {
       cluster: {},
-      target_ip: String,
       snapshot_id: String,
       backup_type: Number,
-      restore_type: Number,
-      changeRestoreType: Function,
+    },
+    mounted() {
+      $('#restoreCluster').on('hide.bs.modal', () => {
+        this.target_ip = "";
+        this.restore_type = 2;
+      });
     },
     data() {
       return {
         failed: false,
+        target_ip: "",
+        restore_type: 2,
       };
     },
     computed: {
@@ -74,29 +78,16 @@
         return t === 2 ? 'Node' : 'Cluster';
       },
       showConfirmationDialogue() {
-        let targetIps = this.target_ip;
         let data = {
           restore_type: this.restore_type,
         };
-        if (this.restore_type === 2 && targetIps) {
-          data.target_ips = targetIps;
+        if (this.restore_type === 2 && this.target_ip) {
+          data.target_ips = this.target_ip;
         }
 
         $('#restoreCluster').modal('hide');
         $('#confirmRestore').modal('show');
         this.$emit('createRestoreRequestBody', data);
-      },
-      setRestoreType() {
-        let el = document.getElementById('restoreTypeSelect');
-        if (el) {
-          this.changeRestoreType(parseInt(el.value));
-        }
-      },
-      setTargetIp() {
-        let el = document.getElementById('targetIpSelect');
-        if (el) {
-          this.target_ip = el.value;
-        }
       },
     },
   };

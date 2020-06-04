@@ -6,7 +6,6 @@
                 :cluster="cluster"
                 :snapshot_id="snapshot_id"
                 :backup_type="backup_type"
-                :restore_type=restore_type
                 :changeRestoreType=changeRestoreType
                 @createRestoreRequestBody="createRestoreRequestBody($event)" />
         <ConfirmRestore :cluster_id="cluster_id" :snapshot_id="snapshot_id" :data="restore_request_body"/>
@@ -36,7 +35,6 @@
           snapshot_ids: Set,
           snapshot_id: '',
           backup_type: 0,
-          restore_type: 2,
           restore_request_body: {}
         };
       },
@@ -104,7 +102,6 @@
         setRestoreParams(event) {
           this.snapshot_id = event.snapshot_id;
           this.backup_type = event.backup_type;
-          this.restore_type = 2
         },
         createRestoreRequestBody(event) {
           this.restore_request_body = event;

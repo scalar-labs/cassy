@@ -29,13 +29,13 @@
                 <td>
                     <button
                             type="button"
-                            class="btn btn-secondary mx-1"
+                            class="btn btn-primary mx-1"
                             @click="viewRestoreHistory(e.snapshot_id)"
                     >View
                     </button>
                     <button
                             type="button"
-                            class="btn btn-success mx-1"
+                            class="btn btn-primary mx-1"
                             :disabled="isNotCompleted(e)"
                             data-toggle="modal"
                             data-target="#restoreCluster"
@@ -71,7 +71,7 @@
       },
       backupType(type) {
         if (type === 1) {
-          return 'Cluster';
+          return 'Cluster-wide Snapshot';
         }
         if (type === 2) {
           return 'Snapshot';
