@@ -32,7 +32,7 @@
                                 <option v-for="(id, index) in snapshot_ids" :key="index">{{id}}</option>
                             </select>
                         </div>
-                        <small v-if="failed" class="form-text text-danger">Failed to create backup. Cassy service unavailable.</small>
+                        <small v-if="failed" class="form-text text-danger">{{ errorMessage }}</small>
                         <div class="modal-footer">
                             <button class="btn btn-outline-secondary mx-1"
                                     data-toggle="modal"
@@ -64,6 +64,7 @@
       $('#registerBackup').on('hide.bs.modal', () => {
         this.target_ip = "";
         this.backup_type = 2;
+        this.errorMessage = "";
       });
     },
     data() {
@@ -72,6 +73,7 @@
         snapshot_id: String,
         target_ip: "",
         failed: false,
+        errorMessage: "",
       };
     },
     methods: {
@@ -99,7 +101,8 @@
             this.$emit('updateBackupList');
           }
         })
-        .catch(() => {
+        .catch(error => {
+            this.errorMessage = error.response.data.message;
             this.failed = true;
         });
       },
