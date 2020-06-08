@@ -15,7 +15,9 @@
                         <p class="col">Snapshot ID:</p>
                         <p class="col">{{snapshot_id}}</p>
                         <p class="col">Target IP(s):</p>
-                        <p class="col">{{target_ips}}</p>
+                        <p class="col">{{targetIp}}</p>
+                        <p class="col">Snapshot-only:</p>
+                        <p class="col">{{snapshot_only}}</p>
                     </div>
                 </div>
                 <small v-if="failed" class="form-text text-danger text-center">Error: {{ error }}</small>
@@ -45,19 +47,23 @@
       return {
         failed: false,
         error: '',
-        target_ips: '',
       };
+    },
+    computed: {
+      targetIp: function() {
+        if (this.data.target_ips) {
+          return this.data.target_ips[0];
+        }
+        return 'all nodes';
+      },
+      snapshot_only: function() {
+        return !!this.data.snapshot_only;
+      }
     },
     mounted() {
       $('#confirmRestore').on('hide.bs.modal', () => {
+        this.target_ip = '';
         this.failed = false;
-      });
-      $('#confirmRestore').on('show.bs.modal', () => {
-        if (this.data.target_ip) {
-          this.target_ips = this.data.target_ip;
-        } else {
-          this.target_ips = 'all nodes';
-        }
       });
     },
     methods: {
