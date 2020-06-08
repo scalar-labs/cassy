@@ -91,7 +91,7 @@
           restore_type: this.restore_type,
         };
         if (this.restore_type === 2 && this.target_ip) {
-          data.target_ips = this.target_ip;
+          data.target_ips = [this.target_ip];
         }
         if (this.snapshot_only) {
           data.snapshot_only = true;
