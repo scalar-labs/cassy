@@ -91,7 +91,7 @@
           backup_type: this.backup_type,
         };
         if (this.backup_type === 2 && this.target_ip) {
-          data.target_ips = this.target_ip;
+          data.target_ips = [this.target_ip];
         }
         if (this.backup_type === 3 && this.snapshot_id) {
           data.snapshot_id = this.snapshot_id
