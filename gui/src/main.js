@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import  '@/assets/custom.scss'
 Vue.prototype.$api = api;
 Vue.config.productionTip = false
 

@@ -12,7 +12,7 @@
                     <form>
                         <div class="form-group">
                             <label for="backupTypeSelect">Select a backup type</label>
-                            <select class="custom-select" id="backupTypeSelect" v-model="backup_type" @change="log()">
+                            <select class="custom-select" id="backupTypeSelect" v-model="backup_type">
                                 <option selected :value="2">Snapshot</option>
                                 <option :value="1">Cluster-Wide</option>
                                 <option :value="3">Incremental</option>
@@ -58,28 +58,25 @@
     props: {
       cluster: {},
       backups: {},
-      snapshot_ids: {}
+      snapshot_ids: {},
     },
     mounted() {
       $('#registerBackup').on('hide.bs.modal', () => {
-        this.target_ip = "";
+        this.target_ip = '';
         this.backup_type = 2;
-        this.errorMessage = "";
+        this.errorMessage = '';
       });
     },
     data() {
       return {
         backup_type: 2,
         snapshot_id: String,
-        target_ip: "",
+        target_ip: '',
         failed: false,
-        errorMessage: "",
+        errorMessage: '',
       };
     },
     methods: {
-      log() {
-        console.log(this.backup_type);
-      },
       setSnapshotId() {
         let el = document.getElementById('snapshotIdSelect');
         if (el) {
@@ -94,7 +91,7 @@
           data.target_ips = [this.target_ip];
         }
         if (this.backup_type === 3 && this.snapshot_id) {
-          data.snapshot_id = this.snapshot_id
+          data.snapshot_id = this.snapshot_id;
         }
 
         this.$api.post(`clusters/${this.cluster.cluster_id}/backups`, data).then((response) => {
@@ -103,10 +100,9 @@
             this.failed = false;
             this.$emit('updateBackupList');
           }
-        })
-        .catch(error => {
-            this.errorMessage = error.response.data.message;
-            this.failed = true;
+        }).catch(error => {
+          this.errorMessage = error.message;
+          this.failed = true;
         });
       },
     },
