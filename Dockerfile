@@ -7,6 +7,7 @@ COPY ./cassy.tar .
 RUN tar xf cassy.tar -C / && rm -f cassy.tar
 
 COPY scripts ./scripts
+COPY logback.xml.docker logback.xml
 
 RUN apt-get update && apt-get install -y \
     sqlite \
@@ -17,6 +18,7 @@ RUN mkdir -p /cassy/data \
 
 RUN mkdir -p /cassy/conf
 
+ENV JAVA_OPTS -Dlogback.configurationFile=/cassy/logback.xml
 CMD ["/cassy/bin/cassy-server", "--config", "/cassy/conf/cassy.properties"]
 
 EXPOSE 20051

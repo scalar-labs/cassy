@@ -138,7 +138,7 @@ applicationDistribution.into('bin') {
 
 docker {
     name 'scalarlabs/cassy'
-    files tasks.distTar.outputs
+    files tasks.distTar.outputs, 'conf/logback.xml.docker'
     copySpec.with {
         from('.') {
             include 'scripts/**'
