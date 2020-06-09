@@ -13,12 +13,10 @@ RUN apt-get update && apt-get install -y \
     sqlite \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /cassy/data \
-    && sqlite3 /cassy/data/cassy.db < ./scripts/db.schema
-
-RUN mkdir -p /cassy/conf
+RUN mkdir -p /cassy/data /cassy/conf
 
 ENV JAVA_OPTS -Dlogback.configurationFile=/cassy/logback.xml
+ENTRYPOINT ["/cassy/scripts/entrypoint.sh"]
 CMD ["/cassy/bin/cassy-server", "--config", "/cassy/conf/cassy.properties"]
 
 EXPOSE 20051
