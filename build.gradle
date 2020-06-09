@@ -7,6 +7,10 @@ buildscript {
     }
 }
 
+plugins {
+    id 'com.palantir.docker' version '0.25.0'
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -130,6 +134,17 @@ applicationDistribution.into('bin') {
     from(RestoreCommand)
     from(Server)
     fileMode = 0755
+}
+
+docker {
+    name 'scalarlabs/cassy'
+    files tasks.distTar.outputs
+    copySpec.with {
+        from('.') {
+            include 'scripts/**'
+            into '.'
+        }
+    }
 }
 
 // build should not depend on the integration tests
