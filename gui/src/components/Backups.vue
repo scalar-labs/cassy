@@ -105,16 +105,6 @@
       },
       viewRestoreHistory() {
         this.$router.push({name: 'ViewRestores', params: {snapshot_id: ''}});
-        // this.$router.push(`/clusters/${this.cluster.cluster_id}/data/`);
-        // var requestOptions = {
-        //   method: 'GET',
-        //   redirect: 'follow'
-        // };
-        //
-        // fetch("http://127.0.0.1:8090/v1/clusters/TestCluster-78d3a9b8-1e22-4c2a-bc41-512e52d24745/data/", requestOptions)
-        // .then(response => response.text())
-        // .then(result => console.log(result))
-        // .catch(error => console.log('error', error));
       },
     },
   };
