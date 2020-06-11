@@ -21,7 +21,7 @@ const routes = [
     path: '/clusters/:cluster_id/data/:snapshot_id?',
     name: 'ViewRestores',
     component: ViewRestores,
-  },
+  }
 ];
 
 const router = new VueRouter({

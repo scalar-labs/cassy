@@ -104,7 +104,7 @@
         }
       },
       viewRestoreHistory() {
-        this.$router.push({name: 'ViewRestores'});
+        this.$router.push({name: 'ViewRestores', params: {snapshot_id: ''}});
         // this.$router.push(`/clusters/${this.cluster.cluster_id}/data/`);
         // var requestOptions = {
         //   method: 'GET',
