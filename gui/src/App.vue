@@ -12,9 +12,9 @@
                     <div class="sidebar-sticky pt-2">
                         <ul class="nav flex-column">
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <router-link class="nav-link" to="/#">
                                     View Clusters
-                                </a>
+                                </router-link>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="#">
@@ -66,6 +66,7 @@
         padding: 48px 0 0;
         box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
         transition: all 0.3s;
+        min-height: 100vh;
     }
 
     .sidebar-sticky {

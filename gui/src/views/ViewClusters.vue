@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="col">
         <Clusters :clusters="clusters"/>
         <RegisterCluster id="registerCluster" @updateClusterList="fetchClusters"/>
     </div>

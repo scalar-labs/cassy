@@ -1,5 +1,5 @@
 <template>
-    <Restores :restores="restores" />
+    <Restores :restores="restores" :cluster="cluster" />
 </template>
 
 <script>
@@ -13,15 +13,21 @@
     data() {
       return {
         cluster_id: this.$route.params.cluster_id,
-        snapshot_id: this.$route.params.snapshot_id,
-        restores: {}
+        restores: {},
+        cluster: {}
       }
     },
     mounted() {
-      this.$api.get(`clusters/${this.cluster_id}/data/${this.snapshot_id}`)
+      this.$api.get(`clusters/${this.cluster_id}/data/`)
       .then((response) => {
         if (response.status === 200) {
           this.restores = response.data;
+        }
+      });
+      this.$api.get(`clusters/${this.cluster_id}`)
+      .then((response) => {
+        if (response.status === 200) {
+          this.cluster = response.data.entries[0];
         }
       });
     }

@@ -27,7 +27,7 @@
             >View Restores
             </button>
         </div>
-        <table class="table  text-center table-bordered">
+        <table class="table text-center table-bordered">
             <thead class="table-success">
             <tr>
                 <th scope="col">Snapshot ID</th>
@@ -104,7 +104,7 @@
         }
       },
       viewRestoreHistory() {
-        this.$router.push({name: 'ViewRestores', params: {snapshot_id: ''}});
+        this.$router.push({name: 'ViewRestores'});
       },
     },
   };

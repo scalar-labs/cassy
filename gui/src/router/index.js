@@ -18,7 +18,7 @@ const routes = [
     component: ViewBackups,
   },
   {
-    path: '/clusters/:cluster_id/data/:snapshot_id?',
+    path: '/clusters/:cluster_id/data/',
     name: 'ViewRestores',
     component: ViewRestores,
   }

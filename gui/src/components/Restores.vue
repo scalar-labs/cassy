@@ -1,8 +1,32 @@
 <template>
     <div>
-        <h4>Restores</h4>
-        <table class="table table-borderless table-striped text-nowrap text-center">
-            <thead>
+        <h4 class="pt-3">Restore Statuses in Cluster: {{cluster.cluster_name}}</h4>
+        <table class="table table-bordered text-center">
+            <thead class="table-success">
+            <tr>
+                <th scope="col">Cluster ID</th>
+                <th scope="col">Target IPs</th>
+                <th scope="col">Keyspaces</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{cluster.cluster_id}}</td>
+                <td>{{cluster.target_ips}}</td>
+                <td>{{cluster.keyspaces}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="row justify-content-end mb-3 pr-3">
+            <button
+                    type="button"
+                    class="btn btn-primary mx-1"
+                    @click="viewBackups()"
+            >View Backups
+            </button>
+        </div>
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-success">
             <tr>
                 <th scope="col">Snapshot ID</th>
                 <th scope="col">Target IP</th>
@@ -26,20 +50,18 @@
             </tr>
             </tbody>
         </table>
-        <div class="row justify-content-end">
-            <button class="btn btn-outline-secondary" @click="goBack">Back</button>
-        </div>
     </div>
 </template>
 
 <script>
     export default {
       props: {
-        restores: {}
+        restores: {},
+        cluster: {}
       },
       methods: {
-        goBack() {
-          this.$router.back()
+        viewBackups() {
+          this.$router.push({name: "ViewBackups", params: {cluster_id: this.cluster.cluster_id}})
         }
       }
     }
