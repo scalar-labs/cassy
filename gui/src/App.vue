@@ -8,7 +8,7 @@
         </nav>
         <div class="container-fluid">
             <div class="row">
-                <nav class="collapse col-sm-0 d-none d-md-block px-0 bg-light sidebar" id="sidebar">
+                <nav class="collapse col-xl-1 d-sm-none d-lg-block px-0 bg-light sidebar" id="sidebar">
                     <div class="sidebar-sticky pt-2">
                         <ul class="nav flex-column">
                             <li class="nav-item">
@@ -26,7 +26,7 @@
                         </ul>
                     </div>
                 </nav>
-                <div class="col-md-10 ml-auto mb-5 mr-5 pl-0 pt-5">
+                <div class="col d-flex mx-3 mb-5 pl-0 pt-5">
                     <router-view/>
                 </div>
             </div>
@@ -61,9 +61,8 @@
         top: 0;
         bottom: 0;
         left: 0;
-        min-width: 150px;
-        max-width: 150px;
         z-index: 100;
+        min-width: 150px;
         padding: 48px 0 0;
         box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
         transition: all 0.3s;
