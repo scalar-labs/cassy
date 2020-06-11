@@ -1,13 +1,14 @@
 <template>
     <div>
         <h4 class="mt-3">Clusters</h4>
-        <table class="table table-borderless text-center text-nowrap table-striped">
-            <thead>
+        <table class="table table-bordered text-center text-nowrap table-striped">
+            <thead class="table-success">
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Name</th>
                 <th scope="col">Created At</th>
                 <th scope="col">Updated At</th>
+                <th scope="col"></th>
             </tr>
             </thead>
             <tbody>
