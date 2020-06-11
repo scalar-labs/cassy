@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h4 class="py-3">Backups in Cluster: {{cluster.cluster_name}}</h4>
+        <h4 class="pt-3">Backups in Cluster: {{cluster.cluster_name}}</h4>
         <table class="table table-bordered text-center">
             <thead class="table-success">
             <tr>
