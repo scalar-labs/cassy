@@ -1,13 +1,34 @@
 <template>
     <div>
-        <h5>Backups in Cluster: {{cluster.cluster_name}}</h5>
-        <div class="bg-secondary text-white border rounded my-3">
-            <p class="m-2">CLUSTER_ID: {{cluster.cluster_id}}</p>
-            <p class="m-2">TARGET_IPS: {{cluster.target_ips}}</p>
-            <p class="m-2">KEYSPACES: {{cluster.keyspaces}}</p>
+        <h4 class="py-3">Backups in Cluster: {{cluster.cluster_name}}</h4>
+        <table class="table table-bordered text-center">
+            <thead class="table-success">
+            <tr>
+                <th scope="col">Cluster ID</th>
+                <th scope="col">Target IPs</th>
+                <th scope="col">Keyspaces</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{cluster.cluster_id}}</td>
+                <td>{{cluster.target_ips}}</td>
+                <td>{{cluster.keyspaces}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="row justify-content-end mr-3 mb-3">
+            <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerBackup">Create Backup
+            </button>
+            <button
+                    type="button"
+                    class="btn btn-primary mx-1"
+                    @click="viewRestoreHistory()"
+            >View Restores
+            </button>
         </div>
-        <table class="table text-nowrap text-center">
-            <thead>
+        <table class="table text-nowrap text-center table-bordered">
+            <thead class="table-success">
             <tr>
                 <th scope="col">Snapshot ID</th>
                 <th scope="col">Backup Type</th>
@@ -18,7 +39,7 @@
                 <th scope="col"></th>
             </tr>
             </thead>
-            <tbody v-for="(b, i) in backups_by_snapshot" :key="i" class="">
+            <tbody id="mainTable" v-for="(b, i) in backups_by_snapshot" :key="i" class="">
             <tr v-for="(e, j) in b" :key="j">
                 <td>{{e.snapshot_id}}</td>
                 <td>{{backupType(e.backup_type)}}</td>
@@ -27,12 +48,6 @@
                 <th class="font-weight-normal">{{ parseInt(e.updated_at) | moment('YYYY/M/D, h:mm a') }}</th>
                 <td>{{e.status}}</td>
                 <td>
-                    <button
-                            type="button"
-                            class="btn btn-primary mx-1"
-                            @click="viewRestoreHistory(e.snapshot_id)"
-                    >View
-                    </button>
                     <button
                             type="button"
                             class="btn btn-primary mx-1"
@@ -46,11 +61,6 @@
             </tr>
             </tbody>
         </table>
-        <div class="row justify-content-end mr-3">
-            <button class="btn btn-outline-secondary mx-1" @click="goBack">Back</button>
-            <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerBackup">Create Backup
-            </button>
-        </div>
     </div>
 </template>
 
@@ -66,9 +76,6 @@
       backups_by_snapshot: Array,
     },
     methods: {
-      goBack() {
-        this.$router.back();
-      },
       backupType(type) {
         if (type === 1) {
           return 'Cluster-wide Snapshot';
@@ -96,14 +103,24 @@
           return entry.status !== 'COMPLETED';
         }
       },
-      viewRestoreHistory(snapshot_id) {
-        this.$router.push({ name: 'ViewRestores', params: { snapshot_id: snapshot_id} });
-      }
+      viewRestoreHistory() {
+        this.$router.push({name: 'ViewRestores'});
+        // this.$router.push(`/clusters/${this.cluster.cluster_id}/data/`);
+        // var requestOptions = {
+        //   method: 'GET',
+        //   redirect: 'follow'
+        // };
+        //
+        // fetch("http://127.0.0.1:8090/v1/clusters/TestCluster-78d3a9b8-1e22-4c2a-bc41-512e52d24745/data/", requestOptions)
+        // .then(response => response.text())
+        // .then(result => console.log(result))
+        // .catch(error => console.log('error', error));
+      },
     },
   };
 </script>
 <style>
-    tbody::before {
+    #mainTable::before {
         content: '';
         display: block;
         height: 30px;
