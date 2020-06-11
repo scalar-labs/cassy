@@ -8,26 +8,26 @@
         </nav>
         <div class="container-fluid">
             <div class="row">
-                <nav class="col-sm-0 d-none d-md-block px-0 bg-light sidebar">
+                <nav class="collapse col-sm-0 d-none d-md-block px-0 bg-light sidebar" id="sidebar">
                     <div class="sidebar-sticky pt-2">
-                       <ul class="nav flex-column">
-                           <li class="nav-item">
-                               <a class="nav-link" href="#">
-                                   View Clusters
-                               </a>
-                           </li>
-                           <li class="nav-item">
-                               <a class="nav-link" href="#">
-                                   View Settings
-                               </a>
-                           </li>
-                           <li>
-                           </li>
-                       </ul>
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    View Clusters
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    View Settings
+                                </a>
+                            </li>
+                            <li>
+                            </li>
+                        </ul>
                     </div>
                 </nav>
                 <div class="col-md-10 ml-auto mb-5 mr-5 pl-0 pt-5">
-                <router-view/>
+                    <router-view/>
                 </div>
             </div>
         </div>
@@ -40,10 +40,16 @@
 </template>
 
 <script>
+  import $ from 'jquery';
+
   export default {
     mounted: function() {
       this.$nextTick(function() {
         document.title = 'Cassy';
+      });
+
+      $('#sidebarCollapse').on('click', function() {
+        $('#sidebar').toggleClass('disabled');
       });
     },
   };
@@ -55,16 +61,25 @@
         top: 0;
         bottom: 0;
         left: 0;
+        min-width: 150px;
+        max-width: 150px;
         z-index: 100;
         padding: 48px 0 0;
         box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+        transition: all 0.3s;
     }
+
     .sidebar-sticky {
         position: -webkit-sticky;
         position: sticky;
     }
+
     .sidebar .nav-link {
         font-weight: 500;
         color: #333;
+    }
+
+    .sidebar.disabled {
+        margin-left: -150px;
     }
 </style>

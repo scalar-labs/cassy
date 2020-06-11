@@ -40,7 +40,6 @@
       },
       mounted() {
         this.fetchBackups();
-        console.log(this.backups_by_snapshot);
 
         this.$api.get(`clusters/${this.cluster_id}`)
         .then((response) => {

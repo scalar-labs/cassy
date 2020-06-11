@@ -51,17 +51,12 @@
           }
         })
         .catch(error => {
-          console.log(error);
-          console.log(error.response);
           this.failed = true;
           if (error.response.data.code === 13) {
-            console.log("code 13");
             this.error = "Failed to register cluster. Please make sure Cassandra is started."
           }
           if (error.response.status === 503) {
-            console.log("code 14");
             this.error = "Failed to register cluster. Cassy service unavailable."
-            console.log(this.error);
           }
         })
         ;
