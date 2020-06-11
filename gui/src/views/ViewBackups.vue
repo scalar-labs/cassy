@@ -40,6 +40,7 @@
       },
       mounted() {
         this.fetchBackups();
+        console.log(this.backups_by_snapshot);
 
         this.$api.get(`clusters/${this.cluster_id}`)
         .then((response) => {
@@ -53,7 +54,6 @@
           this.restore_type = type;
         },
         fetchBackups() {
-          this.backups_by_snapshot = [[]];
           this.$api.get(`clusters/${this.cluster_id}/backups`)
           .then((response) => {
             if (response.status === 200) {
@@ -96,6 +96,7 @@
                   }
                 }
               }
+              this.backups_by_snapshot.sort((a, b) => (a[0].created_at > b[0].created_at ? -1 : 1));
             }
           });
         },

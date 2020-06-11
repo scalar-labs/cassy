@@ -21,15 +21,17 @@
                                    View Settings
                                </a>
                            </li>
+                           <li>
+                           </li>
                        </ul>
                     </div>
                 </nav>
-                <div class="col-md-10 ml-auto mr-5 pl-0 pt-5">
+                <div class="col-md-10 ml-auto mb-5 mr-5 pl-0 pt-5">
                 <router-view/>
                 </div>
             </div>
         </div>
-        <footer class="">
+        <footer class="fixed-bottom">
             <div class="card-footer text-center bg-light text-muted">A backup tool for Cassandra, made by <a
                     href="https://scalar-labs.com/">Scalar</a>.
             </div>
