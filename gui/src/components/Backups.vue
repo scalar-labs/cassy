@@ -70,9 +70,6 @@
       cluster: {
         type: Object,
       },
-      backups: {
-        type: Object,
-      },
       backups_by_snapshot: Array,
     },
     methods: {

@@ -8,7 +8,7 @@
         </nav>
         <div class="container-fluid">
             <div class="row">
-                <nav class="collapse col-xl-1 d-sm-none d-lg-block px-0 bg-light sidebar" id="sidebar">
+                <nav class="collapse col-md-1 d-lg-none d-xl-block px-0 bg-light sidebar" id="sidebar">
                     <div class="sidebar-sticky pt-2">
                         <ul class="nav flex-column">
                             <li class="nav-item">
@@ -21,11 +21,11 @@
                                     View Settings
                                 </a>
                             </li>
-                            <li>
-                            </li>
                         </ul>
                     </div>
                 </nav>
+                <button class="collapse col-md-0 d-lg-none d-xl-block sidebar-toggle btn btn-secondary p-0" id="sidebarCollapse">
+                </button>
                 <div class="col d-flex mx-3 mb-5 pl-0 pt-5">
                     <router-view/>
                 </div>
@@ -81,5 +81,10 @@
 
     .sidebar.disabled {
         margin-left: -150px;
+    }
+
+    .sidebar-toggle {
+        min-width: 10px;
+        max-width: 10px
     }
 </style>

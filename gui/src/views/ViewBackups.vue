@@ -35,7 +35,7 @@
           snapshot_ids: Set,
           snapshot_id: '',
           backup_type: 0,
-          restore_request_body: {}
+          restore_request_body: {},
         };
       },
       mounted() {
