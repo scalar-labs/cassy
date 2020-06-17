@@ -18,18 +18,18 @@
                                 <option :value="3">Incremental</option>
                             </select>
                         </div>
-                        <div class="form-group" v-if="backup_type === 2">
-                            <label for="targetIpSelect">Specify Target IP (Optional)</label>
-                            <select class="custom-select" id="targetIpSelect" v-model="target_ip">
-                                <option selected value="">Choose a node ...</option>
-                                <option v-for="(ip, index) in cluster.target_ips" :key="index">{{ip}}</option>
-                            </select>
-                        </div>
                         <div class="form-group" v-if="backup_type === 3">
                             <label for="snapshotIdSelect">Choose a Snapshot ID</label>
                             <select class="custom-select" id="snapshotIdSelect" @change="setSnapshotId">
                                 <option selected>Snapshot ID</option>
                                 <option v-for="(id, index) in snapshot_ids" :key="index">{{id}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group" v-if="backup_type === 2 || backup_type === 3">
+                            <label for="targetIpSelect">Specify Target IP (Optional)</label>
+                            <select class="custom-select" id="targetIpSelect" v-model="target_ip">
+                                <option selected value="">Choose a node ...</option>
+                                <option v-for="(ip, index) in cluster.target_ips" :key="index">{{ip}}</option>
                             </select>
                         </div>
                         <small v-if="failed" class="form-text text-danger">{{ errorMessage }}</small>
@@ -87,7 +87,7 @@
         let data = {
           backup_type: this.backup_type,
         };
-        if (this.backup_type === 2 && this.target_ip) {
+        if ((this.backup_type === 2 || this.backup_type === 3) && this.target_ip) {
           data.target_ips = [this.target_ip];
         }
         if (this.backup_type === 3 && this.snapshot_id) {
