@@ -1,22 +1,7 @@
 <template>
     <div>
         <h4 class="pt-3">Restore Statuses in Cluster: {{cluster.cluster_name}}</h4>
-        <table class="table table-bordered text-center">
-            <thead class="table-success">
-            <tr>
-                <th scope="col">Cluster ID</th>
-                <th scope="col">Target IPs</th>
-                <th scope="col">Keyspaces</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>{{cluster.cluster_id}}</td>
-                <td>{{cluster.target_ips}}</td>
-                <td>{{cluster.keyspaces}}</td>
-            </tr>
-            </tbody>
-        </table>
+        <ClusterSummary :cluster="cluster"/>
         <div class="row justify-content-end mb-3 pr-3">
             <button
                     type="button"
@@ -61,34 +46,39 @@
 </template>
 
 <script>
-    export default {
-      props: {
-        restores: Array,
-        entryCount: Number,
-        cluster: {}
+  import ClusterSummary from './ClusterSummary';
+
+  export default {
+    components: {
+      ClusterSummary,
+    },
+    props: {
+      restores: Array,
+      entryCount: Number,
+      cluster: {},
+    },
+    data() {
+      return {
+        page: 1,
+        perPage: 10,
+      };
+    },
+    computed: {
+      displayedRestores() {
+        return this.paginate(this.restores);
       },
-      data() {
-        return {
-          page: 1,
-          perPage: 10,
-        }
+    },
+    methods: {
+      paginate(content) {
+        let page = this.page;
+        let perPage = this.perPage;
+        let from = (page * perPage) - perPage;
+        let to = (page * perPage);
+        return content.slice(from, to);
       },
-      computed: {
-        displayedRestores() {
-          return this.paginate(this.restores);
-        }
+      viewBackups() {
+        this.$router.push({name: 'ViewBackups', params: {cluster_id: this.cluster.cluster_id}});
       },
-      methods: {
-        paginate(content) {
-          let page = this.page;
-          let perPage = this.perPage;
-          let from = (page * perPage) - perPage;
-          let to = (page * perPage);
-          return content.slice(from, to);
-        },
-        viewBackups() {
-          this.$router.push({name: "ViewBackups", params: {cluster_id: this.cluster.cluster_id}})
-        }
-      }
-    }
+    },
+  };
 </script>

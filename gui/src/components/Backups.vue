@@ -1,22 +1,7 @@
 <template>
     <div>
         <h4 class="pt-3">Backups in Cluster: {{cluster.cluster_name}}</h4>
-        <table class="table table-bordered text-center">
-            <thead class="table-success">
-            <tr>
-                <th scope="col">Cluster ID</th>
-                <th scope="col">Target IPs</th>
-                <th scope="col">Keyspaces</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>{{cluster.cluster_id}}</td>
-                <td>{{cluster.target_ips}}</td>
-                <td>{{cluster.keyspaces}}</td>
-            </tr>
-            </tbody>
-        </table>
+        <ClusterSummary :cluster="cluster"/>
         <div class="row justify-content-end mb-3 pr-3">
             <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerBackup">Create Backup
             </button>
@@ -72,7 +57,12 @@
 </template>
 
 <script>
+  import ClusterSummary from './ClusterSummary';
+
   export default {
+    components: {
+      ClusterSummary,
+    },
     props: {
       cluster: {
         type: Object,
@@ -83,12 +73,12 @@
       return {
         page: 1,
         perPage: 5,
-      }
+      };
     },
     computed: {
       displayedBackups() {
         return this.paginate(this.backups_by_snapshot);
-      }
+      },
     },
     methods: {
       paginate(content) {
