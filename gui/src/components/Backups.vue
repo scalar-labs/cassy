@@ -105,7 +105,7 @@
             let snapshot = this.backups_by_snapshot[i];
             for (let j = 0; j < snapshot.length; j++) {
               if (snapshot[j].snapshot_id === entry.snapshot_id) {
-                if (snapshot[j].status !== 'COMPLETED') {
+                if (snapshot[j].backup_type === 1 && snapshot[j].status !== 'COMPLETED') {
                   return true;
                 }
               }
