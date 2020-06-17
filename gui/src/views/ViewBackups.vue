@@ -36,10 +36,12 @@
           snapshot_id: '',
           backup_type: 0,
           restore_request_body: {},
+          autoRefreshTimer: ''
         };
       },
       mounted() {
         this.fetchBackups();
+        this.autoRefreshTimer = setInterval(this.fetchBackups, 10000);
 
         this.$api.get(`clusters/${this.cluster_id}`)
         .then((response) => {
@@ -47,6 +49,9 @@
             this.cluster = response.data.entries[0];
           }
         });
+      },
+      beforeDestroy() {
+        clearInterval(this.autoRefreshTimer);
       },
       methods: {
         changeRestoreType(type) {
@@ -67,6 +72,7 @@
                 let prevId = sortedBackups.entries[0].snapshot_id;
                 let snapshot_ids = [];
 
+                this.backups_by_snapshot = [[]];
                 sortedBackups.entries.forEach(entry => {
                   snapshot_ids.push(entry.snapshot_id); // this will be used to make a Set of unique snapshot_ids
                   if (entry.snapshot_id === prevId) {
