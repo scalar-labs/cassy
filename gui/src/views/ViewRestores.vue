@@ -13,7 +13,8 @@
     data() {
       return {
         cluster_id: this.$route.params.cluster_id,
-        restores: {},
+        restores: [],
+        entryCount: 0,
         cluster: {}
       }
     },
@@ -21,7 +22,8 @@
       this.$api.get(`clusters/${this.cluster_id}/data/`)
       .then((response) => {
         if (response.status === 200) {
-          this.restores = response.data;
+          this.restores = response.data.entries;
+          this.entryCount = this.restore.length;
         }
       });
       this.$api.get(`clusters/${this.cluster_id}`)

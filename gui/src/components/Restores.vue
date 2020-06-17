@@ -38,7 +38,7 @@
             </thead>
             <tbody>
             <tr
-                    v-for="(r, index) in restores.entries"
+                    v-for="(r, index) in displayedRestores"
                     :key="index"
             >
                 <td>{{r.snapshot_id}}</td>
@@ -50,16 +50,42 @@
             </tr>
             </tbody>
         </table>
+        <b-pagination
+                class="justify-content-center"
+                v-model="page"
+                :per-page="perPage"
+                :total-rows="restores.length"
+        >
+        </b-pagination>
     </div>
 </template>
 
 <script>
     export default {
       props: {
-        restores: {},
+        restores: Array,
+        entryCount: Number,
         cluster: {}
       },
+      data() {
+        return {
+          page: 1,
+          perPage: 10,
+        }
+      },
+      computed: {
+        displayedRestores() {
+          return this.paginate(this.restores);
+        }
+      },
       methods: {
+        paginate(content) {
+          let page = this.page;
+          let perPage = this.perPage;
+          let from = (page * perPage) - perPage;
+          let to = (page * perPage);
+          return content.slice(from, to);
+        },
         viewBackups() {
           this.$router.push({name: "ViewBackups", params: {cluster_id: this.cluster.cluster_id}})
         }
