@@ -1,6 +1,9 @@
 <template>
     <div>
         <h4 class="mt-3">Clusters</h4>
+        <div class="row justify-content-end mb-3 pr-3">
+            <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerCluster">Add Cluster</button>
+        </div>
         <table class="table table-bordered text-center text-nowrap table-striped">
             <thead class="table-success">
             <tr>
@@ -13,7 +16,7 @@
             </thead>
             <tbody>
             <tr
-                    v-for="(c, index) in clusters.entries"
+                    v-for="(c, index) in displayedClusters"
                     :key="index"
             >
                 <td>{{c.cluster_id}}</td>
@@ -31,20 +34,41 @@
             </tr>
             </tbody>
         </table>
-        <div class="row justify-content-end pr-3">
-            <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerCluster">Add Cluster</button>
-        </div>
+        <b-pagination
+                class="justify-content-center"
+                v-model="page"
+                :per-page="perPage"
+                :total-rows="entries.length"
+        >
+        </b-pagination>
     </div>
 </template>
 
 <script>
   export default {
     props: {
-      clusters: {
-        type: Object,
-      },
+      entries: Array,
+      entryCount: Number,
+    },
+    data() {
+      return {
+        page: 1,
+        perPage: 10,
+      }
+    },
+    computed: {
+      displayedClusters() {
+        return this.paginate(this.entries);
+      }
     },
     methods: {
+      paginate(content) {
+        let page = this.page;
+        let perPage = this.perPage;
+        let from = (page * perPage) - perPage;
+        let to = (page * perPage);
+        return content.slice(from, to);
+      },
       viewBackups(cluster_id) {
         this.$router.push(`/clusters/${cluster_id}/backups`);
       },

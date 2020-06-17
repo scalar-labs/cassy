@@ -1,6 +1,6 @@
 <template>
     <div class="col">
-        <Clusters :clusters="clusters"/>
+        <Clusters :entries="entries" :entryCount="entryCount"/>
         <RegisterCluster id="registerCluster" @updateClusterList="fetchClusters"/>
     </div>
 </template>
@@ -19,7 +19,8 @@
     },
     data() {
       return {
-        clusters: {},
+        entries: [],
+        entryCount: 0,
       };
     },
     mounted() {
@@ -30,7 +31,8 @@
         this.$api.get('clusters/')
         .then((response) => {
           if (response.status === 200) {
-            this.clusters = response.data;
+            this.entries = response.data.entries;
+            this.entryCount = this.entries.length;
           }
         });
       }

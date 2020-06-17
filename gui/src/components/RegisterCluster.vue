@@ -54,9 +54,10 @@
           this.failed = true;
           if (error.response.data.code === 13) {
             this.error = "Failed to register cluster. Please make sure Cassandra is started."
-          }
-          if (error.response.status === 503) {
+          } else if (error.response.status === 503) {
             this.error = "Failed to register cluster. Cassy service unavailable."
+          } else {
+            this.error = error.response.data;
           }
         })
         ;
