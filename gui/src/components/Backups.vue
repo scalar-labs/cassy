@@ -39,7 +39,7 @@
                 <th scope="col"></th>
             </tr>
             </thead>
-            <tbody id="mainTable" v-for="(b, i) in backups_by_snapshot" :key="i" class="">
+            <tbody id="mainTable" v-for="(b, i) in displayedBackups" :key="i">
             <tr v-for="(e, j) in b" :key="j">
                 <td>{{e.snapshot_id}}</td>
                 <td>{{backupType(e.backup_type)}}</td>
@@ -61,6 +61,13 @@
             </tr>
             </tbody>
         </table>
+        <b-pagination
+                class="justify-content-center"
+                v-model="page"
+                :per-page="perPage"
+                :total-rows="backups_by_snapshot.length"
+        >
+        </b-pagination>
     </div>
 </template>
 
@@ -72,7 +79,25 @@
       },
       backups_by_snapshot: Array,
     },
+    data() {
+      return {
+        page: 1,
+        perPage: 5,
+      }
+    },
+    computed: {
+      displayedBackups() {
+        return this.paginate(this.backups_by_snapshot);
+      }
+    },
     methods: {
+      paginate(content) {
+        let page = this.page;
+        let perPage = this.perPage;
+        let from = (page * perPage) - perPage;
+        let to = (page * perPage);
+        return content.slice(from, to);
+      },
       backupType(type) {
         if (type === 1) {
           return 'Cluster-wide Snapshot';
