@@ -21,10 +21,15 @@
       return {
         entries: [],
         entryCount: 0,
+        autoUpdateTimer: ''
       };
     },
     mounted() {
       this.fetchClusters();
+      this.autoUpdateTimer = setInterval(this.fetchClusters, 10000);
+    },
+    beforeDestroy() {
+      clearInterval(this.autoUpdateTimer);
     },
     methods: {
       fetchClusters() {

@@ -15,23 +15,33 @@
         cluster_id: this.$route.params.cluster_id,
         restores: [],
         entryCount: 0,
-        cluster: {}
+        cluster: {},
+        autoUpdateTimer: ''
       }
     },
     mounted() {
-      this.$api.get(`clusters/${this.cluster_id}/data/`)
-      .then((response) => {
-        if (response.status === 200) {
-          this.restores = response.data.entries;
-          this.entryCount = this.restore.length;
-        }
-      });
-      this.$api.get(`clusters/${this.cluster_id}`)
-      .then((response) => {
-        if (response.status === 200) {
-          this.cluster = response.data.entries[0];
-        }
-      });
+      this.fetchData();
+      this.autoUpdateTimer = setInterval(this.fetchData, 10000);
+    },
+    beforeDestroy() {
+      clearInterval(this.autoUpdateTimer);
+    },
+    methods: {
+      fetchData() {
+        this.$api.get(`clusters/${this.cluster_id}/data/`)
+        .then((response) => {
+          if (response.status === 200) {
+            this.restores = response.data.entries;
+            this.entryCount = this.restore.length;
+          }
+        });
+        this.$api.get(`clusters/${this.cluster_id}`)
+        .then((response) => {
+          if (response.status === 200) {
+            this.cluster = response.data.entries[0];
+          }
+        });
+      }
     }
   };
 </script>

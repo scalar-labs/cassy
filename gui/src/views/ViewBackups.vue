@@ -1,7 +1,7 @@
 <template>
     <div>
         <Backups :backups="backups" :backups_by_snapshot="backups_by_snapshot" :cluster="cluster" @emitRestoreParams="setRestoreParams($event)" />
-        <CreateBackup :cluster="cluster" :backups="backups" :snapshot_ids="snapshot_ids" @updateBackupList="fetchBackups"/>
+        <CreateBackup :cluster="cluster" :backups="backups" :snapshot_ids="snapshot_ids" @updateBackupList="fetchData"/>
         <RestoreCluster
                 :cluster="cluster"
                 :snapshot_id="snapshot_id"
@@ -40,15 +40,9 @@
         };
       },
       mounted() {
-        this.fetchBackups();
-        this.autoRefreshTimer = setInterval(this.fetchBackups, 10000);
+        this.fetchData();
+        this.autoRefreshTimer = setInterval(this.fetchData, 10000);
 
-        this.$api.get(`clusters/${this.cluster_id}`)
-        .then((response) => {
-          if (response.status === 200) {
-            this.cluster = response.data.entries[0];
-          }
-        });
       },
       beforeDestroy() {
         clearInterval(this.autoRefreshTimer);
@@ -57,7 +51,13 @@
         changeRestoreType(type) {
           this.restore_type = type;
         },
-        fetchBackups() {
+        fetchData() {
+          this.$api.get(`clusters/${this.cluster_id}`)
+          .then((response) => {
+            if (response.status === 200) {
+              this.cluster = response.data.entries[0];
+            }
+          });
           this.$api.get(`clusters/${this.cluster_id}/backups`)
           .then((response) => {
             if (response.status === 200) {
