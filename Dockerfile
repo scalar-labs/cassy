@@ -10,7 +10,7 @@ COPY scripts ./scripts
 COPY logback.xml entrypoint.sh ./
 
 RUN apt-get update && apt-get install -y \
-    sqlite \
+    sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /cassy/data /cassy/conf
