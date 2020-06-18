@@ -24,8 +24,6 @@
                         </ul>
                     </div>
                 </nav>
-                <button class="collapse col-md-0 d-lg-none d-xl-block sidebar-toggle btn btn-secondary p-0" id="sidebarCollapse">
-                </button>
                 <div class="col d-flex mx-3 mb-5 pl-0 pt-5">
                     <router-view/>
                 </div>
@@ -81,10 +79,5 @@
 
     .sidebar.disabled {
         margin-left: -150px;
-    }
-
-    .sidebar-toggle {
-        min-width: 10px;
-        max-width: 10px
     }
 </style>

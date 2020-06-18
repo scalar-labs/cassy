@@ -24,7 +24,7 @@
                 <th scope="col"></th>
             </tr>
             </thead>
-            <tbody id="mainTable" v-for="(b, i) in displayedBackups" :key="i">
+            <tbody :class="{'space-groups': i !== 0 }" v-for="(b, i) in displayedBackups" :key="i">
             <tr v-for="(e, j) in b" :key="j">
                 <td>{{e.snapshot_id}}</td>
                 <td>{{backupType(e.backup_type)}}</td>
@@ -122,7 +122,7 @@
   };
 </script>
 <style>
-    #mainTable::before {
+    .space-groups::before {
         content: '';
         display: block;
         height: 30px;

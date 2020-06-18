@@ -25,14 +25,6 @@
                                     {{ip}}
                                 </option>
                             </select>
-                            <div class="form-group pt-1">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="snapshotOnlyCheck" v-model="snapshot_only">
-                                    <label class="form-check-label" for="snapshotOnlyCheck">
-                                        Snapshot-only
-                                    </label>
-                                </div>
-                            </div>
                         </div>
                         <small v-if="failed" class="form-text text-danger">Failed to restore backup. Cassy service
                             unavailable.</small>
@@ -70,7 +62,6 @@
         failed: false,
         target_ip: '',
         restore_type: 2,
-        snapshot_only: false,
       };
     },
     computed: {
@@ -90,8 +81,11 @@
         let data = {
           restore_type: this.restore_type,
         };
-        if (this.restore_type === 2 && this.target_ip) {
-          data.target_ips = [this.target_ip];
+        if (this.restore_type === 2) {
+          data.snapshot_only = true;
+          if (this.target_ip) {
+            data.target_ips = [this.target_ip];
+          }
         }
         if (this.snapshot_only) {
           data.snapshot_only = true;
