@@ -145,6 +145,7 @@ docker {
             into '.'
         }
     }
+    noCache true
 }
 
 // build should not depend on the integration tests
