@@ -81,13 +81,10 @@
         let data = {
           restore_type: this.restore_type,
         };
-        if (this.restore_type === 2) {
-          data.snapshot_only = true;
-          if (this.target_ip) {
+        if (this.restore_type === 2 && this.target_ip) {
             data.target_ips = [this.target_ip];
-          }
         }
-        if (this.snapshot_only) {
+        if (this.backup_type === 2) {
           data.snapshot_only = true;
         }
 
