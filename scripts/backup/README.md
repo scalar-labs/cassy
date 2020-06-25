@@ -1,7 +1,7 @@
 # Periodic Backup Creation Script
 
 ## Introduction
-Periodic backup creation script is a script for creating backups at the scheduled time. It will create backups with the help of Cassy commands.
+Periodic backup creation script used to creating backups at the scheduled time. It will create backups with the help of Cassy commands.
 
 ## Background and Objectives
 Cassy is a simple and integrated backup tool for Apache Cassandra,It will help to create different types of backups manually. Periodic backup creation script will ensure the backup creation with the help of cassy grpcurl manual commands.
@@ -9,7 +9,7 @@ Cassy is a simple and integrated backup tool for Apache Cassandra,It will help t
 This is a system for maintaining Cassandra node backups. It will help to automatically manage snapshot creation, Cluster-wide backup creation and incremental backup creation during the scheduled time period. 
 
 ## Requirements
-The primary design goals of periodic backup creation is to create backups in a specified period of times. It  will help avoid loss of data while Cassandra node is damaged.
+The primary design goals of periodic backup creation is to create backups in a specified period of times.
 
 - Start backup creation at specific times.
 - Create specific type of backups in an arbitrary schedule (snapshot or cluster-wide backup or incremental backup)
@@ -29,7 +29,7 @@ The primary design goals of periodic backup creation is to create backups in a s
 
 Cluster wide backup creation and snapshot creation can be automated with the help of periodic backup creation scripts. 
 
-The Cassandra cluster should be pre-registered before scheduling the script to create the backup. The backup creation script will read cluster id from arguments and snapshot creation will be started using Cassy backup command. After proper snapshot creation, it will send backup creation status as email notification.
+The Cassandra cluster should be pre-registered before scheduling the script to create backup. The backup creation script will read cluster id from arguments and snapshot creation will be started using Cassy backup command. After proper snapshot creation, it will send backup creation status as email notification.
 
 - take_snapshot.sh :- Create snapshot for each cassandra nodes
 - take_cluster_wide_snapshot.sh :- Create cluster wide backup
@@ -37,7 +37,8 @@ The Cassandra cluster should be pre-registered before scheduling the script to c
 ### Incremental Backup
 Incremental backup creation can be automated with the help of periodic backup creation scripts. 
 
-The Cassandra cluster should be pre-registered before scheduling the script to create the backup and make sure that, the snapshot will be created for the same cluster-id before starting incremental backup creation. The backup creation script will read the latest snapshot id of specified cluster-id with the help of cassy commands and it will conduct incremental backup creation also with the help of cassy command. After proper backup creation, it will send backup creation status as email notification.
+The Cassandra cluster should be pre-registered before scheduling the script to create backup. Before starting incremental backup creation, snapshots should be created for the same cluster-id. The backup creation script will read cluster id from the arguments. Then it will read latest snapshot id of given cluster-id using cassy commands and it will start incremental backup creation also with the help of cassy command. After proper backup creation, it will send backup creation status as email notification.
+
 - take_incremental_backup.sh :- script for creating incremental backup
 
 Do not use the same cluster id for cluster-wide backup creation and incremental backup creation. Snapshot and incremental backup creation should be used the same cluster id.
