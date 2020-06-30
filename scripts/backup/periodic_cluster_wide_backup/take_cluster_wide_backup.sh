@@ -7,6 +7,7 @@ source ${CURRENT_DIR}/util/helper.sh
 
 load_config_file ${config_file}
 set_default_parameters
+check_config_file
 
 result=$(grpcurl -plaintext -d '{"cluster_id": "'"$cluster_id"'", "backup_type": 1}' localhost:20051 rpc.Cassy.TakeBackup)
 

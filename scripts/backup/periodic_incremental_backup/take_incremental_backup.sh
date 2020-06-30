@@ -8,6 +8,7 @@ source ${CURRENT_DIR}/util/helper.sh
 
 load_config_file ${config_file}
 set_default_parameters
+check_config_file
 
 #read latest snapshot id
 snapshot_id=$(grpcurl -plaintext -d '{"limit": 1, "cluster_id": "'"$cluster_id"'"}' localhost:20051  rpc.Cassy.ListBackups | jq -r '.entries[0].snapshot_id')
