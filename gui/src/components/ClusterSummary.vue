@@ -1,6 +1,6 @@
 <template>
     <table class="table table-bordered text-center">
-        <thead class="table-success">
+        <thead class="table-secondary">
         <tr>
             <th scope="col">Cluster ID</th>
             <th scope="col">Target IPs</th>

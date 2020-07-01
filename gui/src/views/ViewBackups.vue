@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="col">
         <Backups :backups="backups" :backups_by_snapshot="backups_by_snapshot" :cluster="cluster" @emitRestoreParams="setRestoreParams($event)" />
         <CreateBackup :cluster="cluster" :backups="backups" :snapshot_ids="snapshot_ids" @updateBackupList="fetchData"/>
         <RestoreCluster

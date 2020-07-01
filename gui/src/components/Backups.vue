@@ -1,8 +1,8 @@
 <template>
     <div>
-        <h4 class="pt-3">Backups in Cluster: {{cluster.cluster_name}}</h4>
+        <h4 class="py-3">Backups in Cluster: {{cluster.cluster_name}}</h4>
         <ClusterSummary :cluster="cluster"/>
-        <div class="row justify-content-end mb-3 pr-3">
+        <div class="row justify-content-end mb-3 pr-3 py-3">
             <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerBackup">Create Backup
             </button>
             <button
@@ -13,7 +13,7 @@
             </button>
         </div>
         <table class="table text-center table-bordered">
-            <thead class="table-success">
+            <thead class="table-secondary">
             <tr>
                 <th scope="col">Snapshot ID</th>
                 <th scope="col">Backup Type</th>
@@ -100,19 +100,21 @@
         }
       },
       isNotCompleted(entry) {
+        if (entry.backup_type !== 1) {
+          return entry.status !== 'COMPLETED';
+        }
         if (entry.backup_type === 1) {
           for (let i = 0; i < this.backups_by_snapshot.length; i++) {
             let snapshot = this.backups_by_snapshot[i];
             for (let j = 0; j < snapshot.length; j++) {
-              if (snapshot[j].snapshot_id === entry.snapshot_id) {
-                if (snapshot[j].backup_type === 1 && snapshot[j].status !== 'COMPLETED') {
+              if (snapshot[j].snapshot_id === entry.snapshot_id
+                  && snapshot[j].backup_type === 1
+                  && snapshot[j].status !== 'COMPLETED'
+              ) {
                   return true;
-                }
               }
             }
           }
-        } else {
-          return entry.status !== 'COMPLETED';
         }
       },
       viewRestoreHistory() {

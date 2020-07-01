@@ -1,11 +1,11 @@
 <template>
     <div>
-        <h4 class="mt-3">Clusters</h4>
+        <h4 class="py-3">Clusters</h4>
         <div class="row justify-content-end mb-3 pr-3">
             <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerCluster">Add Cluster</button>
         </div>
-        <table class="table table-bordered text-center text-nowrap table-striped">
-            <thead class="table-success">
+        <table class="table table-bordered text-center">
+            <thead class="table-secondary">
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Name</th>

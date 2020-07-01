@@ -24,7 +24,7 @@
                         </ul>
                     </div>
                 </nav>
-                <div class="col d-flex mx-3 mb-5 pl-0 pt-5">
+                <div class="col d-flex mx-3 mb-5 pl-0 pt-5 justify-content-center">
                     <router-view/>
                 </div>
             </div>

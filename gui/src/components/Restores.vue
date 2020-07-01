@@ -1,8 +1,8 @@
 <template>
     <div>
-        <h4 class="pt-3">Restore Statuses in Cluster: {{cluster.cluster_name}}</h4>
+        <h4 class="py-3">Restore Statuses in Cluster: {{cluster.cluster_name}}</h4>
         <ClusterSummary :cluster="cluster"/>
-        <div class="row justify-content-end mb-3 pr-3">
+        <div class="row justify-content-end mb-3 pr-3 py-3">
             <button
                     type="button"
                     class="btn btn-primary mx-1"
@@ -10,8 +10,8 @@
             >View Backups
             </button>
         </div>
-        <table class="table table-bordered table-striped text-center">
-            <thead class="table-success">
+        <table class="table table-bordered text-center">
+            <thead class="table-secondary">
             <tr>
                 <th scope="col">Snapshot ID</th>
                 <th scope="col">Target IP</th>

@@ -1,5 +1,7 @@
 <template>
-    <Restores :restores="restores" :cluster="cluster" />
+    <div class="col">
+        <Restores :restores="restores" :cluster="cluster"/>
+    </div>
 </template>
 
 <script>
@@ -8,7 +10,7 @@
   export default {
     name: 'ViewRestores',
     components: {
-      Restores
+      Restores,
     },
     data() {
       return {
@@ -16,8 +18,8 @@
         restores: [],
         entryCount: 0,
         cluster: {},
-        autoUpdateTimer: ''
-      }
+        autoUpdateTimer: '',
+      };
     },
     mounted() {
       this.fetchData();
@@ -28,20 +30,18 @@
     },
     methods: {
       fetchData() {
-        this.$api.get(`clusters/${this.cluster_id}/data/`)
-        .then((response) => {
+        this.$api.get(`clusters/${this.cluster_id}/data/`).then((response) => {
           if (response.status === 200) {
             this.restores = response.data.entries;
             this.entryCount = this.restore.length;
           }
         });
-        this.$api.get(`clusters/${this.cluster_id}`)
-        .then((response) => {
+        this.$api.get(`clusters/${this.cluster_id}`).then((response) => {
           if (response.status === 200) {
             this.cluster = response.data.entries[0];
           }
         });
-      }
-    }
+      },
+    },
   };
 </script>
