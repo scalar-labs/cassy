@@ -15,7 +15,9 @@ import (
 
 var (
 	endpoint = flag.String("cassy server endpoint", "localhost:20051", "endpoint of Cassy server")
-	mode     = flag.String("mode", "prod", "choose prod mode or dev mode")
+	mode     = flag.String("mode", "prod",
+		"prod: runs the HTTP server on port 8080. Recommended for most users.\n " +
+		"dev: runs the HTTP server on port 8090 to avoid conflict with dev servers.\n")
 )
 
 func run() error {

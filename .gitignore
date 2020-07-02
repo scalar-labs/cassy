@@ -33,6 +33,7 @@ out/
 
 # executables
 entrypoint
+api
 
 # dev files
 tmp/
