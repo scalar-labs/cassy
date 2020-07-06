@@ -33,7 +33,7 @@
         this.$api.get(`clusters/${this.cluster_id}/data/`).then((response) => {
           if (response.status === 200) {
             this.restores = response.data.entries;
-            this.entryCount = this.restore.length;
+            this.entryCount = this.restores.length;
           }
         });
         this.$api.get(`clusters/${this.cluster_id}`).then((response) => {

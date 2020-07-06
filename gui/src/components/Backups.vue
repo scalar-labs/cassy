@@ -2,7 +2,7 @@
     <div>
         <h4 class="py-3">Backups in Cluster: {{cluster.cluster_name}}</h4>
         <ClusterSummary :cluster="cluster"/>
-        <div class="row justify-content-end mb-3 pr-3 py-3">
+        <div class="row justify-content-end mb-3 pr-3 pt-3">
             <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerBackup">Create Backup
             </button>
             <button
@@ -12,7 +12,7 @@
             >View Restores
             </button>
         </div>
-        <table class="table text-center table-bordered">
+        <table class="table text-left table-bordered">
             <thead class="table-secondary">
             <tr>
                 <th scope="col">Snapshot ID</th>
