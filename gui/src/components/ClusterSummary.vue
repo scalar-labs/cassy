@@ -8,6 +8,9 @@
         </tr>
         </thead>
         <tbody>
+        <tr :class="{'no-data': cluster.cluster_id, 'text-center': true, 'font-italic': true}">
+            <td colspan="3">Unable to retrieve cluster data</td>
+        </tr>
         <tr>
             <td>{{cluster.cluster_id}}</td>
             <td>{{cluster.target_ips}}</td>

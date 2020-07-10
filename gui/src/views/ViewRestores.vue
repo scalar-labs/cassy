@@ -41,9 +41,11 @@
             this.restores = response.data.entries;
             this.entryCount = this.restores.length;
           }
-        }).catch(() => {
-          let message = "Failed to fetch restore information for cluster \"" + this.cluster_id + "\".";
-          this.$emit('showError', message);
+        }).catch(error => {
+          if (error.code === 503) {
+            let message = "Failed to fetch restore information for cluster \"" + this.cluster_id + "\".";
+            this.$emit('showError', message);
+          }
         });
         this.$api.get(`clusters/${this.cluster_id}`).then((response) => {
           if (response.status === 200) {

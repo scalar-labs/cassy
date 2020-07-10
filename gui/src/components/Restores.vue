@@ -22,6 +22,9 @@
             </tr>
             </thead>
             <tbody>
+            <tr :class="{'no-data': displayedRestores.length > 0, 'text-center': true, 'font-italic': true}">
+                <td colspan="6">No restores were found for cluster {{cluster.cluster_name}}</td>
+            </tr>
             <tr
                     v-for="(r, index) in displayedRestores"
                     :key="index"
@@ -39,7 +42,7 @@
                 class="justify-content-center"
                 v-model="page"
                 :per-page="perPage"
-                :total-rows="restores.length"
+                :total-rows="totalRows"
         >
         </b-pagination>
     </div>
@@ -67,9 +70,14 @@
       displayedRestores() {
         return this.paginate(this.restores);
       },
+      totalRows() {
+        if (!this.restores) { return 0; }
+        return this.restores.length;
+      },
     },
     methods: {
       paginate(content) {
+        if (!content) { return []; }
         let page = this.page;
         let perPage = this.perPage;
         let from = (page * perPage) - perPage;

@@ -25,6 +25,9 @@
             </tr>
             </thead>
             <tbody :class="{'space-groups': i !== 0 }" v-for="(b, i) in displayedBackups" :key="i">
+            <tr :class="{'no-data': backups_by_snapshot[0].length > 0, 'text-center': true, 'font-italic': true}">
+                <td colspan="7">No backups were found for cluster {{cluster.cluster_name}}</td>
+            </tr>
             <tr v-for="(e, j) in b" :key="j">
                 <td>{{e.snapshot_id}}</td>
                 <td>{{backupType(e.backup_type)}}</td>
@@ -50,7 +53,7 @@
                 class="justify-content-center"
                 v-model="page"
                 :per-page="perPage"
-                :total-rows="backups_by_snapshot.length"
+                :total-rows="totalRows"
         >
         </b-pagination>
     </div>
@@ -79,9 +82,14 @@
       displayedBackups() {
         return this.paginate(this.backups_by_snapshot);
       },
+      totalRows() {
+        if (!this.backups_by_snapshot) { return 0; }
+        return this.backups_by_snapshot.length;
+      },
     },
     methods: {
       paginate(content) {
+        if (!content) { return []; }
         let page = this.page;
         let perPage = this.perPage;
         let from = (page * perPage) - perPage;

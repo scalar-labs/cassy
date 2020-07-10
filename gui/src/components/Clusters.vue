@@ -15,6 +15,9 @@
             </tr>
             </thead>
             <tbody>
+            <tr :class="{'no-data': displayedClusters.length > 0, 'text-center': true, 'font-italic': true}">
+                <td colspan="5">No clusters were found</td>
+            </tr>
             <tr
                     v-for="(c, index) in displayedClusters"
                     :key="index"
@@ -38,7 +41,7 @@
                 class="justify-content-center"
                 v-model="page"
                 :per-page="perPage"
-                :total-rows="entries.length"
+                :total-rows="totalRows"
         >
         </b-pagination>
     </div>
@@ -59,10 +62,15 @@
     computed: {
       displayedClusters() {
         return this.paginate(this.entries);
-      }
+      },
+      totalRows() {
+        if (!this.entries) { return 0; }
+        return this.entries.length;
+      },
     },
     methods: {
       paginate(content) {
+        if (!content) { return []; }
         let page = this.page;
         let perPage = this.perPage;
         let from = (page * perPage) - perPage;
