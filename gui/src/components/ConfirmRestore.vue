@@ -14,7 +14,7 @@
                         <p class="col">{{typeName(data.restore_type)}}</p>
                         <p class="col">Snapshot ID:</p>
                         <p class="col">{{snapshot_id}}</p>
-                        <p class="col">Target IP(s):</p>
+                        <p class="col">Target IP:</p>
                         <p class="col">{{targetIp}}</p>
                         <p class="col">Snapshot-only:</p>
                         <p class="col">{{snapshot_only}}</p>
@@ -41,7 +41,7 @@
     props: {
       cluster_id: String,
       snapshot_id: String,
-      data: {},
+      data: Object,
     },
     data() {
       return {
@@ -54,15 +54,14 @@
         if (this.data.target_ips) {
           return this.data.target_ips[0];
         }
-        return 'all nodes';
+        return "";
       },
       snapshot_only: function() {
         return !!this.data.snapshot_only;
-      }
+      },
     },
     mounted() {
       $('#confirmRestore').on('hide.bs.modal', () => {
-        this.target_ip = '';
         this.failed = false;
       });
     },

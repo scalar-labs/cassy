@@ -17,15 +17,6 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="form-group" v-if="restore_type === 2">
-                            <label for="targetIpSelect">Specify Target IP (Optional)</label>
-                            <select class="custom-select" id="targetIpSelect" v-model="target_ip">
-                                <option value="">Choose a node ...</option>
-                                <option v-for="(ip, index) in cluster.target_ips" :key="index">
-                                    {{ip}}
-                                </option>
-                            </select>
-                        </div>
                         <small v-if="failed" class="form-text text-danger">Failed to restore backup. Cassy service
                             unavailable.</small>
                         <div class="modal-footer">
@@ -50,17 +41,16 @@
       cluster: {},
       snapshot_id: String,
       backup_type: Number,
+      target_ip: String,
     },
     mounted() {
       $('#restoreCluster').on('hide.bs.modal', () => {
-        this.target_ip = '';
         this.restore_type = 2;
       });
     },
     data() {
       return {
         failed: false,
-        target_ip: '',
         restore_type: 2,
       };
     },
@@ -80,10 +70,8 @@
       showConfirmationDialogue() {
         let data = {
           restore_type: this.restore_type,
+          target_ips: [this.target_ip]
         };
-        if (this.restore_type === 2 && this.target_ip) {
-            data.target_ips = [this.target_ip];
-        }
         if (this.backup_type === 2) {
           data.snapshot_only = true;
         }

@@ -39,7 +39,7 @@
                             :disabled="isNotCompleted(e)"
                             data-toggle="modal"
                             data-target="#restoreCluster"
-                            @click="$emit('emitRestoreParams', {snapshot_id: e.snapshot_id, backup_type: e.backup_type})"
+                            @click="$emit('emitRestoreParams', {snapshot_id: e.snapshot_id, backup_type: e.backup_type, target_ip: e.target_ip})"
                     >Restore
                     </button>
                 </td>
