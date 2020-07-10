@@ -45,9 +45,11 @@
             this.entries = response.data.entries;
             this.entryCount = this.entries.length;
           }
-        }).catch(() => {
-          let message = "Failed to fetch clusters.";
-          this.$emit('showError', message);
+        }).catch(error => {
+          if (error.code === 503) {
+            let message = "Failed to fetch clusters.";
+            this.$emit('showError', message);
+          }
         });
       }
     }

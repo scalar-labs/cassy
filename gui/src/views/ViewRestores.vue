@@ -51,9 +51,11 @@
           if (response.status === 200) {
             this.cluster = response.data.entries[0];
           }
-        }).catch(() => {
-          let message = "Failed to fetch cluster \"" + this.cluster_id + "\".";
-          this.$emit('showError', message);
+        }).catch(error => {
+          if (error.code === 503) {
+            let message = "Failed to fetch cluster \"" + this.cluster_id + "\".";
+            this.$emit('showError', message);
+          }
         });
       },
     },
