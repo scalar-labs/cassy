@@ -1,5 +1,6 @@
 <template>
     <div class="col">
+        <ErrorNotification :error_message="error_message"/>
         <Clusters :entries="entries" :entryCount="entryCount"/>
         <RegisterCluster id="registerCluster" @updateClusterList="fetchClusters"/>
     </div>
@@ -9,13 +10,18 @@
   // @ is an alias to /src
   import Clusters from '../components/Clusters';
   import RegisterCluster from '../components/RegisterCluster'
+  import ErrorNotification from '../components/ErrorNotification';
 
 
   export default {
     name: 'ViewClusters',
+    props: {
+      error_message: String,
+    },
     components: {
       Clusters,
-      RegisterCluster
+      RegisterCluster,
+      ErrorNotification
     },
     data() {
       return {
@@ -39,6 +45,9 @@
             this.entries = response.data.entries;
             this.entryCount = this.entries.length;
           }
+        }).catch(() => {
+          let message = "Failed to fetch clusters.";
+          this.$emit('showError', message);
         });
       }
     }

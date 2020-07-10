@@ -1,5 +1,6 @@
 <template>
     <div class="col">
+        <ErrorNotification :error_message="error_message"/>
         <Backups :backups="backups" :backups_by_snapshot="backups_by_snapshot" :cluster="cluster" @emitRestoreParams="setRestoreParams($event)" />
         <CreateBackup :cluster="cluster" :backups="backups" :snapshot_ids="snapshot_ids" @updateBackupList="fetchData"/>
         <RestoreCluster
@@ -18,10 +19,15 @@
     import CreateBackup from '../components/CreateBackup'
     import RestoreCluster from '../components/RestoreCluster';
     import ConfirmRestore from '../components/ConfirmRestore';
+    import ErrorNotification from '../components/ErrorNotification';
 
     export default {
       name: 'ViewBackups',
+      props: {
+        error_message: String,
+      },
       components: {
+        ErrorNotification,
         RestoreCluster,
         Backups,
         CreateBackup,
@@ -59,6 +65,9 @@
             if (response.status === 200) {
               this.cluster = response.data.entries[0];
             }
+          }).catch(() => {
+            let message = "Failed to fetch cluster \"" + this.cluster_id + "\".";
+            this.$emit('showError', message);
           });
           this.$api.get(`clusters/${this.cluster_id}/backups`)
           .then((response) => {
@@ -105,6 +114,9 @@
               }
               this.backups_by_snapshot.sort((a, b) => (a[0].created_at > b[0].created_at ? -1 : 1));
             }
+          }).catch(() => {
+            let message = "Failed to fetch backups for cluster \"" + this.cluster_id + "\".";
+            this.$emit('showError', message);
           });
         },
         setRestoreParams(event) {

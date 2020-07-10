@@ -25,7 +25,7 @@
                     </div>
                 </nav>
                 <div class="col d-flex mx-3 mb-5 pl-0 pt-5 justify-content-center">
-                    <router-view/>
+                    <router-view :error_message="error_message" @showError="toggleErrorNotification($event)"/>
                 </div>
             </div>
         </div>
@@ -41,6 +41,11 @@
   import $ from 'jquery';
 
   export default {
+    data() {
+      return {
+        error_message: "",
+      }
+    },
     mounted: function() {
       this.$nextTick(function() {
         document.title = 'Cassy';
@@ -49,6 +54,12 @@
       $('#sidebarCollapse').on('click', function() {
         $('#sidebar').toggleClass('disabled');
       });
+    },
+    methods: {
+      toggleErrorNotification(event) {
+        this.error_message = event;
+        $('#errorNotificationToast').toast('show');
+      }
     },
   };
 </script>
