@@ -2,9 +2,10 @@
     <table class="table table-borderless text-left">
         <thead>
         <tr>
-            <th scope="col">Cluster ID</th>
-            <th scope="col">Target IPs</th>
-            <th scope="col">Keyspaces</th>
+            <th class="text-nowrap" scope="col">Cluster ID</th>
+            <th class="text-nowrap" scope="col">Cluster Name</th>
+            <th class="text-nowrap" scope="col">Target IPs</th>
+            <th class="text-nowrap" scope="col">Keyspaces</th>
         </tr>
         </thead>
         <tbody>
@@ -13,6 +14,7 @@
         </tr>
         <tr>
             <td>{{cluster.cluster_id}}</td>
+            <td>{{cluster.cluster_name}}</td>
             <td>{{cluster.target_ips}}</td>
             <td>{{cluster.keyspaces}}</td>
         </tr>

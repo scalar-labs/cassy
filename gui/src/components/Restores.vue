@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h4 class="py-4">Restore Statuses in Cluster: {{cluster.cluster_name}}</h4>
+        <h4 class="py-4">Restore Statuses</h4>
         <ClusterSummary :cluster="cluster"/>
         <div class="row justify-content-end mb-3 pr-3 pt-3">
             <button

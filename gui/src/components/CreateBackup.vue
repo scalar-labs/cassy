@@ -14,7 +14,7 @@
                             <label for="backupTypeSelect">Select a backup type</label>
                             <select class="custom-select" id="backupTypeSelect" v-model="backup_type">
                                 <option selected :value="2">Snapshot</option>
-                                <option :value="1">Cluster-Wide</option>
+                                <option :value="1">Cluster-wide</option>
                                 <option :value="3">Incremental</option>
                             </select>
                         </div>
