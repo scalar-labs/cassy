@@ -1,34 +1,22 @@
-FROM openjdk:8u212-jdk-stretch AS builder
+FROM openjdk:8u212-jre-slim-stretch
 
-RUN mkdir -p /opt/cassy
-WORKDIR /opt/cassy
+WORKDIR /cassy
 
-COPY gradle ./gradle
-COPY build.gradle ./
-COPY gradlew ./gradlew
-COPY src ./src
+# The Docker context is created in build/docker by `./gradlew docker`
+COPY ./cassy.tar .
+RUN tar xf cassy.tar -C / && rm -f cassy.tar
 
-RUN ./gradlew installDist
-
-# Runtime Container
-FROM openjdk:8-alpine
-
-RUN apk add sqlite
-
-WORKDIR /opt/cassy
-
-RUN mkdir -p /cassy/data && mkdir -p /cassy/conf
-
-# Copy Build output from Builder Step
-COPY --from=builder /opt/cassy/build ./build
 COPY scripts ./scripts
-COPY conf ./conf
+COPY logback.xml entrypoint.sh ./
 
-RUN sqlite3 ./cassy.db < ./scripts/db.schema
+RUN apt-get update && apt-get install -y \
+    sqlite3 \
+    && rm -rf /var/lib/apt/lists/*
 
-VOLUME /cassy
+RUN mkdir -p /cassy/data /cassy/conf
 
-ENTRYPOINT ["/bin/sh", "scripts/entrypoint.sh"]
-CMD ["--config", "/cassy/conf/cassy.properties"]
+ENV JAVA_OPTS -Dlogback.configurationFile=/cassy/logback.xml
+ENTRYPOINT ["/cassy/entrypoint.sh"]
+CMD ["/cassy/bin/cassy-server", "--config", "/cassy/conf/cassy.properties"]
 
 EXPOSE 20051
