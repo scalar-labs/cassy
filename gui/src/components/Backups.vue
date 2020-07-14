@@ -3,7 +3,7 @@
         <h4 class="py-4">Backups</h4>
         <ClusterSummary :cluster="cluster"/>
         <div class="row justify-content-end mb-3 pr-3 pt-3">
-            <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerBackup">Create Backup
+            <button class="btn btn-primary mx-1" type="button" data-toggle="modal" data-target="#registerBackup">Create Backup
             </button>
             <button
                     type="button"

@@ -20,10 +20,10 @@
                         <small v-if="failed" class="form-text text-danger">Failed to restore backup. Cassy service
                             unavailable.</small>
                         <div class="modal-footer">
-                            <button class="btn btn-outline-secondary mx-1" data-toggle="modal"
+                            <button class="btn btn-outline-secondary mx-1" type="button" data-toggle="modal"
                                     data-target="#restoreCluster">Cancel
                             </button>
-                            <button class="btn btn-primary mx-1" @click="showConfirmationDialogue()">Restore Backup
+                            <button class="btn btn-primary mx-1" type="button" @click="showConfirmationDialogue()">Restore Backup
                             </button>
                         </div>
                     </form>
