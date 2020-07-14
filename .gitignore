@@ -30,3 +30,11 @@ build
 
 # out files
 out/
+
+# executables
+entrypoint
+api
+
+# dev files
+tmp/
+conf/test-cassy.properties
