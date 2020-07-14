@@ -2,7 +2,7 @@
     <div>
         <h4 class="py-4">Clusters</h4>
         <div class="row justify-content-end mb-3 pr-3 pt-3">
-            <button class="btn btn-primary mx-1" data-toggle="modal" data-target="#registerCluster">Add Cluster</button>
+            <button class="btn btn-primary mx-1" type="button" data-toggle="modal" data-target="#registerCluster">Add Cluster</button>
         </div>
         <table class="table table-bordered text-left">
             <thead class="table-secondary">

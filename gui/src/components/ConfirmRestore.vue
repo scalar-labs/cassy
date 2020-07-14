@@ -22,9 +22,10 @@
                 </div>
                 <small v-if="failed" class="form-text text-danger text-center">Error: {{ error }}</small>
                 <div class="modal-footer">
-                    <button class="btn btn-outline-secondary mx-1" @click="returnToRestoreCluster()">Cancel
+                    <button class="btn btn-outline-secondary mx-1" type="button" @click="returnToRestoreCluster()">Cancel
                     </button>
                     <button class="btn btn-primary mx-1"
+                            type="button"
                             @click="restoreBackup"
                     >Confirm
                     </button>

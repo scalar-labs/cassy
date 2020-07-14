@@ -21,7 +21,7 @@
                             <small v-if="failed" class="form-text text-danger">{{ error }}</small>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" data-target="#registerCluster" type="submit"
+                            <button class="btn btn-primary" data-target="#registerCluster" type="button"
                                     @click="registerCluster">Register
                             </button>
                         </div>

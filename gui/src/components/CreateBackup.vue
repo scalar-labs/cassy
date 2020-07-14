@@ -35,11 +35,13 @@
                         <small v-if="failed" class="form-text text-danger">{{ errorMessage }}</small>
                         <div class="modal-footer">
                             <button class="btn btn-outline-secondary mx-1"
+                                    type="button"
                                     data-toggle="modal"
                                     data-target="#registerBackup"
                             >Cancel
                             </button>
                             <button class="btn btn-primary mx-1"
+                                    type="button"
                                     @click="createBackup"
                             >Create Backup
                             </button>
