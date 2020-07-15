@@ -11,12 +11,12 @@
                     <div class="sidebar-sticky pt-2">
                         <ul class="nav flex-column">
                             <li class="nav-item">
-                                <router-link class="nav-link" to="/#">
+                                <router-link class="nav-link" to="/">
                                     View Clusters
                                 </router-link>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="/">
                                     View Settings
                                 </a>
                             </li>
