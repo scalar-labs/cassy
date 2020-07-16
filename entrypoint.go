@@ -10,7 +10,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	gw "github.com/cassy/entrypoint/src/main/proto"
+	gw "github.com/scalar-labs/cassy/entrypoint/src/main/proto"
 )
 
 var (
