@@ -31,7 +31,7 @@ In order to overcome these problems we created a new backup tool, which makes it
 ## Contributing 
 This library is mainly maintained by the Scalar Engineering Team, but of course we appreciate any help.
 
-* For asking questions, finding answers and helping other users, please go to [cassy-user](https://groups.google.com/forum/#!forum/cassy-user).
+* For asking questions, finding answers and helping other users, please go to [stackoverflow](https://stackoverflow.com/) and use [cassy](https://stackoverflow.com/questions/tagged/cassy) tag.
 * For filing bugs, suggesting improvements, or requesting new features, help us out by opening an issue.
 
 ## License
