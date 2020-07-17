@@ -38,3 +38,6 @@ api
 # dev files
 tmp/
 conf/test-cassy.properties
+
+# executables
+entrypoint
