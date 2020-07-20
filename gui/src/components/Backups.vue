@@ -29,7 +29,7 @@
                 <td colspan="7">No backups were found for cluster {{cluster.cluster_name}}</td>
             </tr>
             <tr v-for="(e, j) in b" :key="j">
-                <td>{{e.snapshot_id}}</td>
+                <td class="text-nowrap">{{e.snapshot_id}}</td>
                 <td>{{backupType(e.backup_type)}}</td>
                 <td>{{e.target_ip}}</td>
                 <th class="font-weight-normal">{{ parseInt(e.created_at) | moment('YYYY/M/D, h:mm a') }}</th>
