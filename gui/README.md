@@ -1,4 +1,4 @@
-# Cassy
+# Cassy GUI
 
 ## Project setup
 ```
@@ -26,7 +26,7 @@ When running in production mode, the GUI is run using a file server, so it can e
 
 ```javascript
 export const api = axios.create({
-  baseURL: 'http://127.0.0.1:8090/v1', // by default the port is set to 8080.
+  baseURL: 'http://localhost:8090/v1', // by default the port is set to 8080.
 });
 ```
 
