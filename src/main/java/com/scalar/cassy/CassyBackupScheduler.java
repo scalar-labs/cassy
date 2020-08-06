@@ -45,7 +45,9 @@ class NodeIncremental implements Callable<Integer> {
 
   @CommandLine.Option(
       names = {"--target_ips", "-t"},
-      description = "optionally specify target ips")
+      description = "optionally specify target ips",
+      split = ","
+  )
   String[] targetIps;
 
   /**
@@ -94,7 +96,9 @@ class NodeSnapshot implements Callable<Integer> {
 
   @CommandLine.Option(
       names = {"--target_ips", "-t"},
-      description = "optionally specify target ips")
+      description = "optionally specify target ips",
+      split = ","
+  )
   String[] targetIps;
 
   /**
