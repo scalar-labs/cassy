@@ -33,35 +33,6 @@ public class CassyBackupScheduler implements Runnable {
   }
 }
 
-@CommandLine.Command(name = "node_incremental", description = "take a cluster-wide snapshot")
-class NodeIncremental implements Callable<Integer> {
-  CassyClient client = new CassyClient();
-
-  @CommandLine.Option(
-      names = {"--cluster_id", "-c"},
-      required = true,
-      description = "cluster id pertaining to the snapshot to backup")
-  String clusterId;
-
-  @CommandLine.Option(
-      names = {"--target_ips", "-t"},
-      description = "optionally specify target ips",
-      split = ","
-  )
-  String[] targetIps;
-
-  /**
-   * Computes a result, or throws an exception if unable to do so.
-   *
-   * @return computed result
-   * @throws Exception if unable to compute a result
-   */
-  @Override
-  public Integer call() throws Exception {
-    return client.takeIncrementalBackup(clusterId, Optional.ofNullable(targetIps));
-  }
-}
-
 @CommandLine.Command(name = "cluster_snapshot", description = "take a cluster-wide snapshot")
 class ClusterSnapshot implements Callable<Integer> {
   CassyClient client = new CassyClient();
@@ -97,8 +68,7 @@ class NodeSnapshot implements Callable<Integer> {
   @CommandLine.Option(
       names = {"--target_ips", "-t"},
       description = "optionally specify target ips",
-      split = ","
-  )
+      split = ",")
   String[] targetIps;
 
   /**
@@ -110,5 +80,33 @@ class NodeSnapshot implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     return client.takeNodeSnapshot(clusterId, Optional.ofNullable(targetIps));
+  }
+}
+
+@CommandLine.Command(name = "node_incremental", description = "take a cluster-wide snapshot")
+class NodeIncremental implements Callable<Integer> {
+  CassyClient client = new CassyClient();
+
+  @CommandLine.Option(
+      names = {"--cluster_id", "-c"},
+      required = true,
+      description = "cluster id pertaining to the snapshot to backup")
+  String clusterId;
+
+  @CommandLine.Option(
+      names = {"--target_ips", "-t"},
+      description = "optionally specify target ips",
+      split = ",")
+  String[] targetIps;
+
+  /**
+   * Computes a result, or throws an exception if unable to do so.
+   *
+   * @return computed result
+   * @throws Exception if unable to compute a result
+   */
+  @Override
+  public Integer call() throws Exception {
+    return client.takeIncrementalBackup(clusterId, Optional.ofNullable(targetIps));
   }
 }

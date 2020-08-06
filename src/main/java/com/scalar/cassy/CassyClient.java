@@ -30,26 +30,25 @@ public class CassyClient {
     blockingStub = CassyGrpc.newBlockingStub(channel);
   }
 
-  public CassyGrpc.CassyBlockingStub getBlockingStub() {
-    return blockingStub;
-  }
-
-  private int startTask(BackupResponse response)
-      throws InterruptedException, ExecutionException, TimeoutException {
-    ExecutorService executorService = Executors.newCachedThreadPool();
-    Callable<BackupListingResponse> task = () -> awaitBackupStatusCompletedOrFailed(response);
-    Future<BackupListingResponse> future = executorService.submit(task);
-    return future
-        .get(20, TimeUnit.SECONDS)
-        .getEntries(0)
-        .getStatusValue(); // wait a maximum of 20 seconds
-  }
-
   public int takeClusterSnapshot(String clusterId) throws Exception {
     BackupRequest backupRequest =
         BackupRequest.newBuilder().setClusterId(clusterId).setBackupType(1).build();
     BackupResponse backupResponse = blockingStub.takeBackup(backupRequest);
     return startTask(backupResponse);
+  }
+
+  public int takeNodeSnapshot(String clusterId, Optional<String[]> targetIps)
+      throws InterruptedException, TimeoutException, ExecutionException {
+    BackupRequest backupRequest =
+        BackupRequest.newBuilder().setClusterId(clusterId).setBackupType(2).build();
+    if (targetIps.isPresent()) {
+      backupRequest =
+          BackupRequest.newBuilder(backupRequest)
+              .addAllTargetIps(Arrays.stream(targetIps.get()).collect(Collectors.toList()))
+              .build();
+    }
+
+    return startTask(blockingStub.takeBackup(backupRequest));
   }
 
   public int takeIncrementalBackup(String clusterId, Optional<String[]> targetIps)
@@ -83,20 +82,6 @@ public class CassyClient {
     return startTask(blockingStub.takeBackup(backupRequest));
   }
 
-  public int takeNodeSnapshot(String clusterId, Optional<String[]> targetIps)
-      throws InterruptedException, TimeoutException, ExecutionException {
-    BackupRequest backupRequest =
-        BackupRequest.newBuilder().setClusterId(clusterId).setBackupType(2).build();
-    if (targetIps.isPresent()) {
-      backupRequest =
-          BackupRequest.newBuilder(backupRequest)
-              .addAllTargetIps(Arrays.stream(targetIps.get()).collect(Collectors.toList()))
-              .build();
-    }
-
-    return startTask(blockingStub.takeBackup(backupRequest));
-  }
-
   private BackupListingResponse awaitBackupStatusCompletedOrFailed(BackupResponse response)
       throws InterruptedException {
     BackupListingResponse backupListingResponse;
@@ -115,5 +100,16 @@ public class CassyClient {
         && backupListingResponse.getEntries(0).getStatusValue() != 4);
 
     return backupListingResponse;
+  }
+
+  private int startTask(BackupResponse response)
+      throws InterruptedException, ExecutionException, TimeoutException {
+    ExecutorService executorService = Executors.newCachedThreadPool();
+    Callable<BackupListingResponse> task = () -> awaitBackupStatusCompletedOrFailed(response);
+    Future<BackupListingResponse> future = executorService.submit(task);
+    return future
+        .get(20, TimeUnit.SECONDS)
+        .getEntries(0)
+        .getStatusValue(); // wait a maximum of 20 seconds
   }
 }
