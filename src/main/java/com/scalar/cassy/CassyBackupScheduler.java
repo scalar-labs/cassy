@@ -3,16 +3,16 @@ package com.scalar.cassy;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-    name = "cassy-backup",
+    name = "cassy-schedule",
     mixinStandardHelpOptions = true,
     description = "calls Cassy's backup command",
     subcommands = {ClusterSnapshot.class, NodeSnapshot.class, NodeIncremental.class})
-public class CassyBackup implements Runnable {
+public class CassyBackupScheduler implements Runnable {
 
   @CommandLine.Spec CommandLine.Model.CommandSpec spec;
 
   public static void main(String[] args) {
-    System.exit(new CommandLine(new CassyBackup()).execute(args));
+    System.exit(new CommandLine(new CassyBackupScheduler()).execute(args));
   }
 
   /**
