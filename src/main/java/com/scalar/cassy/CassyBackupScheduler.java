@@ -33,7 +33,7 @@ public class CassyBackupScheduler implements Runnable {
   }
 }
 
-@CommandLine.Command(name = "cluster_snapshot", description = "take a cluster-wide snapshot")
+@CommandLine.Command(name = "cluster_snapshot", aliases = {"cs"},description = "take a cluster-wide snapshot")
 class ClusterSnapshot implements Callable<Integer> {
   CassyClient client = new CassyClient();
 
@@ -55,7 +55,7 @@ class ClusterSnapshot implements Callable<Integer> {
   }
 }
 
-@CommandLine.Command(name = "node_snapshot", description = "take a node snapshot")
+@CommandLine.Command(name = "node_snapshot", aliases = {"ns"}, description = "take a node snapshot")
 class NodeSnapshot implements Callable<Integer> {
   CassyClient client = new CassyClient();
 
@@ -83,7 +83,7 @@ class NodeSnapshot implements Callable<Integer> {
   }
 }
 
-@CommandLine.Command(name = "node_incremental", description = "take a cluster-wide snapshot")
+@CommandLine.Command(name = "node_incremental", aliases = {"ni"}, description = "take a cluster-wide snapshot")
 class NodeIncremental implements Callable<Integer> {
   CassyClient client = new CassyClient();
 
