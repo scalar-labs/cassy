@@ -1,5 +1,7 @@
 package com.scalar.cassy;
 
+import java.util.Optional;
+import java.util.concurrent.Callable;
 import picocli.CommandLine;
 
 @CommandLine.Command(
@@ -28,5 +30,81 @@ public class CassyBackupScheduler implements Runnable {
   @Override
   public void run() {
     spec.commandLine().usage(System.err);
+  }
+}
+
+@CommandLine.Command(name = "node_incremental", description = "take a cluster-wide snapshot")
+class NodeIncremental implements Callable<Integer> {
+  CassyClient client = new CassyClient();
+
+  @CommandLine.Option(
+      names = {"--cluster_id", "-c"},
+      required = true,
+      description = "cluster id pertaining to the snapshot to backup")
+  String clusterId;
+
+  @CommandLine.Option(
+      names = {"--target_ips", "-t"},
+      description = "optionally specify target ips")
+  String[] targetIps;
+
+  /**
+   * Computes a result, or throws an exception if unable to do so.
+   *
+   * @return computed result
+   * @throws Exception if unable to compute a result
+   */
+  @Override
+  public Integer call() throws Exception {
+    return client.takeIncrementalBackup(clusterId, Optional.ofNullable(targetIps));
+  }
+}
+
+@CommandLine.Command(name = "cluster_snapshot", description = "take a cluster-wide snapshot")
+class ClusterSnapshot implements Callable<Integer> {
+  CassyClient client = new CassyClient();
+
+  @CommandLine.Option(
+      names = {"--cluster_id", "-c"},
+      required = true,
+      description = "cluster id to backup")
+  String clusterId;
+
+  /**
+   * Computes a result, or throws an exception if unable to do so.
+   *
+   * @return computed result
+   * @throws Exception if unable to compute a result
+   */
+  @Override
+  public Integer call() throws Exception {
+    return client.takeClusterSnapshot(clusterId);
+  }
+}
+
+@CommandLine.Command(name = "node_snapshot", description = "take a node snapshot")
+class NodeSnapshot implements Callable<Integer> {
+  CassyClient client = new CassyClient();
+
+  @CommandLine.Option(
+      names = {"--cluster_id", "-c"},
+      required = true,
+      description = "cluster id pertaining to the snapshot to backup")
+  String clusterId;
+
+  @CommandLine.Option(
+      names = {"--target_ips", "-t"},
+      description = "optionally specify target ips")
+  String[] targetIps;
+
+  /**
+   * Computes a result, or throws an exception if unable to do so.
+   *
+   * @return computed result
+   * @throws Exception if unable to compute a result
+   */
+  @Override
+  public Integer call() throws Exception {
+    return client.takeNodeSnapshot(clusterId, Optional.ofNullable(targetIps));
   }
 }
