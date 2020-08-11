@@ -1,10 +1,5 @@
-package com.scalar.cassy;
+package scheduler;
 
-import com.scalar.cassy.rpc.BackupListingRequest;
-import com.scalar.cassy.rpc.BackupListingResponse;
-import com.scalar.cassy.rpc.BackupRequest;
-import com.scalar.cassy.rpc.BackupResponse;
-import com.scalar.cassy.rpc.CassyGrpc;
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
 import java.util.Arrays;
@@ -17,12 +12,27 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+import scheduler.grpc.BackupListingRequest;
+import scheduler.grpc.BackupListingResponse;
+import scheduler.grpc.BackupRequest;
+import scheduler.grpc.BackupResponse;
+import scheduler.grpc.BackupType;
+import scheduler.grpc.CassyGrpc;
+import scheduler.grpc.OperationStatus;
 
 public class CassyClient {
   private final CassyGrpc.CassyBlockingStub blockingStub;
+  private int timeoutInSeconds = 20;
 
   public CassyClient() {
     this(ManagedChannelBuilder.forAddress("localhost", 20051).usePlaintext());
+  }
+
+  public CassyClient(int timeout) {
+    this(
+        ManagedChannelBuilder.forAddress("localhost", 20051).usePlaintext(),
+        timeout
+    );
   }
 
   public CassyClient(ManagedChannelBuilder<?> channelBuilder) {
@@ -30,9 +40,15 @@ public class CassyClient {
     blockingStub = CassyGrpc.newBlockingStub(channel);
   }
 
+  public CassyClient(ManagedChannelBuilder<?> channelBuilder, int timeout) {
+    Channel channel = channelBuilder.build();
+    blockingStub = CassyGrpc.newBlockingStub(channel);
+    timeoutInSeconds = timeout;
+  }
+
   public int takeClusterSnapshot(String clusterId) throws Exception {
     BackupRequest backupRequest =
-        BackupRequest.newBuilder().setClusterId(clusterId).setBackupType(1).build();
+        BackupRequest.newBuilder().setClusterId(clusterId).setBackupType(BackupType.CLUSTER_SNAPSHOT.get()).build();
     BackupResponse backupResponse = blockingStub.takeBackup(backupRequest);
     return startTask(backupResponse);
   }
@@ -40,7 +56,10 @@ public class CassyClient {
   public int takeNodeSnapshot(String clusterId, Optional<String[]> targetIps)
       throws InterruptedException, TimeoutException, ExecutionException {
     BackupRequest backupRequest =
-        BackupRequest.newBuilder().setClusterId(clusterId).setBackupType(2).build();
+        BackupRequest.newBuilder()
+            .setClusterId(clusterId)
+            .setBackupType(BackupType.NODE_SNAPSHOT.get())
+            .build();
     if (targetIps.isPresent()) {
       backupRequest =
           BackupRequest.newBuilder(backupRequest)
@@ -57,8 +76,8 @@ public class CassyClient {
     BackupListingResponse backupListingResponse =
         blockingStub.listBackups(BackupListingRequest.newBuilder().setClusterId(clusterId).build());
     for (BackupListingResponse.Entry entry : backupListingResponse.getEntriesList()) {
-      if ((entry.getBackupType() == 1 || entry.getBackupType() == 2)
-          && entry.getStatusValue() == 3) {
+      if ((entry.getBackupType() == BackupType.CLUSTER_SNAPSHOT.get() || entry.getBackupType() == BackupType.NODE_SNAPSHOT.get())
+          && entry.getStatusValue() == OperationStatus.COMPLETED_VALUE) {
         snapshotId = entry.getSnapshotId();
       }
     }
@@ -69,7 +88,7 @@ public class CassyClient {
         BackupRequest.newBuilder()
             .setClusterId(clusterId)
             .setSnapshotId(snapshotId)
-            .setBackupType(3)
+            .setBackupType(BackupType.NODE_INCREMENTAL.get())
             .build();
 
     if (targetIps.isPresent()) {
@@ -96,8 +115,8 @@ public class CassyClient {
                           .build()))
               .build();
       Thread.sleep(2000); // so we aren't spamming Cassy server every millisecond
-    } while (backupListingResponse.getEntries(0).getStatusValue() != 3
-        && backupListingResponse.getEntries(0).getStatusValue() != 4);
+    } while (backupListingResponse.getEntries(0).getStatusValue() != OperationStatus.COMPLETED_VALUE
+        && backupListingResponse.getEntries(0).getStatusValue() != OperationStatus.FAILED_VALUE);
 
     return backupListingResponse;
   }
@@ -108,8 +127,8 @@ public class CassyClient {
     Callable<BackupListingResponse> task = () -> awaitBackupStatusCompletedOrFailed(response);
     Future<BackupListingResponse> future = executorService.submit(task);
     return future
-        .get(20, TimeUnit.SECONDS)
+        .get(timeoutInSeconds, TimeUnit.SECONDS)
         .getEntries(0)
-        .getStatusValue(); // wait a maximum of 20 seconds
+        .getStatusValue();
   }
 }
