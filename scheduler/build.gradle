@@ -42,5 +42,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
-// Define the main class for the application
-mainClassName = 'scheduler.App'
+task Scheduler(type: CreateStartScripts) {
+    mainClassName = 'scheduler.CassyBackupScheduler'
+    applicationName = 'cassy-schedule'
+    outputDir = new File(project.buildDir, 'tmp')
+}
