@@ -22,16 +22,12 @@ import scheduler.grpc.OperationStatus;
 
 public class CassyClient {
   private final CassyGrpc.CassyBlockingStub blockingStub;
-  private int timeoutInSeconds = 20;
 
   public CassyClient() {
-    this(ManagedChannelBuilder.forAddress("localhost", 20051).usePlaintext());
-  }
-
-  public CassyClient(int timeout) {
     this(
-        ManagedChannelBuilder.forAddress("localhost", 20051).usePlaintext(),
-        timeout
+        ManagedChannelBuilder.forAddress(
+            System.getenv().getOrDefault("CASSY_SCHEDULER_HOST", "localhost"),
+            Integer.parseInt(System.getenv().getOrDefault("CASSY_SCHEDULER_PORT", "20051"))).usePlaintext()
     );
   }
 
@@ -40,20 +36,14 @@ public class CassyClient {
     blockingStub = CassyGrpc.newBlockingStub(channel);
   }
 
-  public CassyClient(ManagedChannelBuilder<?> channelBuilder, int timeout) {
-    Channel channel = channelBuilder.build();
-    blockingStub = CassyGrpc.newBlockingStub(channel);
-    timeoutInSeconds = timeout;
-  }
-
-  public int takeClusterSnapshot(String clusterId) throws Exception {
+  public int takeClusterSnapshot(String clusterId, int timeout) throws Exception {
     BackupRequest backupRequest =
         BackupRequest.newBuilder().setClusterId(clusterId).setBackupType(BackupType.CLUSTER_SNAPSHOT.get()).build();
     BackupResponse backupResponse = blockingStub.takeBackup(backupRequest);
-    return startTask(backupResponse);
+    return startTask(backupResponse, timeout);
   }
 
-  public int takeNodeSnapshot(String clusterId, Optional<String[]> targetIps)
+  public int takeNodeSnapshot(String clusterId, int timeout, Optional<String[]> targetIps)
       throws InterruptedException, TimeoutException, ExecutionException {
     BackupRequest backupRequest =
         BackupRequest.newBuilder()
@@ -67,10 +57,10 @@ public class CassyClient {
               .build();
     }
 
-    return startTask(blockingStub.takeBackup(backupRequest));
+    return startTask(blockingStub.takeBackup(backupRequest), timeout);
   }
 
-  public int takeIncrementalBackup(String clusterId, Optional<String[]> targetIps)
+  public int takeIncrementalBackup(String clusterId, int timeout, Optional<String[]> targetIps)
       throws InterruptedException, TimeoutException, ExecutionException {
     String snapshotId = "";
     BackupListingResponse backupListingResponse =
@@ -98,7 +88,7 @@ public class CassyClient {
               .build();
     }
 
-    return startTask(blockingStub.takeBackup(backupRequest));
+    return startTask(blockingStub.takeBackup(backupRequest), timeout);
   }
 
   private BackupListingResponse awaitBackupStatusCompletedOrFailed(BackupResponse response)
@@ -121,13 +111,13 @@ public class CassyClient {
     return backupListingResponse;
   }
 
-  private int startTask(BackupResponse response)
+  private int startTask(BackupResponse response, int timeout)
       throws InterruptedException, ExecutionException, TimeoutException {
     ExecutorService executorService = Executors.newCachedThreadPool();
     Callable<BackupListingResponse> task = () -> awaitBackupStatusCompletedOrFailed(response);
     Future<BackupListingResponse> future = executorService.submit(task);
     return future
-        .get(timeoutInSeconds, TimeUnit.SECONDS)
+        .get(timeout, TimeUnit.SECONDS)
         .getEntries(0)
         .getStatusValue();
   }

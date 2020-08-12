@@ -1,11 +1,14 @@
 package scheduler;
 
+import com.google.inject.Inject;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "node_snapshot", aliases = {"ns"}, description = "take a node snapshot")
 class NodeSnapshot implements Callable<Integer> {
+  private final CassyClient client;
+
   @CommandLine.ParentCommand
   CassyBackupScheduler scheduler;
 
@@ -21,6 +24,11 @@ class NodeSnapshot implements Callable<Integer> {
       split = ",")
   String[] targetIps;
 
+  @Inject
+  NodeSnapshot(CassyClient client) {
+    this.client = client;
+  }
+
   /**
    * Computes a result, or throws an exception if unable to do so.
    *
@@ -29,7 +37,6 @@ class NodeSnapshot implements Callable<Integer> {
    */
   @Override
   public Integer call() throws Exception {
-    CassyClient client = new CassyClient(scheduler.timeout);
-    return client.takeNodeSnapshot(clusterId, Optional.ofNullable(targetIps));
+    return client.takeNodeSnapshot(clusterId, scheduler.timeout, Optional.ofNullable(targetIps));
   }
 }

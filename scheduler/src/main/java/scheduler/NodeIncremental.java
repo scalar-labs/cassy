@@ -1,11 +1,14 @@
 package scheduler;
 
+import com.google.inject.Inject;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "node_incremental", aliases = {"ni"}, description = "take a cluster-wide snapshot")
 class NodeIncremental implements Callable<Integer> {
+  private final CassyClient client;
+
   @CommandLine.ParentCommand
   CassyBackupScheduler scheduler;
 
@@ -21,6 +24,11 @@ class NodeIncremental implements Callable<Integer> {
       split = ",")
   String[] targetIps;
 
+  @Inject
+  public NodeIncremental(CassyClient client) {
+    this.client = client;
+  }
+
   /**
    * Computes a result, or throws an exception if unable to do so.
    *
@@ -29,7 +37,6 @@ class NodeIncremental implements Callable<Integer> {
    */
   @Override
   public Integer call() throws Exception {
-    CassyClient client = new CassyClient(scheduler.timeout);
-    return client.takeIncrementalBackup(clusterId, Optional.ofNullable(targetIps));
+    return client.takeIncrementalBackup(clusterId, scheduler.timeout, Optional.ofNullable(targetIps));
   }
 }

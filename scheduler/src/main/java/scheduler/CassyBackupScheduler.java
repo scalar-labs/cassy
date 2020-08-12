@@ -1,20 +1,26 @@
 package scheduler;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import picocli.CommandLine;
 
 @CommandLine.Command(
     name = "cassy-schedule",
     mixinStandardHelpOptions = true,
-    description = "calls Cassy's backup command",
-    subcommands = {ClusterSnapshot.class, NodeSnapshot.class, NodeIncremental.class})
+    description = "calls Cassy's backup command")
 public class CassyBackupScheduler implements Runnable {
   @CommandLine.Spec CommandLine.Model.CommandSpec spec;
 
-  @CommandLine.Option(names = {"-t", "--timeout"}, description = "this option sets the timeout value in seconds")
+  @CommandLine.Option(names = "-t", scope = CommandLine.ScopeType.INHERIT) // option is shared with subcommands
   int timeout;
 
   public static void main(String[] args) {
-    System.exit(new CommandLine(new CassyBackupScheduler()).execute(args));
+    Injector injector = Guice.createInjector(new CommandModule());
+    CommandLine commandLine = new CommandLine(new CassyBackupScheduler())
+        .addSubcommand(injector.getInstance(ClusterSnapshot.class))
+        .addSubcommand(injector.getInstance(NodeIncremental.class))
+        .addSubcommand(injector.getInstance(NodeSnapshot.class));
+    System.exit(commandLine.execute(args));
   }
 
   /**
