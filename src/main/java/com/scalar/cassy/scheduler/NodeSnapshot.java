@@ -1,4 +1,4 @@
-package scheduler;
+package com.scalar.cassy.scheduler;
 
 import com.google.inject.Inject;
 import java.util.Optional;

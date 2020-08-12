@@ -1,5 +1,12 @@
-package scheduler;
+package com.scalar.cassy.scheduler;
 
+import com.scalar.cassy.config.BackupType;
+import com.scalar.cassy.rpc.BackupListingRequest;
+import com.scalar.cassy.rpc.BackupListingResponse;
+import com.scalar.cassy.rpc.BackupRequest;
+import com.scalar.cassy.rpc.BackupResponse;
+import com.scalar.cassy.rpc.CassyGrpc;
+import com.scalar.cassy.rpc.OperationStatus;
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
 import java.util.Arrays;
@@ -12,13 +19,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-import scheduler.grpc.BackupListingRequest;
-import scheduler.grpc.BackupListingResponse;
-import scheduler.grpc.BackupRequest;
-import scheduler.grpc.BackupResponse;
-import scheduler.grpc.BackupType;
-import scheduler.grpc.CassyGrpc;
-import scheduler.grpc.OperationStatus;
 
 public class CassyClient {
   private final CassyGrpc.CassyBlockingStub blockingStub;
