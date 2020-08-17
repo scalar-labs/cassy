@@ -29,12 +29,6 @@ class NodeSnapshot implements Callable<Integer> {
     this.client = client;
   }
 
-  /**
-   * Computes a result, or throws an exception if unable to do so.
-   *
-   * @return computed result
-   * @throws Exception if unable to compute a result
-   */
   @Override
   public Integer call() throws Exception {
     return client.takeNodeSnapshot(clusterId, scheduler.timeout, Optional.ofNullable(targetIps));
