@@ -3,14 +3,19 @@ package com.scalar.cassy.scheduler;
 import com.google.inject.Inject;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
-@CommandLine.Command(name = "node_incremental", aliases = {"ni"}, description = "take a cluster-wide snapshot")
+@CommandLine.Command(
+    name = "node_incremental",
+    aliases = {"ni"},
+    description = "take a cluster-wide snapshot")
 class NodeIncremental implements Callable<Integer> {
+  private static final Logger logger = LoggerFactory.getLogger(NodeIncremental.class);
   private final CassyClient client;
 
-  @CommandLine.ParentCommand
-  CassyBackupScheduler scheduler;
+  @CommandLine.ParentCommand CassyBackupScheduler scheduler;
 
   @CommandLine.Option(
       names = {"--cluster_id", "-c"},
@@ -31,6 +36,9 @@ class NodeIncremental implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    return client.takeIncrementalBackup(clusterId, scheduler.timeout, Optional.ofNullable(targetIps));
+    logger.info(String.format("Taking node incremental backup for cluster %s ...", clusterId));
+    client.takeIncrementalBackup(clusterId, scheduler.timeout, Optional.ofNullable(targetIps));
+    logger.info("Operation completed successfully ...");
+    return 0;
   }
 }
