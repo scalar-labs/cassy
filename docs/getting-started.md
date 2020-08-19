@@ -199,22 +199,7 @@ You can view restore statues with `ListRestoreStatuses`.
 $ grpcurl -plaintext -d '{"limit": 3, "cluster_id": "CLUSTER-ID"}' 192.168.0.254:20051 rpc.Cassy.ListRestoreStatuses
 ```
 
-### Scheduling backups
+## Future Work
 
-You can schedule backups using the `cassy-schedule` executable together with `cron`. 
-
-The command can be executed with `cassy-schedule [-t=<timeout>] [subcommand] [options]`. The `timeout` option is an integer in seconds, which will set a maximum time to wait for the backup to reach a `COMPLETED` or `FAILED` status, or otherwise exit the program with an exception. If you do not set this option it will use the default value of 20.
-
-The subcommands are used for setting the backup type, and can be used as follows:
-
-- `cluster_snapshot [-c, --cluster_id]` : take a cluster-wide backup
-- `node_snapshot [-c, --cluster_id] [-i, --target_ips]` : take a node snapshot
-- `node_incremental [-c, --cluster_id] [-i, --target_ips` : take a node incremental backup using the most recent successful snapshot.
-
-An example command would look like the following:
-```bash
-cassy-schedule -t 40 node_incremental -c "Test Cluster 123" -i 127.0.0.1,192.168.0.1
-```
-The above command will start an incremental backup with a timeout of 40 seconds for cluster "Test Cluster 123" with target ips of 127.0.0.1 and 192.168.0.1.
-
-You can add these commands into your `crontab` to start backups at your desired time interval.
+The following features are planned to be implemented in the near future.
+* GUI component to make backup and restore operations even easier. 
