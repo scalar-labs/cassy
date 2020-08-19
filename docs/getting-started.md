@@ -203,6 +203,16 @@ $ grpcurl -plaintext -d '{"limit": 3, "cluster_id": "CLUSTER-ID"}' 192.168.0.254
 
 You can schedule backups using the `cassy-schedule` executable together with `cron`. 
 
+#### Environment variables
+First, you will need to set environment variables to tell the scheduler where your Cassy server is running. If you do not set these variables, the scheduler will default to `localhost:20051`.
+
+| Variable | Definition | Example
+| -------- | ---------- | ---------------------------------- |
+| CASSY_SCHEDULER_HOST  | the ip address of the cassy server | 127.0.0.1
+| CASSY_SCHEDULER_PORT  | the port of the cassy server       | 20051
+
+#### Usage
+
 The command can be executed with `cassy-schedule [-t=<timeout>] [subcommand] [options]`. The `timeout` option is an integer in seconds, which will set a maximum time to wait for the backup to reach a `COMPLETED` or `FAILED` status, or otherwise exit the program with an exception. If you do not set this option it will use the default value of 20.
 
 The subcommands are used for setting the backup type, and can be used as follows:
