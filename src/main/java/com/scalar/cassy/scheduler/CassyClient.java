@@ -50,17 +50,17 @@ public class CassyClient {
     startTask(backupResponse, timeout);
   }
 
-  public void takeNodeSnapshot(String clusterId, int timeout, Optional<String[]> targetIps)
+  public void takeNodeSnapshot(String clusterId, int timeout, List<String> targetIps)
       throws InterruptedException, TimeoutException, ExecutionException {
     BackupRequest backupRequest =
         BackupRequest.newBuilder()
             .setClusterId(clusterId)
             .setBackupType(BackupType.NODE_SNAPSHOT.get())
             .build();
-    if (targetIps.isPresent()) {
+    if (!targetIps.isEmpty()) {
       backupRequest =
           BackupRequest.newBuilder(backupRequest)
-              .addAllTargetIps(Arrays.stream(targetIps.get()).collect(Collectors.toList()))
+              .addAllTargetIps(targetIps)
               .build();
     }
 
