@@ -140,6 +140,7 @@ applicationDistribution.into('bin') {
     from(BackupCommand)
     from(RestoreCommand)
     from(Server)
+    from(Scheduler)
     fileMode = 0755
 }
 
