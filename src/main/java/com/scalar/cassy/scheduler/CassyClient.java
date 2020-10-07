@@ -67,16 +67,18 @@ public class CassyClient {
     startTask(blockingStub.takeBackup(backupRequest), timeout);
   }
 
-  public void takeIncrementalBackup(String clusterId, int timeout, Optional<String[]> targetIps)
+  public void takeIncrementalBackup(String clusterId, int timeout, List<String> targetIps)
       throws InterruptedException, TimeoutException, ExecutionException {
-    // take incremental backups individually by target ips
 
-    // get cluster target ips
-    ClusterListingResponse clusterListingResponse =
-        blockingStub.listClusters(
-            ClusterListingRequest.newBuilder().setClusterId(clusterId).build());
-    for (String targetIp : clusterListingResponse.getEntries(0).getTargetIpsList()) {
-      // for each target_ip, get a backup listing response
+    // get cluster target ips if no target ips are set
+    if (targetIps.isEmpty()) {
+      targetIps =
+          blockingStub.listClusters(
+              ClusterListingRequest.newBuilder().setClusterId(clusterId).build()).getEntries(0).getTargetIpsList();
+    }
+
+    // for each target_ip, get a backup listing response
+    for (String targetIp : targetIps) {
       BackupListingResponse backupListingResponse =
           blockingStub.listBackups(
               BackupListingRequest.newBuilder()
@@ -97,41 +99,13 @@ public class CassyClient {
       BackupRequest backupRequest =
           BackupRequest.newBuilder()
               .setClusterId(clusterId)
+              .addTargetIps(targetIp)
               .setSnapshotId(entries.get(0).getSnapshotId())
               .setBackupType(BackupType.NODE_INCREMENTAL.get())
           .build();
 
       startTask(blockingStub.takeBackup(backupRequest), timeout);
     }
-//
-//    String snapshotId = "";
-//    BackupListingResponse backupListingResponse =
-//        blockingStub.listBackups(BackupListingRequest.newBuilder().setClusterId(clusterId).build());
-//    for (BackupListingResponse.Entry entry : backupListingResponse.getEntriesList()) {
-//      if ((entry.getBackupType() == BackupType.CLUSTER_SNAPSHOT.get()
-//              || entry.getBackupType() == BackupType.NODE_SNAPSHOT.get())
-//          && entry.getStatusValue() == OperationStatus.COMPLETED_VALUE) {
-//        snapshotId = entry.getSnapshotId();
-//      }
-//    }
-//
-//    if (snapshotId.isEmpty()) return; // TODO throw exception?
-//
-//    BackupRequest backupRequest =
-//        BackupRequest.newBuilder()
-//            .setClusterId(clusterId)
-//            .setSnapshotId(snapshotId)
-//            .setBackupType(BackupType.NODE_INCREMENTAL.get())
-//            .build();
-//
-//    if (targetIps.isPresent()) {
-//      backupRequest =
-//          BackupRequest.newBuilder(backupRequest)
-//              .addAllTargetIps(Arrays.stream(targetIps.get()).collect(Collectors.toList()))
-//              .build();
-//    }
-//
-//    startTask(blockingStub.takeBackup(backupRequest), timeout);
   }
 
   private BackupListingResponse awaitBackupStatusCompletedOrFailed(BackupResponse response)
