@@ -146,12 +146,12 @@ public class CassyClient {
           && backupListingResponse.getEntries(0).getStatusValue() != OperationStatus.FAILED_VALUE;
 
       if (isNotCompletedOrFailed) {
-        Thread.sleep(10000); // so we aren't spamming Cassy server every millisecond
+        Thread.sleep(2000); // so we aren't spamming Cassy server every millisecond
       }
     } while (isNotCompletedOrFailed);
 
     OperationStatus status = backupListingResponse.getEntries(0).getStatus();
-    logger.info(String.format("\n\nThe following backup concluded with status %s\n\nCluster: %s\nSnapshot: %s\nTarget IP: %s\nBackup Type: %s",
+    logger.info(String.format("\n\nThe following backup concluded with status %s\n\nCluster: %s\nSnapshot: %s\nTarget IP: %s\nBackup Type: %s\n",
         status.toString(),
         response.getClusterId(),
         response.getSnapshotId(),
