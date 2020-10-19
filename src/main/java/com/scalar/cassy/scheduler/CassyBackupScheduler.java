@@ -11,15 +11,19 @@ import picocli.CommandLine;
 public class CassyBackupScheduler implements Runnable {
   @CommandLine.Spec CommandLine.Model.CommandSpec spec;
 
-  @CommandLine.Option(names = "-t", scope = CommandLine.ScopeType.INHERIT, defaultValue = "18000") // option is shared with subcommands
+  @CommandLine.Option(
+      names = "-t",
+      scope = CommandLine.ScopeType.INHERIT,
+      defaultValue = "18000") // option is shared with subcommands
   int timeout;
 
   public static void main(String[] args) {
     Injector injector = Guice.createInjector(new CommandModule());
-    CommandLine commandLine = new CommandLine(new CassyBackupScheduler())
-        .addSubcommand(injector.getInstance(ClusterSnapshot.class))
-        .addSubcommand(injector.getInstance(NodeIncremental.class))
-        .addSubcommand(injector.getInstance(NodeSnapshot.class));
+    CommandLine commandLine =
+        new CommandLine(new CassyBackupScheduler())
+            .addSubcommand(injector.getInstance(ClusterSnapshot.class))
+            .addSubcommand(injector.getInstance(NodeIncremental.class))
+            .addSubcommand(injector.getInstance(NodeSnapshot.class));
     System.exit(commandLine.execute(args));
   }
 
