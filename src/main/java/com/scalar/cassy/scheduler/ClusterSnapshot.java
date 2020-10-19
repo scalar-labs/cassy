@@ -24,7 +24,6 @@ class ClusterSnapshot implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    client.takeClusterSnapshot(clusterId, scheduler.timeout);
-    return 0;
+    return client.takeClusterSnapshot(clusterId, scheduler.timeout);
   }
 }

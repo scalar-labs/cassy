@@ -213,13 +213,13 @@ First, you will need to set environment variables to tell the scheduler where yo
 
 #### Usage
 
-The command can be executed with `cassy-schedule [-t=<timeout>] [subcommand] [options]`. The `timeout` option is an integer in seconds, which will set a maximum time to wait for the backup to reach a `COMPLETED` or `FAILED` status, or otherwise exit the program with an exception. If you do not set this option it will use the default value of 20.
+The command can be executed with `cassy-schedule [-t=<timeout>] [subcommand] [options]`. The `timeout` option is an integer in seconds, which will set a maximum time to wait for the backup to reach a `COMPLETED` or `FAILED` status, or otherwise exit the program with an exception. If you do not set this option it will use the default value of 18000 (five hours).
 
 The subcommands are used for setting the backup type, and can be used as follows:
 
 - `cluster_snapshot [-c, --cluster_id]` : take a cluster-wide backup
 - `node_snapshot [-c, --cluster_id] [-i, --target_ips]` : take a node snapshot
-- `node_incremental [-c, --cluster_id] [-i, --target_ips` : take a node incremental backup using the most recent successful snapshot.
+- `node_incremental [-c, --cluster_id] [-i, --target_ips` : take a node incremental backup using the most recent snapshot.
 
 An example command would look like the following:
 ```bash

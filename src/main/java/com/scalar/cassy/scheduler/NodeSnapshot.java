@@ -1,6 +1,7 @@
 package com.scalar.cassy.scheduler;
 
 import com.google.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -26,7 +27,7 @@ class NodeSnapshot implements Callable<Integer> {
       names = {"--target_ips", "-i"},
       description = "optionally specify target ips",
       split = ",")
-  List<String> targetIps;
+  List<String> targetIps = new ArrayList<>();
 
   @Inject
   NodeSnapshot(CassyClient client) {
@@ -36,8 +37,6 @@ class NodeSnapshot implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     logger.info(String.format("Taking node snapshot for cluster %s ...", clusterId));
-    client.takeNodeSnapshot(clusterId, scheduler.timeout, targetIps);
-    logger.info("Operation completed successfully ...");
-    return 0;
+    return client.takeNodeSnapshot(clusterId, scheduler.timeout, targetIps);
   }
 }

@@ -8,13 +8,10 @@ import com.scalar.cassy.rpc.BackupRequest;
 import com.scalar.cassy.rpc.BackupResponse;
 import com.scalar.cassy.rpc.CassyGrpc;
 import com.scalar.cassy.rpc.ClusterListingRequest;
-import com.scalar.cassy.rpc.ClusterListingResponse;
 import com.scalar.cassy.rpc.OperationStatus;
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -23,8 +20,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CassyClient {
+  private static final Logger logger = LoggerFactory.getLogger(CassyClient.class);
   private final CassyGrpc.CassyBlockingStub blockingStub;
 
   public CassyClient() {
@@ -40,17 +40,19 @@ public class CassyClient {
     blockingStub = CassyGrpc.newBlockingStub(channel);
   }
 
-  public void takeClusterSnapshot(String clusterId, int timeout) throws Exception {
+  public int takeClusterSnapshot(String clusterId, int timeout) throws Exception {
     BackupRequest backupRequest =
         BackupRequest.newBuilder()
             .setClusterId(clusterId)
             .setBackupType(BackupType.CLUSTER_SNAPSHOT.get())
             .build();
-    BackupResponse backupResponse = blockingStub.takeBackup(backupRequest);
-    startTask(backupResponse, timeout);
+    if (startTask(blockingStub.takeBackup(backupRequest), timeout) != 3) {
+      return 1;
+    }
+    return 0;
   }
 
-  public void takeNodeSnapshot(String clusterId, int timeout, List<String> targetIps)
+  public int takeNodeSnapshot(String clusterId, int timeout, List<String> targetIps)
       throws InterruptedException, TimeoutException, ExecutionException {
     BackupRequest backupRequest =
         BackupRequest.newBuilder()
@@ -58,23 +60,26 @@ public class CassyClient {
             .setBackupType(BackupType.NODE_SNAPSHOT.get())
             .build();
     if (!targetIps.isEmpty()) {
-      backupRequest =
-          BackupRequest.newBuilder(backupRequest)
-              .addAllTargetIps(targetIps)
-              .build();
+      backupRequest = BackupRequest.newBuilder(backupRequest).addAllTargetIps(targetIps).build();
     }
 
-    startTask(blockingStub.takeBackup(backupRequest), timeout);
+    if (startTask(blockingStub.takeBackup(backupRequest), timeout) != 3) {
+      return 1;
+    }
+    return 0;
   }
 
-  public void takeIncrementalBackup(String clusterId, int timeout, List<String> targetIps)
+  public int takeIncrementalBackup(String clusterId, int timeout, List<String> targetIps)
       throws InterruptedException, TimeoutException, ExecutionException {
+    int code = 0;
 
     // get cluster target ips if no target ips are set
     if (targetIps.isEmpty()) {
       targetIps =
-          blockingStub.listClusters(
-              ClusterListingRequest.newBuilder().setClusterId(clusterId).build()).getEntries(0).getTargetIpsList();
+          blockingStub
+              .listClusters(ClusterListingRequest.newBuilder().setClusterId(clusterId).build())
+              .getEntries(0)
+              .getTargetIpsList();
     }
 
     // for each target_ip, get a backup listing response
@@ -91,9 +96,9 @@ public class CassyClient {
               .collect(Collectors.toList());
       // get the most recent snapshot
       if (entries.get(0).getStatusValue() != OperationStatus.COMPLETED_VALUE) {
-        // if snapshot is not COMPLETED, throw an exception
-        throw new BackupException(
-            "Most recent snapshot is not completed. Unable to take incremental backup.");
+        logger.error(String.format("Could not find completed snapshot for node incremental backup on Target IP %s", targetIp));
+        code = 1;
+        continue;
       }
       // if snapshot is COMPLETED, take an incremental backup with target_ip
       BackupRequest backupRequest =
@@ -102,15 +107,19 @@ public class CassyClient {
               .addTargetIps(targetIp)
               .setSnapshotId(entries.get(0).getSnapshotId())
               .setBackupType(BackupType.NODE_INCREMENTAL.get())
-          .build();
+              .build();
 
-      startTask(blockingStub.takeBackup(backupRequest), timeout);
+      if (startTask(blockingStub.takeBackup(backupRequest), timeout) != 3) {
+        code = 1;
+      }
     }
+    return code;
   }
 
-  private BackupListingResponse awaitBackupStatusCompletedOrFailed(BackupResponse response)
+  private int awaitBackupStatusCompletedOrFailed(BackupResponse response)
       throws InterruptedException {
     BackupListingResponse backupListingResponse;
+    boolean isNotCompletedOrFailed;
     do {
       backupListingResponse =
           BackupListingResponse.newBuilder(
@@ -118,27 +127,35 @@ public class CassyClient {
                       BackupListingRequest.newBuilder()
                           .setClusterId(response.getClusterId())
                           .setSnapshotId(response.getSnapshotId())
+                          .setTargetIp(response.getTargetIps(0))
                           .setLimit(1)
                           .build()))
               .build();
-      Thread.sleep(2000); // so we aren't spamming Cassy server every millisecond
-    } while (backupListingResponse.getEntries(0).getStatusValue() != OperationStatus.COMPLETED_VALUE
-        && backupListingResponse.getEntries(0).getStatusValue() != OperationStatus.FAILED_VALUE);
-    if (backupListingResponse.getEntries(0).getStatusValue() == OperationStatus.FAILED_VALUE) {
-      throw new BackupException(
-          String.format(
-              "Failed to create backup for cluster '%s' with snapshot_id '%s'",
-              response.getClusterId(), response.getSnapshotId()));
-    }
 
-    return backupListingResponse;
+      isNotCompletedOrFailed = backupListingResponse.getEntries(0).getStatusValue() != OperationStatus.COMPLETED_VALUE
+          && backupListingResponse.getEntries(0).getStatusValue() != OperationStatus.FAILED_VALUE;
+
+      if (isNotCompletedOrFailed) {
+        Thread.sleep(10000); // so we aren't spamming Cassy server every millisecond
+      }
+    } while (isNotCompletedOrFailed);
+
+    OperationStatus status = backupListingResponse.getEntries(0).getStatus();
+    logger.info(String.format("\n\nThe following backup concluded with status %s\n\nCluster: %s\nSnapshot: %s\nTarget IP: %s\nBackup Type: %s",
+        status.toString(),
+        response.getClusterId(),
+        response.getSnapshotId(),
+        response.getTargetIps(0),
+        response.getBackupType()
+    ));
+    return status.getNumber();
   }
 
-  private void startTask(BackupResponse response, int timeout)
+  private int startTask(BackupResponse response, int timeout)
       throws InterruptedException, ExecutionException, TimeoutException {
     ExecutorService executorService = Executors.newCachedThreadPool();
-    Callable<BackupListingResponse> task = () -> awaitBackupStatusCompletedOrFailed(response);
-    Future<BackupListingResponse> future = executorService.submit(task);
-    future.get(timeout, TimeUnit.SECONDS);
+    Callable<Integer> task = () -> awaitBackupStatusCompletedOrFailed(response);
+    Future<Integer> future = executorService.submit(task);
+    return future.get(timeout, TimeUnit.SECONDS);
   }
 }
