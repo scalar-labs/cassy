@@ -54,19 +54,29 @@ public class CassyClient {
 
   public int takeNodeSnapshot(String clusterId, int timeout, List<String> targetIps)
       throws InterruptedException, TimeoutException, ExecutionException {
-    BackupRequest backupRequest =
-        BackupRequest.newBuilder()
-            .setClusterId(clusterId)
-            .setBackupType(BackupType.NODE_SNAPSHOT.get())
-            .build();
-    if (!targetIps.isEmpty()) {
-      backupRequest = BackupRequest.newBuilder(backupRequest).addAllTargetIps(targetIps).build();
+    int code = 0;
+
+    if (targetIps.isEmpty()) {
+      targetIps =
+          blockingStub
+              .listClusters(ClusterListingRequest.newBuilder().setClusterId(clusterId).build())
+              .getEntries(0)
+              .getTargetIpsList();
     }
 
-    if (startTask(blockingStub.takeBackup(backupRequest), timeout) != 3) {
-      return 1;
+    for (String targetIp : targetIps) {
+      BackupRequest backupRequest =
+          BackupRequest.newBuilder()
+              .setClusterId(clusterId)
+              .setBackupType(BackupType.NODE_SNAPSHOT.get())
+              .addTargetIps(targetIp)
+              .build();
+
+      if (startTask(blockingStub.takeBackup(backupRequest), timeout) != 3) {
+        code = 1;
+      }
     }
-    return 0;
+    return code;
   }
 
   public int takeIncrementalBackup(String clusterId, int timeout, List<String> targetIps)
