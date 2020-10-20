@@ -88,10 +88,9 @@ public class CassyClient {
       try {
         status = future.get();
       } catch (CancellationException e) {
-        // TODO maybe change future object so we can log more info here
         logger.info(
             String.format(
-                "\n\nThe following node backup timed out before completion\n\nCluster: %s\nBackup Type: %s\n",
+                "\n\nA target IP in the following node backup timed out before completion\n\nCluster: %s\nBackup Type: %s\n",
                 clusterId, BackupType.NODE_SNAPSHOT.get()));
         code = 1;
         continue;
@@ -165,10 +164,9 @@ public class CassyClient {
       try {
         status = future.get();
       } catch (CancellationException e) {
-        // TODO maybe change future object so we can log more info here
         logger.info(
             String.format(
-                "\n\nThe following incremental backup timed out before completion\n\nCluster: %s\nBackup Type: %s\n",
+                "\n\nA target IP in the following incremental backup timed out before completion\n\nCluster: %s\nBackup Type: %s\n",
                 clusterId, BackupType.NODE_INCREMENTAL.get()));
         code = 1;
         continue;
