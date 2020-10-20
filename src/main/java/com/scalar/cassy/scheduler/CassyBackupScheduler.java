@@ -9,7 +9,9 @@ import picocli.CommandLine;
     mixinStandardHelpOptions = true,
     description = "calls Cassy's backup command")
 public class CassyBackupScheduler implements Runnable {
-  @CommandLine.Spec CommandLine.Model.CommandSpec spec;
+
+  @CommandLine.Spec
+  CommandLine.Model.CommandSpec spec;
 
   @CommandLine.Option(
       names = "-t",
