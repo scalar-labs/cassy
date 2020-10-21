@@ -11,12 +11,10 @@ import com.scalar.cassy.rpc.OperationStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,22 +28,21 @@ public class CassyClient {
   }
 
   public int takeClusterSnapshot(String clusterId, int timeout)
-      throws ExecutionException, InterruptedException {
+      throws InterruptedException, ExecutionException {
     BackupRequest backupRequest =
         BackupRequest.newBuilder()
             .setClusterId(clusterId)
             .setBackupType(BackupType.CLUSTER_SNAPSHOT.get())
             .build();
     List<Callable<Integer>> tasks = new ArrayList<>();
-    tasks.add(() -> awaitBackupStatusCompletedOrFailed(blockingStub.takeBackup(backupRequest), timeout));
+    tasks.add(
+        () -> awaitBackupStatusCompletedOrFailed(blockingStub.takeBackup(backupRequest), timeout));
 
-    return startTasks(tasks).get(0).get();
+    return startTasks(tasks);
   }
 
   public int takeNodeSnapshot(String clusterId, int timeout, List<String> targetIps)
       throws ExecutionException, InterruptedException {
-    int code = 0;
-
     if (targetIps.isEmpty()) {
       targetIps =
           blockingStub
@@ -63,17 +60,12 @@ public class CassyClient {
               .addTargetIps(targetIp)
               .build();
 
-      tasks.add(() -> awaitBackupStatusCompletedOrFailed(blockingStub.takeBackup(backupRequest), timeout));
+      tasks.add(
+          () ->
+              awaitBackupStatusCompletedOrFailed(blockingStub.takeBackup(backupRequest), timeout));
     }
 
-    List<Future<Integer>> futures = startTasks(tasks);
-
-    for (Future<Integer> future : futures) {
-      if (future.get() == 1) {
-        code = 1;
-      }
-    }
-    return code;
+    return startTasks(tasks);
   }
 
   public int takeIncrementalBackup(String clusterId, int timeout, List<String> targetIps)
@@ -128,17 +120,15 @@ public class CassyClient {
               .setBackupType(BackupType.NODE_INCREMENTAL.get())
               .build();
 
-      tasks.add(() -> awaitBackupStatusCompletedOrFailed(blockingStub.takeBackup(backupRequest), timeout));
+      tasks.add(
+          () ->
+              awaitBackupStatusCompletedOrFailed(blockingStub.takeBackup(backupRequest), timeout));
     }
 
-    List<Future<Integer>> futures = startTasks(tasks);
-
-    for (Future<Integer> future : futures) {
-      if (future.get() == 1) {
-        code = 1;
-      }
+    if (code == 1) {
+      return code;
     }
-    return code;
+    return startTasks(tasks);
   }
 
   private int awaitBackupStatusCompletedOrFailed(BackupResponse response, int timeout)
@@ -168,12 +158,12 @@ public class CassyClient {
                           .setTargetIp(response.getTargetIps(0))
                           .setLimit(1)
                           .build()))
-              .build().getEntries(0);
+              .build()
+              .getEntries(0);
 
       isNotCompletedOrFailed =
           entry.getStatusValue() != OperationStatus.COMPLETED_VALUE
-              && entry.getStatusValue()
-                  != OperationStatus.FAILED_VALUE;
+              && entry.getStatusValue() != OperationStatus.FAILED_VALUE;
 
       if (isNotCompletedOrFailed) {
         Thread.sleep(2000); // so we aren't spamming Cassy server every millisecond
@@ -195,9 +185,15 @@ public class CassyClient {
     return 0;
   }
 
-  private List<Future<Integer>> startTasks(List<Callable<Integer>> tasks)
-      throws InterruptedException {
+  private int startTasks(List<Callable<Integer>> tasks)
+      throws InterruptedException, ExecutionException {
     ExecutorService executorService = Executors.newCachedThreadPool();
-    return executorService.invokeAll(tasks);
+    List<Future<Integer>> futures = executorService.invokeAll(tasks);
+    for (Future<Integer> future : futures) {
+      if (future.get() == 1) {
+        return 1;
+      }
+    }
+    return 0;
   }
 }
