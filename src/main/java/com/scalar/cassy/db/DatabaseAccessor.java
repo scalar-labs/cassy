@@ -1,6 +1,7 @@
 package com.scalar.cassy.db;
 
 import com.google.inject.Inject;
+import java.sql.Connection;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
@@ -10,11 +11,10 @@ public class DatabaseAccessor {
   private final ClusterInfo clusterInfo;
 
   @Inject
-  public DatabaseAccessor(
-      BackupHistory backupHistory, RestoreHistory restoreHistory, ClusterInfo clusterInfo) {
-    this.backupHistory = backupHistory;
-    this.restoreHistory = restoreHistory;
-    this.clusterInfo = clusterInfo;
+  public DatabaseAccessor(Connection connection) {
+    this.backupHistory = new BackupHistory(connection);
+    this.restoreHistory = new RestoreHistory(connection);
+    this.clusterInfo = new ClusterInfo(connection);
   }
 
   public BackupHistory getBackupHistory() {
