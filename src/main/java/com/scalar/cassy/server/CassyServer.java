@@ -8,8 +8,6 @@ import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -56,11 +54,9 @@ public final class CassyServer extends CassyImplBase {
   private void stop() {
     if (server != null) {
       server.shutdown();
-      try {
-        injector.getInstance(Connection.class).close();
-      } catch (SQLException e) {
-        // ignore
-      }
+    }
+    if (handlerService != null) {
+      handlerService.shutdown();
     }
   }
 

@@ -2,13 +2,15 @@ package com.scalar.cassy.server;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.inject.Inject;
-import com.scalar.cassy.db.DatabaseAccessor;
+import com.scalar.cassy.db.BackupHistory;
+import com.scalar.cassy.db.RestoreHistory;
 import com.scalar.cassy.exception.RemoteExecutionException;
 import com.scalar.cassy.remotecommand.RemoteCommandContext;
 import com.scalar.cassy.remotecommand.RemoteCommandResult;
 import com.scalar.cassy.rpc.OperationStatus;
 import com.scalar.cassy.service.BackupServiceMaster;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
@@ -17,13 +19,16 @@ import org.slf4j.LoggerFactory;
 public class RemoteCommandHandler implements Runnable {
   private static final Logger logger = LoggerFactory.getLogger(RemoteCommandHandler.class);
   private final BlockingQueue<RemoteCommandContext> futures;
-  private final DatabaseAccessor database;
+  private final Connection connection;
+  private final BackupHistory backupHistory;
+  private final RestoreHistory restoreHistory;
 
   @Inject
-  public RemoteCommandHandler(
-      BlockingQueue<RemoteCommandContext> futures, DatabaseAccessor database) {
+  public RemoteCommandHandler(BlockingQueue<RemoteCommandContext> futures, Connection connection) {
     this.futures = futures;
-    this.database = database;
+    this.connection = connection;
+    this.backupHistory = new BackupHistory(connection);
+    this.restoreHistory = new RestoreHistory(connection);
   }
 
   @Override
@@ -62,9 +67,9 @@ public class RemoteCommandHandler implements Runnable {
 
   private void updateStatus(RemoteCommandContext future, OperationStatus status) {
     if (future.getCommand().getName().equals(BackupServiceMaster.BACKUP_COMMAND)) {
-      database.getBackupHistory().update(future.getBackupKey(), status);
+      backupHistory.update(future.getBackupKey(), status);
     } else {
-      database.getRestoreHistory().update(future.getBackupKey(), status);
+      restoreHistory.update(future.getBackupKey(), status);
     }
   }
 }
