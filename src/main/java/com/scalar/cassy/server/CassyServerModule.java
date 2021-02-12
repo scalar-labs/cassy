@@ -47,7 +47,6 @@ public class CassyServerModule extends AbstractModule {
     return config;
   }
 
-  // A connection is created per thread of CassyServerController and RemoteCommandHandler
   @Provides
   Connection provideConnection() throws SQLException {
     Connection connection = DriverManager.getConnection(config.getMetadataDbUrl());
