@@ -21,6 +21,7 @@ public final class CassyServer extends CassyImplBase {
   private final CassyServerConfig config;
   private io.grpc.Server server;
   private Injector injector;
+  private RemoteCommandHandler remoteCommandHandler;
   private ExecutorService handlerService;
 
   public CassyServer(CassyServerConfig config) {
@@ -29,8 +30,9 @@ public final class CassyServer extends CassyImplBase {
 
   private void start() throws IOException {
     injector = Guice.createInjector(new CassyServerModule(config));
+    remoteCommandHandler = injector.getInstance(RemoteCommandHandler.class);
     handlerService = Executors.newFixedThreadPool(1);
-    handlerService.submit(injector.getInstance(RemoteCommandHandler.class));
+    handlerService.submit(remoteCommandHandler);
 
     ServerBuilder builder =
         ServerBuilder.forPort(config.getPort())
@@ -53,10 +55,22 @@ public final class CassyServer extends CassyImplBase {
 
   private void stop() {
     if (server != null) {
-      server.shutdown();
+      try {
+        server.shutdown().awaitTermination(10, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        Thread.interrupted();
+        logger.warn("CassyServer shutdown is interrupted.", e);
+      }
     }
     if (handlerService != null) {
+      remoteCommandHandler.stop();
       handlerService.shutdown();
+      try {
+        handlerService.awaitTermination(10, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        Thread.interrupted();
+        logger.warn("RemoteCommandHandler shutdown is interrupted.", e);
+      }
     }
   }
 

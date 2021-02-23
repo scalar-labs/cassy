@@ -35,11 +35,10 @@ import com.scalar.cassy.service.BackupKey;
 import com.scalar.cassy.service.BackupServiceMaster;
 import com.scalar.cassy.service.MetadataDbBackupService;
 import com.scalar.cassy.service.RestoreServiceMaster;
+import com.scalar.cassy.util.ConnectionUtil;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -102,7 +101,7 @@ public final class CassyServerController extends CassyImplBase {
       }
 
       String clusterId = jmx.getClusterName() + "-" + UUID.randomUUID().toString();
-      connection = getConnection();
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
       ClusterInfo clusterInfo = new ClusterInfo(connection);
       clusterInfo.insert(
           clusterId,
@@ -115,7 +114,7 @@ public final class CassyServerController extends CassyImplBase {
       setError(responseObserver, Status.INTERNAL, e);
       return;
     } finally {
-      close(connection);
+      ConnectionUtil.close(connection);
     }
 
     ClusterRegistrationResponse response =
@@ -138,7 +137,7 @@ public final class CassyServerController extends CassyImplBase {
     Connection connection = null;
 
     try {
-      connection = getConnection();
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
       ClusterInfo clusterInfo = new ClusterInfo(connection);
       if (request.getClusterId().isEmpty()) {
         int limit = request.getLimit() == 0 ? -1 : request.getLimit();
@@ -150,7 +149,7 @@ public final class CassyServerController extends CassyImplBase {
       setError(responseObserver, Status.INTERNAL, e);
       return;
     } finally {
-      close(connection);
+      ConnectionUtil.close(connection);
     }
 
     ClusterListingResponse.Builder builder = ClusterListingResponse.newBuilder();
@@ -180,7 +179,7 @@ public final class CassyServerController extends CassyImplBase {
     Connection connection = null;
 
     try {
-      connection = getConnection();
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
       BackupHistory backupHistory = new BackupHistory(connection);
       records = backupHistory.selectRecentSnapshots(request);
     } catch (IllegalArgumentException e) {
@@ -190,7 +189,7 @@ public final class CassyServerController extends CassyImplBase {
       setError(responseObserver, Status.INTERNAL, e);
       return;
     } finally {
-      close(connection);
+      ConnectionUtil.close(connection);
     }
 
     BackupListingResponse.Builder builder = BackupListingResponse.newBuilder();
@@ -220,7 +219,7 @@ public final class CassyServerController extends CassyImplBase {
     Connection connection = null;
 
     try {
-      connection = getConnection();
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
       RestoreHistory restoreHistory = new RestoreHistory(connection);
       records = restoreHistory.selectRecent(request);
     } catch (IllegalArgumentException e) {
@@ -230,7 +229,7 @@ public final class CassyServerController extends CassyImplBase {
       setError(responseObserver, Status.INTERNAL, e);
       return;
     } finally {
-      close(connection);
+      ConnectionUtil.close(connection);
     }
 
     RestoreStatusListingResponse.Builder builder = RestoreStatusListingResponse.newBuilder();
@@ -261,7 +260,7 @@ public final class CassyServerController extends CassyImplBase {
     List<BackupKey> backupKeys = null;
 
     try {
-      connection = getConnection();
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
 
       if (!isValid(request)) {
         throw new IllegalArgumentException(INVALID_REQUEST);
@@ -299,7 +298,7 @@ public final class CassyServerController extends CassyImplBase {
       setError(responseObserver, Status.INTERNAL, e.getMessage());
       return;
     } finally {
-      close(connection);
+      ConnectionUtil.close(connection);
     }
 
     // it will backup metadata database to a specified storage
@@ -330,7 +329,7 @@ public final class CassyServerController extends CassyImplBase {
     List<BackupKey> backupKeys = Collections.emptyList();
 
     try {
-      connection = getConnection();
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
       backupHistory = new BackupHistory(connection);
       restoreHistory = new RestoreHistory(connection);
 
@@ -363,7 +362,7 @@ public final class CassyServerController extends CassyImplBase {
       setError(responseObserver, Status.INTERNAL, e.getMessage());
       return;
     } finally {
-      close(connection);
+      ConnectionUtil.close(connection);
     }
 
     RestoreResponse.Builder builder =
@@ -531,19 +530,5 @@ public final class CassyServerController extends CassyImplBase {
   private <T> void setError(StreamObserver<T> responseObserver, Status status, Throwable e) {
     logger.error(e.getMessage(), e);
     responseObserver.onError(status.withCause(e).asRuntimeException());
-  }
-
-  private Connection getConnection() throws SQLException {
-    return DriverManager.getConnection(config.getMetadataDbUrl());
-  }
-
-  private void close(Connection connection) {
-    try {
-      if (connection != null) {
-        connection.close();
-      }
-    } catch (SQLException e) {
-      logger.warn("failed to close the connection", e);
-    }
   }
 }

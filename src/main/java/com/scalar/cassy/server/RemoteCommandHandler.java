@@ -2,6 +2,7 @@ package com.scalar.cassy.server;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.inject.Inject;
+import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.db.BackupHistory;
 import com.scalar.cassy.db.RestoreHistory;
 import com.scalar.cassy.exception.RemoteExecutionException;
@@ -9,6 +10,7 @@ import com.scalar.cassy.remotecommand.RemoteCommandContext;
 import com.scalar.cassy.remotecommand.RemoteCommandResult;
 import com.scalar.cassy.rpc.OperationStatus;
 import com.scalar.cassy.service.BackupServiceMaster;
+import com.scalar.cassy.util.ConnectionUtil;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.concurrent.BlockingQueue;
@@ -18,22 +20,20 @@ import org.slf4j.LoggerFactory;
 
 public class RemoteCommandHandler implements Runnable {
   private static final Logger logger = LoggerFactory.getLogger(RemoteCommandHandler.class);
+  private final CassyServerConfig config;
   private final BlockingQueue<RemoteCommandContext> futures;
-  private final Connection connection;
-  private final BackupHistory backupHistory;
-  private final RestoreHistory restoreHistory;
+  private boolean isActive = true;
 
   @Inject
-  public RemoteCommandHandler(BlockingQueue<RemoteCommandContext> futures, Connection connection) {
+  public RemoteCommandHandler(
+      CassyServerConfig config, BlockingQueue<RemoteCommandContext> futures) {
+    this.config = config;
     this.futures = futures;
-    this.connection = connection;
-    this.backupHistory = new BackupHistory(connection);
-    this.restoreHistory = new RestoreHistory(connection);
   }
 
   @Override
   public void run() {
-    while (true) {
+    while (isActive) {
       RemoteCommandContext future = null;
       try {
         future = futures.peek();
@@ -65,11 +65,24 @@ public class RemoteCommandHandler implements Runnable {
     }
   }
 
+  public void stop() {
+    isActive = false;
+  }
+
   private void updateStatus(RemoteCommandContext future, OperationStatus status) {
-    if (future.getCommand().getName().equals(BackupServiceMaster.BACKUP_COMMAND)) {
-      backupHistory.update(future.getBackupKey(), status);
-    } else {
-      restoreHistory.update(future.getBackupKey(), status);
+    Connection connection = null;
+    try {
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
+      if (future.getCommand().getName().equals(BackupServiceMaster.BACKUP_COMMAND)) {
+        new BackupHistory(connection).update(future.getBackupKey(), status);
+      } else {
+        new RestoreHistory(connection).update(future.getBackupKey(), status);
+      }
+    } catch (Exception e) {
+      logger.error(
+          "Writing status " + status + " for " + future.getCommand().getName() + " failed.", e);
+    } finally {
+      ConnectionUtil.close(connection);
     }
   }
 }
