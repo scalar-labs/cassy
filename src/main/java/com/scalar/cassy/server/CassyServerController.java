@@ -6,10 +6,13 @@ import com.google.inject.Inject;
 import com.scalar.cassy.config.BackupType;
 import com.scalar.cassy.config.CassyServerConfig;
 import com.scalar.cassy.config.RestoreType;
+import com.scalar.cassy.db.BackupHistory;
 import com.scalar.cassy.db.BackupHistoryRecord;
+import com.scalar.cassy.db.ClusterInfo;
 import com.scalar.cassy.db.ClusterInfoRecord;
-import com.scalar.cassy.db.DatabaseAccessor;
+import com.scalar.cassy.db.RestoreHistory;
 import com.scalar.cassy.db.RestoreHistoryRecord;
+import com.scalar.cassy.exception.DatabaseException;
 import com.scalar.cassy.jmx.JmxManager;
 import com.scalar.cassy.remotecommand.RemoteCommandContext;
 import com.scalar.cassy.remotecommand.RemoteCommandExecutor;
@@ -32,9 +35,12 @@ import com.scalar.cassy.service.BackupKey;
 import com.scalar.cassy.service.BackupServiceMaster;
 import com.scalar.cassy.service.MetadataDbBackupService;
 import com.scalar.cassy.service.RestoreServiceMaster;
+import com.scalar.cassy.util.ConnectionUtil;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -52,7 +58,6 @@ public final class CassyServerController extends CassyImplBase {
   private static final Logger logger = LoggerFactory.getLogger(CassyServerController.class);
   private final ExecutorService executorService = Executors.newSingleThreadExecutor();
   private final CassyServerConfig config;
-  private final DatabaseAccessor database;
   private final BlockingQueue<RemoteCommandContext> commandQueue;
   private final MetadataDbBackupService metadataDbBackupService;
   private static final String NO_CASSANDRA_HOST = "cassandra_host is not set correctly.";
@@ -61,6 +66,7 @@ public final class CassyServerController extends CassyImplBase {
       "snapshot_id must be specified when taking incremental backups.";
   private static final String NON_EMPTY_SNAPSHOT_ID =
       "snapshot_id must be empty when taking snapshots.";
+  private static final String INVALID_REQUEST = "The request is invalid or inconsistent.";
   private static final String CLUSTER_NOT_FOUND = "The specified cluster cannot be found.";
   private static final String NON_CLUSTER_BACKUP =
       "The specified backup is not a cluster-wide backup.";
@@ -68,11 +74,9 @@ public final class CassyServerController extends CassyImplBase {
   @Inject
   public CassyServerController(
       CassyServerConfig config,
-      DatabaseAccessor database,
       BlockingQueue<RemoteCommandContext> commandQueue,
       MetadataDbBackupService metadataDbBackupService) {
     this.config = config;
-    this.database = database;
     this.commandQueue = commandQueue;
     this.metadataDbBackupService = metadataDbBackupService;
   }
@@ -87,6 +91,8 @@ public final class CassyServerController extends CassyImplBase {
     }
 
     ClusterInfoRecord record;
+    Connection connection = null;
+
     try {
       JmxManager jmx = getJmx(request.getCassandraHost(), config.getJmxPort());
       if (!areAllNodesAlive(jmx)) {
@@ -95,18 +101,20 @@ public final class CassyServerController extends CassyImplBase {
       }
 
       String clusterId = jmx.getClusterName() + "-" + UUID.randomUUID().toString();
-      database
-          .getClusterInfo()
-          .insert(
-              clusterId,
-              jmx.getClusterName(),
-              jmx.getLiveNodes(),
-              jmx.getKeyspaces(),
-              jmx.getAllDataFileLocations().get(0));
-      record = database.getClusterInfo().selectByClusterId(clusterId).get();
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
+      ClusterInfo clusterInfo = new ClusterInfo(connection);
+      clusterInfo.insert(
+          clusterId,
+          jmx.getClusterName(),
+          jmx.getLiveNodes(),
+          jmx.getKeyspaces(),
+          jmx.getAllDataFileLocations().get(0));
+      record = clusterInfo.selectByClusterId(clusterId).get();
     } catch (Exception e) {
       setError(responseObserver, Status.INTERNAL, e);
       return;
+    } finally {
+      ConnectionUtil.close(connection);
     }
 
     ClusterRegistrationResponse response =
@@ -126,14 +134,22 @@ public final class CassyServerController extends CassyImplBase {
   public void listClusters(
       ClusterListingRequest request, StreamObserver<ClusterListingResponse> responseObserver) {
     List<ClusterInfoRecord> clusters = new ArrayList<>();
-    if (request.getClusterId().isEmpty()) {
-      int limit = request.getLimit() == 0 ? -1 : request.getLimit();
-      clusters.addAll(database.getClusterInfo().selectRecent(limit));
-    } else {
-      database
-          .getClusterInfo()
-          .selectByClusterId(request.getClusterId())
-          .ifPresent(c -> clusters.add(c));
+    Connection connection = null;
+
+    try {
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
+      ClusterInfo clusterInfo = new ClusterInfo(connection);
+      if (request.getClusterId().isEmpty()) {
+        int limit = request.getLimit() == 0 ? -1 : request.getLimit();
+        clusters.addAll(clusterInfo.selectRecent(limit));
+      } else {
+        clusterInfo.selectByClusterId(request.getClusterId()).ifPresent(c -> clusters.add(c));
+      }
+    } catch (Exception e) {
+      setError(responseObserver, Status.INTERNAL, e);
+      return;
+    } finally {
+      ConnectionUtil.close(connection);
     }
 
     ClusterListingResponse.Builder builder = ClusterListingResponse.newBuilder();
@@ -160,11 +176,20 @@ public final class CassyServerController extends CassyImplBase {
   public void listBackups(
       BackupListingRequest request, StreamObserver<BackupListingResponse> responseObserver) {
     List<BackupHistoryRecord> records;
+    Connection connection = null;
+
     try {
-      records = database.getBackupHistory().selectRecentSnapshots(request);
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
+      BackupHistory backupHistory = new BackupHistory(connection);
+      records = backupHistory.selectRecentSnapshots(request);
+    } catch (IllegalArgumentException e) {
+      setError(responseObserver, Status.INVALID_ARGUMENT, e);
+      return;
     } catch (Exception e) {
       setError(responseObserver, Status.INTERNAL, e);
       return;
+    } finally {
+      ConnectionUtil.close(connection);
     }
 
     BackupListingResponse.Builder builder = BackupListingResponse.newBuilder();
@@ -191,14 +216,20 @@ public final class CassyServerController extends CassyImplBase {
       RestoreStatusListingRequest request,
       StreamObserver<RestoreStatusListingResponse> responseObserver) {
     List<RestoreHistoryRecord> records;
+    Connection connection = null;
+
     try {
-      records = database.getRestoreHistory().selectRecent(request);
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
+      RestoreHistory restoreHistory = new RestoreHistory(connection);
+      records = restoreHistory.selectRecent(request);
     } catch (IllegalArgumentException e) {
       setError(responseObserver, Status.INVALID_ARGUMENT, e);
       return;
     } catch (Exception e) {
       setError(responseObserver, Status.INTERNAL, e);
       return;
+    } finally {
+      ConnectionUtil.close(connection);
     }
 
     RestoreStatusListingResponse.Builder builder = RestoreStatusListingResponse.newBuilder();
@@ -222,53 +253,67 @@ public final class CassyServerController extends CassyImplBase {
 
   @Override
   public void takeBackup(BackupRequest request, StreamObserver<BackupResponse> responseObserver) {
-    if (!isValidOrSetError(request, responseObserver)) {
-      return;
-    }
-
-    Optional<ClusterInfoRecord> clusterInfo =
-        getClusterOrSetError(request.getClusterId(), responseObserver);
-    if (!clusterInfo.isPresent()) {
-      return;
-    }
-
-    if (!areTargetsAliveOrSetError(
-        clusterInfo.get().getTargetIps(), config.getJmxPort(), responseObserver)) {
-      return;
-    }
-
+    Connection connection = null;
     final String snapshotId = createSnapshotId(request);
-    List<BackupKey> backupKeys =
-        getBackupKeys(snapshotId, request.getTargetIpsList(), clusterInfo.get());
     BackupType type = BackupType.getByType(request.getBackupType());
-    BackupResponse.Builder builder = BackupResponse.newBuilder().setSnapshotId(snapshotId);
+    BackupHistory backupHistory = null;
+    List<BackupKey> backupKeys = null;
 
     try {
-      updateBackupStatus(backupKeys, type, OperationStatus.INITIALIZED);
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
+
+      if (!isValid(request)) {
+        throw new IllegalArgumentException(INVALID_REQUEST);
+      }
+
+      ClusterInfo clusterInfo = new ClusterInfo(connection);
+      Optional<ClusterInfoRecord> cluster = getCluster(request.getClusterId(), clusterInfo);
+      if (!cluster.isPresent()) {
+        throw new IllegalArgumentException(CLUSTER_NOT_FOUND);
+      }
+
+      if (!areTargetsAlive(cluster.get().getTargetIps(), config.getJmxPort())) {
+        throw new DatabaseException(NODES_UNAVAILABLE);
+      }
+
+      backupHistory = new BackupHistory(connection);
+      backupKeys = getBackupKeys(snapshotId, request.getTargetIpsList(), cluster.get());
+      updateBackupStatus(backupHistory, backupKeys, type, OperationStatus.INITIALIZED);
+
       BackupServiceMaster master =
           new BackupServiceMaster(
               config,
-              clusterInfo.get(),
+              cluster.get(),
               new RemoteCommandExecutor(),
               new ApplicationPauser(config.getSrvServiceUrl()));
       List<RemoteCommandContext> futures = master.takeBackup(backupKeys, type);
-      updateBackupStatus(backupKeys, type, OperationStatus.STARTED);
+
+      updateBackupStatus(backupHistory, backupKeys, type, OperationStatus.STARTED);
       commandQueue.addAll(futures);
+    } catch (IllegalArgumentException e) {
+      setError(responseObserver, Status.INVALID_ARGUMENT, e.getMessage());
+      return;
     } catch (Exception e) {
-      builder.setStatus(OperationStatus.FAILED);
-      updateBackupStatus(backupKeys, type, OperationStatus.FAILED);
+      updateBackupStatus(backupHistory, backupKeys, type, OperationStatus.FAILED);
+      setError(responseObserver, Status.INTERNAL, e.getMessage());
+      return;
+    } finally {
+      ConnectionUtil.close(connection);
     }
 
     // it will backup metadata database to a specified storage
     backupMetadata();
 
-    builder
-        .setStatus(OperationStatus.STARTED)
-        .setClusterId(backupKeys.get(0).getClusterId())
-        .addAllTargetIps(backupKeys.stream().map(k -> k.getTargetIp()).collect(Collectors.toList()))
-        .setSnapshotId(snapshotId)
-        .setCreatedAt(backupKeys.get(0).getCreatedAt())
-        .setBackupType(type.get());
+    BackupResponse.Builder builder =
+        BackupResponse.newBuilder()
+            .setSnapshotId(snapshotId)
+            .setStatus(OperationStatus.STARTED)
+            .setClusterId(backupKeys.get(0).getClusterId())
+            .addAllTargetIps(
+                backupKeys.stream().map(k -> k.getTargetIp()).collect(Collectors.toList()))
+            .setSnapshotId(snapshotId)
+            .setCreatedAt(backupKeys.get(0).getCreatedAt())
+            .setBackupType(type.get());
 
     responseObserver.onNext(builder.build());
     responseObserver.onCompleted();
@@ -277,40 +322,58 @@ public final class CassyServerController extends CassyImplBase {
   @Override
   public void restoreBackup(
       RestoreRequest request, StreamObserver<RestoreResponse> responseObserver) {
-    if (!isValidOrSetError(request, responseObserver)) {
-      return;
-    }
-    Optional<ClusterInfoRecord> clusterInfo =
-        getClusterOrSetError(request.getClusterId(), responseObserver);
-    if (!clusterInfo.isPresent()) {
-      return;
-    }
-
-    List<BackupKey> backupKeys =
-        getBackupKeys(request.getSnapshotId(), request.getTargetIpsList(), clusterInfo.get());
-    RemoteCommandExecutor executor = new RemoteCommandExecutor();
+    Connection connection = null;
+    BackupHistory backupHistory = null;
+    RestoreHistory restoreHistory = null;
     RestoreType type = RestoreType.getByType(request.getRestoreType());
-    RestoreResponse.Builder builder = RestoreResponse.newBuilder();
+    List<BackupKey> backupKeys = Collections.emptyList();
 
     try {
-      updateRestoreStatus(backupKeys, type, OperationStatus.INITIALIZED);
-      RestoreServiceMaster master = new RestoreServiceMaster(config, clusterInfo.get(), executor);
+      connection = ConnectionUtil.create(config.getMetadataDbUrl());
+      backupHistory = new BackupHistory(connection);
+      restoreHistory = new RestoreHistory(connection);
+
+      if (!isValid(request, backupHistory)) {
+        throw new IllegalArgumentException(INVALID_REQUEST);
+      }
+
+      ClusterInfo clusterInfo = new ClusterInfo(connection);
+      Optional<ClusterInfoRecord> cluster = getCluster(request.getClusterId(), clusterInfo);
+      if (!cluster.isPresent()) {
+        throw new IllegalArgumentException(CLUSTER_NOT_FOUND);
+      }
+
+      backupKeys =
+          getBackupKeys(request.getSnapshotId(), request.getTargetIpsList(), cluster.get());
+      updateRestoreStatus(restoreHistory, backupKeys, type, OperationStatus.INITIALIZED);
+
+      RestoreServiceMaster master =
+          new RestoreServiceMaster(config, cluster.get(), new RemoteCommandExecutor());
       List<RemoteCommandContext> futures =
           master.restoreBackup(backupKeys, type, request.getSnapshotOnly());
-      updateRestoreStatus(backupKeys, type, OperationStatus.STARTED);
+
+      updateRestoreStatus(restoreHistory, backupKeys, type, OperationStatus.STARTED);
       commandQueue.addAll(futures);
+    } catch (IllegalArgumentException e) {
+      setError(responseObserver, Status.INVALID_ARGUMENT, e.getMessage());
+      return;
     } catch (Exception e) {
-      builder.setStatus(OperationStatus.FAILED);
-      updateRestoreStatus(backupKeys, type, OperationStatus.FAILED);
+      updateRestoreStatus(restoreHistory, backupKeys, type, OperationStatus.FAILED);
+      setError(responseObserver, Status.INTERNAL, e.getMessage());
+      return;
+    } finally {
+      ConnectionUtil.close(connection);
     }
 
-    builder
-        .setStatus(OperationStatus.STARTED)
-        .setClusterId(backupKeys.get(0).getClusterId())
-        .addAllTargetIps(backupKeys.stream().map(k -> k.getTargetIp()).collect(Collectors.toList()))
-        .setSnapshotId(request.getSnapshotId())
-        .setRestoreType(type.get())
-        .setSnapshotOnly(request.getSnapshotOnly());
+    RestoreResponse.Builder builder =
+        RestoreResponse.newBuilder()
+            .setStatus(OperationStatus.STARTED)
+            .setClusterId(backupKeys.get(0).getClusterId())
+            .addAllTargetIps(
+                backupKeys.stream().map(k -> k.getTargetIp()).collect(Collectors.toList()))
+            .setSnapshotId(request.getSnapshotId())
+            .setRestoreType(type.get())
+            .setSnapshotOnly(request.getSnapshotOnly());
 
     responseObserver.onNext(builder.build());
     responseObserver.onCompleted();
@@ -332,58 +395,46 @@ public final class CassyServerController extends CassyImplBase {
     return false;
   }
 
-  private boolean isValidOrSetError(
-      BackupRequest request, StreamObserver<BackupResponse> responseObserver) {
+  private boolean isValid(BackupRequest request) {
     if (request.getSnapshotId().isEmpty()
         && request.getBackupType() == BackupType.NODE_INCREMENTAL.get()) {
-      setError(responseObserver, Status.INVALID_ARGUMENT, NO_SNAPSHOT_ID);
+      logger.error(NO_SNAPSHOT_ID);
       return false;
     }
 
     if (!request.getSnapshotId().isEmpty()
         && request.getBackupType() != BackupType.NODE_INCREMENTAL.get()) {
-      setError(responseObserver, Status.INVALID_ARGUMENT, NON_EMPTY_SNAPSHOT_ID);
+      logger.error(NON_EMPTY_SNAPSHOT_ID);
       return false;
     }
     return true;
   }
 
-  private boolean isValidOrSetError(
-      RestoreRequest request, StreamObserver<RestoreResponse> responseObserver) {
+  private boolean isValid(RestoreRequest request, BackupHistory backupHistory) {
     // Return invalid if node-level backups are used to restore a cluster
     if (request.getRestoreType() == RestoreType.CLUSTER.get()) {
       BackupListingRequest listingRequest =
           BackupListingRequest.newBuilder().setSnapshotId(request.getSnapshotId()).build();
-      List<BackupHistoryRecord> records =
-          database.getBackupHistory().selectRecentSnapshots(listingRequest);
+      List<BackupHistoryRecord> records = backupHistory.selectRecentSnapshots(listingRequest);
       if (records.get(records.size() - 1).getBackupType() == BackupType.NODE_SNAPSHOT) {
-        setError(responseObserver, Status.INVALID_ARGUMENT, NON_CLUSTER_BACKUP);
+        logger.error(NON_CLUSTER_BACKUP);
         return false;
       }
     }
     return true;
   }
 
-  private <T> Optional<ClusterInfoRecord> getClusterOrSetError(
-      String clusterId, StreamObserver<T> responseObserver) {
-    Optional<ClusterInfoRecord> clusterInfo =
-        database.getClusterInfo().selectByClusterId(clusterId);
-    if (!clusterInfo.isPresent()) {
-      setError(responseObserver, Status.NOT_FOUND, CLUSTER_NOT_FOUND);
-    }
-    return clusterInfo;
+  private <T> Optional<ClusterInfoRecord> getCluster(String clusterId, ClusterInfo clusterInfo) {
+    return clusterInfo.selectByClusterId(clusterId);
   }
 
-  private <T> boolean areTargetsAliveOrSetError(
-      List<String> ips, int port, StreamObserver<T> responseObserver) {
+  private <T> boolean areTargetsAlive(List<String> ips, int port) {
     try {
       JmxManager jmx = getJmx(ips.get(0), port);
       if (!jmx.getLiveNodes().containsAll(ips)) {
-        setError(responseObserver, Status.UNAVAILABLE, NODES_UNAVAILABLE);
         return false;
       }
     } catch (Exception e) {
-      setError(responseObserver, Status.UNAVAILABLE, e);
       return false;
     }
     return true;
@@ -419,20 +470,32 @@ public final class CassyServerController extends CassyImplBase {
   }
 
   private void updateBackupStatus(
-      List<BackupKey> backupKeys, BackupType type, OperationStatus status) {
+      BackupHistory backupHistory,
+      List<BackupKey> backupKeys,
+      BackupType type,
+      OperationStatus status) {
+    if (backupHistory == null) {
+      return;
+    }
     if (status == OperationStatus.INITIALIZED) {
-      backupKeys.forEach(backupKey -> database.getBackupHistory().insert(backupKey, type, status));
+      backupKeys.forEach(backupKey -> backupHistory.insert(backupKey, type, status));
     } else {
-      backupKeys.forEach(backupKey -> database.getBackupHistory().update(backupKey, status));
+      backupKeys.forEach(backupKey -> backupHistory.update(backupKey, status));
     }
   }
 
   private void updateRestoreStatus(
-      List<BackupKey> backupKeys, RestoreType type, OperationStatus status) {
+      RestoreHistory restoreHistory,
+      List<BackupKey> backupKeys,
+      RestoreType type,
+      OperationStatus status) {
+    if (restoreHistory == null) {
+      return;
+    }
     if (status == OperationStatus.INITIALIZED) {
-      backupKeys.forEach(backupKey -> database.getRestoreHistory().insert(backupKey, type, status));
+      backupKeys.forEach(backupKey -> restoreHistory.insert(backupKey, type, status));
     } else {
-      backupKeys.forEach(backupKey -> database.getRestoreHistory().update(backupKey, status));
+      backupKeys.forEach(backupKey -> restoreHistory.update(backupKey, status));
     }
   }
 
