@@ -22,7 +22,7 @@ public class RemoteCommandHandler implements Runnable {
   private static final Logger logger = LoggerFactory.getLogger(RemoteCommandHandler.class);
   private final CassyServerConfig config;
   private final BlockingQueue<RemoteCommandContext> futures;
-  private boolean isActive = true;
+  private volatile boolean isActive = true;
 
   @Inject
   public RemoteCommandHandler(
