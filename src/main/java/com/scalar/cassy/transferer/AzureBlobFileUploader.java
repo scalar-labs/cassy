@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono;
 
 public class AzureBlobFileUploader implements FileUploader {
   private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileUploader.class);
-  private static final int ASYNC_FILE_UPLOAD_LIMIT = 3;
+  private static final int ASYNC_FILE_UPLOAD_LIMIT = 20;
   private final BlobContainerAsyncClient blobContainerClient;
 
   @Inject
@@ -67,7 +67,8 @@ public class AzureBlobFileUploader implements FileUploader {
       } else {
         logger.info(filePath + " has been already uploaded.");
       }
-      if (toBeUploaded.size() % ASYNC_FILE_UPLOAD_LIMIT == 0) {
+
+      if (toBeUploaded.size() >= ASYNC_FILE_UPLOAD_LIMIT) {
         // Start uploading files asynchronously and wait for them to complete
         Mono.when(toBeUploaded).block();
         toBeUploaded.clear();
