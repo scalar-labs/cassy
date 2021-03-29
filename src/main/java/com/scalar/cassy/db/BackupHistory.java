@@ -1,6 +1,5 @@
 package com.scalar.cassy.db;
 
-import com.google.inject.Inject;
 import com.scalar.cassy.config.BackupType;
 import com.scalar.cassy.exception.DatabaseException;
 import com.scalar.cassy.rpc.BackupListingRequest;
@@ -12,9 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.NotThreadSafe;
 
-@ThreadSafe
+@NotThreadSafe
 public class BackupHistory {
   static final String INSERT =
       "INSERT INTO backup_history "
@@ -38,7 +37,6 @@ public class BackupHistory {
   private final PreparedStatement selectRecentByHost;
   private final PreparedStatement selectRecentBySnapshot;
 
-  @Inject
   public BackupHistory(Connection connection) {
     this.connection = connection;
     try {
