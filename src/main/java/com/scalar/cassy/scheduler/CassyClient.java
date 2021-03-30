@@ -137,14 +137,18 @@ public class CassyClient {
     boolean isNotCompletedOrFailed;
     timeout *= 1000; // convert to millis
     long taskStartedAt = System.currentTimeMillis();
+    String targetIps = response.getTargetIps(0);
+    if (response.getBackupType() == BackupType.CLUSTER_SNAPSHOT.get()) {
+      targetIps = response.getTargetIpsList().toString();
+    }
     do {
       if ((System.currentTimeMillis() - taskStartedAt) > timeout) {
         logger.info(
             String.format(
-                "\n\nError: The following backup timed out before completion\n\nCluster: %s\nSnapshot: %s\nTarget IP: %s\nBackup Type: %s\n",
+                "\n\nError: The following backup timed out before completion\n\nCluster: %s\nSnapshot: %s\nTarget IP(s): %s\nBackup Type: %s\n",
                 response.getClusterId(),
                 response.getSnapshotId(),
-                response.getTargetIps(0),
+                targetIps,
                 response.getBackupType()));
         return 1;
       }
@@ -172,11 +176,11 @@ public class CassyClient {
 
     logger.info(
         String.format(
-            "\n\nThe following backup concluded with status %s\n\nCluster: %s\nSnapshot: %s\nTarget IP: %s\nBackup Type: %s\n",
+            "\n\nThe following backup concluded with status %s\n\nCluster: %s\nSnapshot: %s\nTarget IP(s): %s\nBackup Type: %s\n",
             entry.getStatus().toString(),
             response.getClusterId(),
             response.getSnapshotId(),
-            response.getTargetIps(0),
+            targetIps,
             response.getBackupType()));
 
     if (entry.getStatusValue() != 3) {
