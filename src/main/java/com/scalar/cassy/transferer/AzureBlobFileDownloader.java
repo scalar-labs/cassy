@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 public class AzureBlobFileDownloader implements FileDownloader {
   private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileDownloader.class);
+  private static final int ASYNC_FILE_DOWNLOAD_LIMIT = 3;
   private BlobContainerAsyncClient blobContainerClient;
 
   @Inject
@@ -52,10 +53,18 @@ public class AzureBlobFileDownloader implements FileDownloader {
                     throw new FileTransferException(
                         "Download file failed : " + destFile.toString(), error);
                   }));
+
+      if (filesToBeDownloaded.size() >= ASYNC_FILE_DOWNLOAD_LIMIT) {
+        // Start downloading files asynchronously and wait for them to complete
+        Mono.when(filesToBeDownloaded).block();
+        filesToBeDownloaded.clear();
+      }
     }
 
-    // Start asynchronously all downloads and wait for all of them to complete
-    Mono.when(filesToBeDownloaded).block();
+    if (filesToBeDownloaded.size() > 0) {
+      // Start downloading files asynchronously and wait for them to complete
+      Mono.when(filesToBeDownloaded).block();
+    }
   }
 
   @Override
