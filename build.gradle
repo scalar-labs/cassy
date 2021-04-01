@@ -145,7 +145,7 @@ applicationDistribution.into('bin') {
 }
 
 docker {
-    name 'scalarlabs/cassy'
+    name 'ghcr.io/scalar-labs/cassy'
     files tasks.distTar.outputs, 'docker/logback.xml', 'docker/entrypoint.sh'
     copySpec.with {
         from('.') {
@@ -172,4 +172,3 @@ protobuf {
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-

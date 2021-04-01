@@ -8,8 +8,6 @@ import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +21,7 @@ public final class CassyServer extends CassyImplBase {
   private final CassyServerConfig config;
   private io.grpc.Server server;
   private Injector injector;
+  private RemoteCommandHandler remoteCommandHandler;
   private ExecutorService handlerService;
 
   public CassyServer(CassyServerConfig config) {
@@ -31,8 +30,9 @@ public final class CassyServer extends CassyImplBase {
 
   private void start() throws IOException {
     injector = Guice.createInjector(new CassyServerModule(config));
+    remoteCommandHandler = injector.getInstance(RemoteCommandHandler.class);
     handlerService = Executors.newFixedThreadPool(1);
-    handlerService.submit(injector.getInstance(RemoteCommandHandler.class));
+    handlerService.submit(remoteCommandHandler);
 
     ServerBuilder builder =
         ServerBuilder.forPort(config.getPort())
@@ -55,11 +55,21 @@ public final class CassyServer extends CassyImplBase {
 
   private void stop() {
     if (server != null) {
-      server.shutdown();
       try {
-        injector.getInstance(Connection.class).close();
-      } catch (SQLException e) {
-        // ignore
+        server.shutdown().awaitTermination(10, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        Thread.interrupted();
+        logger.warn("CassyServer shutdown is interrupted.", e);
+      }
+    }
+    if (handlerService != null) {
+      remoteCommandHandler.stop();
+      handlerService.shutdown();
+      try {
+        handlerService.awaitTermination(10, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        Thread.interrupted();
+        logger.warn("RemoteCommandHandler shutdown is interrupted.", e);
       }
     }
   }

@@ -34,10 +34,16 @@ public class CassyClientTest {
     // arrange
     BackupRequest request = prepareBackupRequest(BackupType.CLUSTER_SNAPSHOT.get());
     BackupResponse response = prepareBackupResponse(BackupType.CLUSTER_SNAPSHOT.get());
-    BackupListingRequest listingRequest = prepareListingRequest(response);
-    BackupListingResponse listingResponse = prepareListingResponse(3);
+    BackupListingRequest listingRequest = prepareListingRequest(response, response.getTargetIps(0));
+    BackupListingRequest listingRequest2 = prepareListingRequest(response, response.getTargetIps(1));
+    BackupListingRequest listingRequest3 = prepareListingRequest(response, response.getTargetIps(2));
+    BackupListingResponse listingResponse = prepareListingResponse(3, response.getTargetIps(0));
+    BackupListingResponse listingResponse2 = prepareListingResponse(3, response.getTargetIps(1));
+    BackupListingResponse listingResponse3 = prepareListingResponse(3, response.getTargetIps(2));
     when(blockingStub.takeBackup(request)).thenReturn(response);
     when(blockingStub.listBackups(listingRequest)).thenReturn(listingResponse);
+    when(blockingStub.listBackups(listingRequest2)).thenReturn(listingResponse2);
+    when(blockingStub.listBackups(listingRequest3)).thenReturn(listingResponse3);
 
     // act
     int result = client.takeClusterSnapshot(MOCKED_CLUSTER_ID, 1);
@@ -56,10 +62,10 @@ public class CassyClientTest {
         prepareBackupResponse(BackupType.NODE_SNAPSHOT.get(), targetIps.get(0));
     BackupResponse response2 =
         prepareBackupResponse(BackupType.NODE_SNAPSHOT.get(), targetIps.get(1));
-    BackupListingRequest listingRequest1 = prepareListingRequest(response1);
-    BackupListingRequest listingRequest2 = prepareListingRequest(response2);
-    BackupListingResponse listingResponse1 = prepareListingResponse(3);
-    BackupListingResponse listingResponse2 = prepareListingResponse(3);
+    BackupListingRequest listingRequest1 = prepareListingRequest(response1, targetIps.get(0));
+    BackupListingRequest listingRequest2 = prepareListingRequest(response2, targetIps.get(1));
+    BackupListingResponse listingResponse1 = prepareListingResponse(3, targetIps.get(0));
+    BackupListingResponse listingResponse2 = prepareListingResponse(3, targetIps.get(1));
     when(blockingStub.takeBackup(request1)).thenReturn(response1);
     when(blockingStub.takeBackup(request2)).thenReturn(response2);
     when(blockingStub.listBackups(listingRequest1)).thenReturn(listingResponse1);
@@ -82,10 +88,10 @@ public class CassyClientTest {
         prepareBackupResponse(BackupType.NODE_SNAPSHOT.get(), targetIps.get(0));
     BackupResponse response2 =
         prepareBackupResponse(BackupType.NODE_SNAPSHOT.get(), targetIps.get(1));
-    BackupListingRequest listingRequest1 = prepareListingRequest(response1);
-    BackupListingRequest listingRequest2 = prepareListingRequest(response2);
-    BackupListingResponse listingResponse1 = prepareListingResponse(3);
-    BackupListingResponse listingResponse2 = prepareListingResponse(4);
+    BackupListingRequest listingRequest1 = prepareListingRequest(response1, targetIps.get(0));
+    BackupListingRequest listingRequest2 = prepareListingRequest(response2, targetIps.get(1));
+    BackupListingResponse listingResponse1 = prepareListingResponse(3, targetIps.get(0));
+    BackupListingResponse listingResponse2 = prepareListingResponse(4, targetIps.get(1));
     when(blockingStub.takeBackup(request1)).thenReturn(response1);
     when(blockingStub.takeBackup(request2)).thenReturn(response2);
     when(blockingStub.listBackups(listingRequest1)).thenReturn(listingResponse1);
@@ -112,12 +118,12 @@ public class CassyClientTest {
         prepareBackupResponse(BackupType.NODE_INCREMENTAL.get(), targetIps.get(1));
     BackupListingRequest listingRequest1 = prepareListingRequest(targetIps.get(0));
     BackupListingRequest listingRequest2 = prepareListingRequest(targetIps.get(1));
-    BackupListingRequest listingRequest3 = prepareListingRequest(response1);
-    BackupListingRequest listingRequest4 = prepareListingRequest(response2);
+    BackupListingRequest listingRequest3 = prepareListingRequest(response1, targetIps.get(0));
+    BackupListingRequest listingRequest4 = prepareListingRequest(response2, targetIps.get(1));
     BackupListingResponse listingResponse1 = prepareListingResponse();
     BackupListingResponse listingResponse2 = prepareListingResponse();
-    BackupListingResponse listingResponse3 = prepareListingResponse(3);
-    BackupListingResponse listingResponse4 = prepareListingResponse(4);
+    BackupListingResponse listingResponse3 = prepareListingResponse(3, targetIps.get(0));
+    BackupListingResponse listingResponse4 = prepareListingResponse(4, targetIps.get(1));
     when(blockingStub.takeBackup(request1)).thenReturn(response1);
     when(blockingStub.takeBackup(request2)).thenReturn(response2);
     when(blockingStub.listBackups(listingRequest1)).thenReturn(listingResponse1);
@@ -146,12 +152,12 @@ public class CassyClientTest {
         prepareBackupResponse(BackupType.NODE_INCREMENTAL.get(), targetIps.get(1));
     BackupListingRequest listingRequest1 = prepareListingRequest(targetIps.get(0));
     BackupListingRequest listingRequest2 = prepareListingRequest(targetIps.get(1));
-    BackupListingRequest listingRequest3 = prepareListingRequest(response1);
-    BackupListingRequest listingRequest4 = prepareListingRequest(response2);
+    BackupListingRequest listingRequest3 = prepareListingRequest(response1, targetIps.get(0));
+    BackupListingRequest listingRequest4 = prepareListingRequest(response2, targetIps.get(1));
     BackupListingResponse listingResponse1 = prepareListingResponse();
     BackupListingResponse listingResponse2 = prepareListingResponse();
-    BackupListingResponse listingResponse3 = prepareListingResponse(3);
-    BackupListingResponse listingResponse4 = prepareListingResponse(3);
+    BackupListingResponse listingResponse3 = prepareListingResponse(3, targetIps.get(0));
+    BackupListingResponse listingResponse4 = prepareListingResponse(3, targetIps.get(1));
     when(blockingStub.takeBackup(request1)).thenReturn(response1);
     when(blockingStub.takeBackup(request2)).thenReturn(response2);
     when(blockingStub.listBackups(listingRequest1)).thenReturn(listingResponse1);
@@ -172,10 +178,16 @@ public class CassyClientTest {
     // arrange
     BackupRequest request = prepareBackupRequest(BackupType.CLUSTER_SNAPSHOT.get());
     BackupResponse response = prepareBackupResponse(BackupType.CLUSTER_SNAPSHOT.get());
-    BackupListingRequest listingRequest = prepareListingRequest(response);
-    BackupListingResponse listingResponse = prepareListingResponse(2);
+    BackupListingRequest listingRequest = prepareListingRequest(response, response.getTargetIps(0));
+    BackupListingRequest listingRequest2 = prepareListingRequest(response, response.getTargetIps(1));
+    BackupListingRequest listingRequest3 = prepareListingRequest(response, response.getTargetIps(2));
+    BackupListingResponse listingResponse = prepareListingResponse(2, response.getTargetIps(0));
+    BackupListingResponse listingResponse2 = prepareListingResponse(2, response.getTargetIps(1));
+    BackupListingResponse listingResponse3 = prepareListingResponse(2, response.getTargetIps(2));
     when(blockingStub.takeBackup(request)).thenReturn(response);
     when(blockingStub.listBackups(listingRequest)).thenReturn(listingResponse);
+    when(blockingStub.listBackups(listingRequest2)).thenReturn(listingResponse2);
+    when(blockingStub.listBackups(listingRequest3)).thenReturn(listingResponse3);
 
     // act
     int result = client.takeClusterSnapshot(MOCKED_CLUSTER_ID, 1);
@@ -194,10 +206,10 @@ public class CassyClientTest {
         prepareBackupResponse(BackupType.NODE_SNAPSHOT.get(), targetIps.get(0));
     BackupResponse response2 =
         prepareBackupResponse(BackupType.NODE_SNAPSHOT.get(), targetIps.get(1));
-    BackupListingRequest listingRequest1 = prepareListingRequest(response1);
-    BackupListingRequest listingRequest2 = prepareListingRequest(response2);
-    BackupListingResponse listingResponse1 = prepareListingResponse(3);
-    BackupListingResponse listingResponse2 = prepareListingResponse(1);
+    BackupListingRequest listingRequest1 = prepareListingRequest(response1, targetIps.get(0));
+    BackupListingRequest listingRequest2 = prepareListingRequest(response2, targetIps.get(1));
+    BackupListingResponse listingResponse1 = prepareListingResponse(3, targetIps.get(0));
+    BackupListingResponse listingResponse2 = prepareListingResponse(1, targetIps.get(1));
     when(blockingStub.takeBackup(request1)).thenReturn(response1);
     when(blockingStub.takeBackup(request2)).thenReturn(response2);
     when(blockingStub.listBackups(listingRequest1)).thenReturn(listingResponse1);
@@ -225,12 +237,12 @@ public class CassyClientTest {
         prepareBackupResponse(BackupType.NODE_INCREMENTAL.get(), targetIps.get(1));
     BackupListingRequest listingRequest1 = prepareListingRequest(targetIps.get(0));
     BackupListingRequest listingRequest2 = prepareListingRequest(targetIps.get(1));
-    BackupListingRequest listingRequest3 = prepareListingRequest(response1);
-    BackupListingRequest listingRequest4 = prepareListingRequest(response2);
+    BackupListingRequest listingRequest3 = prepareListingRequest(response1, targetIps.get(0));
+    BackupListingRequest listingRequest4 = prepareListingRequest(response2, targetIps.get(1));
     BackupListingResponse listingResponse1 = prepareListingResponse();
     BackupListingResponse listingResponse2 = prepareListingResponse();
-    BackupListingResponse listingResponse3 = prepareListingResponse(3);
-    BackupListingResponse listingResponse4 = prepareListingResponse(1);
+    BackupListingResponse listingResponse3 = prepareListingResponse(3, targetIps.get(0));
+    BackupListingResponse listingResponse4 = prepareListingResponse(1, targetIps.get(1));
     when(blockingStub.takeBackup(request1)).thenReturn(response1);
     when(blockingStub.takeBackup(request2)).thenReturn(response2);
     when(blockingStub.listBackups(listingRequest1)).thenReturn(listingResponse1);
@@ -265,21 +277,22 @@ public class CassyClientTest {
         .build();
   }
 
-  private BackupListingResponse prepareListingResponse(int status) {
+  private BackupListingResponse prepareListingResponse(int status, String targetIp) {
     return BackupListingResponse.newBuilder()
         .addEntries(
             BackupListingResponse.Entry.newBuilder()
+                .setTargetIp(targetIp)
                 .setStatusValue(status)
                 .setStatus(OperationStatus.forNumber(status))
                 .build())
         .build();
   }
 
-  private BackupListingRequest prepareListingRequest(BackupResponse response) {
+  private BackupListingRequest prepareListingRequest(BackupResponse response, String targetIp) {
     return BackupListingRequest.newBuilder()
         .setClusterId(response.getClusterId())
         .setSnapshotId(response.getSnapshotId())
-        .setTargetIp(response.getTargetIps(0))
+        .setTargetIp(targetIp)
         .setLimit(1)
         .build();
   }
@@ -313,6 +326,8 @@ public class CassyClientTest {
         .setClusterId(MOCKED_CLUSTER_ID)
         .setSnapshotId("snapshot123")
         .addTargetIps("127.0.0.1")
+        .addTargetIps("127.0.0.2")
+        .addTargetIps("127.0.0.3")
         .setBackupType(type)
         .build();
   }

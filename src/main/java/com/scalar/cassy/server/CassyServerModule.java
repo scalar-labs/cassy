@@ -16,9 +16,6 @@ import com.scalar.cassy.transferer.AwsS3FileUploader;
 import com.scalar.cassy.transferer.AzureBlobFileUploader;
 import com.scalar.cassy.transferer.FileUploader;
 import com.scalar.cassy.util.AzureUtil;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -49,16 +46,8 @@ public class CassyServerModule extends AbstractModule {
 
   @Provides
   @Singleton
-  Connection provideConnection() throws SQLException {
-    Connection connection = DriverManager.getConnection(config.getMetadataDbUrl());
-    connection.setAutoCommit(true);
-    return connection;
-  }
-
-  @Provides
-  @Singleton
   BlockingQueue<RemoteCommandContext> provideRemoteCommandQueue() {
-    return new LinkedBlockingQueue<RemoteCommandContext>();
+    return new LinkedBlockingQueue<>();
   }
 
   @Provides
