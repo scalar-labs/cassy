@@ -156,22 +156,22 @@ public class CassyClient {
 
       isNotCompletedOrFailed = false;
       entries.clear();
-      for (int i = 0; i < response.getTargetIpsCount(); i++) {
+      for (String ip : response.getTargetIpsList()) {
         entry =
             BackupListingResponse.newBuilder(
-                blockingStub.listBackups(
-                    BackupListingRequest.newBuilder()
-                        .setClusterId(response.getClusterId())
-                        .setSnapshotId(response.getSnapshotId())
-                        .setTargetIp(response.getTargetIps(i))
-                        .setLimit(1)
-                        .build()))
+                    blockingStub.listBackups(
+                        BackupListingRequest.newBuilder()
+                            .setClusterId(response.getClusterId())
+                            .setSnapshotId(response.getSnapshotId())
+                            .setTargetIp(ip)
+                            .setLimit(1)
+                            .build()))
                 .build()
                 .getEntries(0);
         entries.add(entry);
 
         if (entry.getStatusValue() != OperationStatus.COMPLETED_VALUE
-                && entry.getStatusValue() != OperationStatus.FAILED_VALUE) {
+            && entry.getStatusValue() != OperationStatus.FAILED_VALUE) {
           isNotCompletedOrFailed = true;
         }
       }
@@ -182,9 +182,10 @@ public class CassyClient {
     } while (isNotCompletedOrFailed);
 
     StringBuilder ipStatus = new StringBuilder();
-    for (BackupListingResponse.Entry e : entries) {
-      ipStatus.append(String.format("IP %s: %s\n", e.getTargetIp(), e.getStatus().toString()));
-    }
+    entries.forEach(
+        e ->
+            ipStatus.append(
+                String.format("IP %s: %s\n", e.getTargetIp(), e.getStatus().toString())));
 
     logger.info(
         String.format(
@@ -194,7 +195,8 @@ public class CassyClient {
             response.getSnapshotId(),
             ipStatus.toString()));
 
-    if (entries.stream().allMatch(e -> e.getStatusValue() == 3)) {
+    if (entries.stream().allMatch(e -> e.getStatusValue() == OperationStatus.COMPLETED_VALUE)) {
+
       return 0;
     }
     return 1;
