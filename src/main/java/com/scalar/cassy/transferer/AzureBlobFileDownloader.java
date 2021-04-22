@@ -1,29 +1,27 @@
 package com.scalar.cassy.transferer;
 
-import com.azure.storage.blob.BlobContainerAsyncClient;
+import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
-import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.google.inject.Inject;
 import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.exception.FileTransferException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
 
 public class AzureBlobFileDownloader implements FileDownloader {
   private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileDownloader.class);
-  private static final int ASYNC_FILE_DOWNLOAD_LIMIT = 3;
-  private BlobContainerAsyncClient blobContainerClient;
+  private BlobContainerClient blobContainerClient;
 
   @Inject
-  public AzureBlobFileDownloader(BlobContainerAsyncClient blobContainerClient) {
+  public AzureBlobFileDownloader(BlobContainerClient blobContainerClient) {
     this.blobContainerClient = blobContainerClient;
   }
 
@@ -32,38 +30,28 @@ public class AzureBlobFileDownloader implements FileDownloader {
     String key = BackupPath.create(config, config.getKeyspace());
 
     logger.info("Downloading " + blobContainerClient.getBlobContainerName() + "/" + key);
-    List<Mono<BlobProperties>> filesToBeDownloaded = new ArrayList<>();
-    Iterable<BlobItem> keyspaceBlobs =
-        blobContainerClient.listBlobs(new ListBlobsOptions().setPrefix(key + "/")).toIterable();
-    for (BlobItem blob : keyspaceBlobs) {
+    Iterator<BlobItem> keyspaceBlobs =
+            blobContainerClient.listBlobs(new ListBlobsOptions().setPrefix(key + "/"), null).iterator();
+    while (keyspaceBlobs.hasNext()) {
+      BlobItem blob = keyspaceBlobs.next();
       Path destFile = Paths.get(config.getDataDir(), blob.getName());
+
       try {
         Files.createDirectories(destFile.getParent());
       } catch (IOException e) {
         throw new FileTransferException(e);
       }
-      filesToBeDownloaded.add(
+
+      try {
+        try (OutputStream outputStream = new FileOutputStream(destFile.toString())) {
           blobContainerClient
-              .getBlobAsyncClient(blob.getName())
-              .downloadToFile(destFile.toString())
-              .doOnSuccess(
-                  blobProperties -> logger.info("Download file succeeded : " + destFile.toString()))
-              .doOnError(
-                  error -> {
-                    throw new FileTransferException(
-                        "Download file failed : " + destFile.toString(), error);
-                  }));
-
-      if (filesToBeDownloaded.size() >= ASYNC_FILE_DOWNLOAD_LIMIT) {
-        // Start downloading files asynchronously and wait for them to complete
-        Mono.when(filesToBeDownloaded).block();
-        filesToBeDownloaded.clear();
+                  .getBlobClient(blob.getName())
+                  .download(outputStream);
+          logger.info("Download file succeeded : " + destFile.toString());
+        }
+      } catch (IOException e) {
+        throw new FileTransferException(e);
       }
-    }
-
-    if (filesToBeDownloaded.size() > 0) {
-      // Start downloading files asynchronously and wait for them to complete
-      Mono.when(filesToBeDownloaded).block();
     }
   }
 
