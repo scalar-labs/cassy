@@ -24,7 +24,7 @@ public class AzureUtil {
 
     if (!storageBaseUri.startsWith(asyncClient.getAccountUrl())) {
       throw new IllegalArgumentException(
-              "The given credential can not be used for the specified container.");
+          "The given credential can not be used for the specified container.");
     }
     String containerName = storageBaseUri.replace(asyncClient.getAccountUrl() + "/", "");
     return asyncClient.getBlobContainerAsyncClient(containerName);
