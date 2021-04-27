@@ -9,6 +9,7 @@ import com.scalar.cassy.util.AzureUtil;
 
 public abstract class AzureBlobContainerClientModule extends AbstractModule {
   private final String storeBaseUri;
+
   public AzureBlobContainerClientModule(String storeBaseUri) {
     this.storeBaseUri = storeBaseUri;
   }

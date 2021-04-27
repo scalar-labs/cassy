@@ -33,6 +33,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
     this.blobContainerClient = blobContainerClient;
   }
 
+  @Override
   public void download(RestoreConfig config) {
     List<Future> downloadFuture = new ArrayList<>();
     String key = BackupPath.create(config, config.getKeyspace());
@@ -65,7 +66,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
             logger.info("Download file succeeded : " + destFile.toString());
           }));
     }
-    
+
     downloadFuture.forEach(d->{
       try{
         // Start downloading files asynchronously and wait for them to complete
