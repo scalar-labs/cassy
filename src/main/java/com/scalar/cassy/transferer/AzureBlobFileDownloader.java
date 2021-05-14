@@ -19,30 +19,33 @@ import reactor.core.publisher.Mono;
 
 public class AzureBlobFileDownloader implements FileDownloader {
   private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileDownloader.class);
-  private BlobContainerAsyncClient blobContainerClient;
+  private static final int ASYNC_FILE_DOWNLOAD_LIMIT = 3;
+  private BlobContainerAsyncClient blobContainerAsyncClient;
 
   @Inject
   public AzureBlobFileDownloader(BlobContainerAsyncClient blobContainerClient) {
-    this.blobContainerClient = blobContainerClient;
+    this.blobContainerAsyncClient = blobContainerClient;
   }
 
   @Override
   public void download(RestoreConfig config) {
     String key = BackupPath.create(config, config.getKeyspace());
+    logger.info("Downloading " + blobContainerAsyncClient.getBlobContainerName() + "/" + key);
 
-    logger.info("Downloading " + blobContainerClient.getBlobContainerName() + "/" + key);
     List<Mono<BlobProperties>> filesToBeDownloaded = new ArrayList<>();
     Iterable<BlobItem> keyspaceBlobs =
-        blobContainerClient.listBlobs(new ListBlobsOptions().setPrefix(key + "/")).toIterable();
+            blobContainerAsyncClient.listBlobs(new ListBlobsOptions().setPrefix(key + "/")).toIterable();
     for (BlobItem blob : keyspaceBlobs) {
       Path destFile = Paths.get(config.getDataDir(), blob.getName());
+
       try {
         Files.createDirectories(destFile.getParent());
       } catch (IOException e) {
         throw new FileTransferException(e);
       }
+
       filesToBeDownloaded.add(
-          blobContainerClient
+          blobContainerAsyncClient
               .getBlobAsyncClient(blob.getName())
               .downloadToFile(destFile.toString())
               .doOnSuccess(
@@ -52,10 +55,18 @@ public class AzureBlobFileDownloader implements FileDownloader {
                     throw new FileTransferException(
                         "Download file failed : " + destFile.toString(), error);
                   }));
+
+      if (filesToBeDownloaded.size() >= ASYNC_FILE_DOWNLOAD_LIMIT) {
+        // Start downloading files asynchronously and wait for them to complete
+        Mono.when(filesToBeDownloaded).block();
+        filesToBeDownloaded.clear();
+      }
     }
 
-    // Start asynchronously all downloads and wait for all of them to complete
-    Mono.when(filesToBeDownloaded).block();
+    if (filesToBeDownloaded.size() > 0) {
+      // Start downloading files asynchronously and wait for them to complete
+      Mono.when(filesToBeDownloaded).block();
+    }
   }
 
   @Override
