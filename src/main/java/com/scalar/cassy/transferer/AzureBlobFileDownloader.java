@@ -20,21 +20,21 @@ import reactor.core.publisher.Mono;
 public class AzureBlobFileDownloader implements FileDownloader {
   private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileDownloader.class);
   private static final int ASYNC_FILE_DOWNLOAD_LIMIT = 3;
-  private BlobContainerAsyncClient blobContainerAsyncClient;
+  private BlobContainerAsyncClient blobContainerClient;
 
   @Inject
   public AzureBlobFileDownloader(BlobContainerAsyncClient blobContainerClient) {
-    this.blobContainerAsyncClient = blobContainerClient;
+    this.blobContainerClient = blobContainerClient;
   }
 
   @Override
   public void download(RestoreConfig config) {
     String key = BackupPath.create(config, config.getKeyspace());
-    logger.info("Downloading " + blobContainerAsyncClient.getBlobContainerName() + "/" + key);
+    logger.info("Downloading " + blobContainerClient.getBlobContainerName() + "/" + key);
 
     List<Mono<BlobProperties>> filesToBeDownloaded = new ArrayList<>();
     Iterable<BlobItem> keyspaceBlobs =
-            blobContainerAsyncClient.listBlobs(new ListBlobsOptions().setPrefix(key + "/")).toIterable();
+            blobContainerClient.listBlobs(new ListBlobsOptions().setPrefix(key + "/")).toIterable();
     for (BlobItem blob : keyspaceBlobs) {
       Path destFile = Paths.get(config.getDataDir(), blob.getName());
 
@@ -45,7 +45,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
       }
 
       filesToBeDownloaded.add(
-          blobContainerAsyncClient
+          blobContainerClient
               .getBlobAsyncClient(blob.getName())
               .downloadToFile(destFile.toString())
               .doOnSuccess(
