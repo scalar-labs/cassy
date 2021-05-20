@@ -38,19 +38,20 @@ public class AzureBlobFileUploader implements FileUploader {
     }
 
     logger.info("Uploading " + file);
-    return executorService.submit(
-            () -> {
-              try {
-                try (InputStream inputStream = new FileInputStream(file.toString())) {
-                  blobContainerClient
-                          .getBlobClient(key)
-                          .upload(inputStream, new File(file.toString()).length());
-                }
-              } catch (IOException e) {
-                throw new FileTransferException(e);
-              }
-              return null;
-            });
+    return executorService
+      .submit(() -> {
+        try {
+          try (InputStream inputStream = new FileInputStream(file.toString())) {
+            blobContainerClient
+              .getBlobClient(key)
+              .upload(inputStream, new File(file.toString()).length(), true);
+          }
+        } catch (IOException e) {
+          throw new FileTransferException(e);
+        }
+        logger.info("Upload file succeeded : " + file.toString());
+        return null;
+      });
   }
 
   @Override
@@ -66,10 +67,10 @@ public class AzureBlobFileUploader implements FileUploader {
             executorService
               .submit(() -> {
                 try {
-                  try (InputStream inputStream = new FileInputStream(filePath.toString())) {
+                  try (InputStream inputStream = readStream(filePath)) {
                     blobContainerClient
                       .getBlobClient(key)
-                      .upload(inputStream, new File(filePath.toString()).length());
+                      .upload(inputStream, new File(filePath.toString()).length(),true);
                   }
                 } catch (IOException e) {
                   throw new FileTransferException(e);
@@ -112,5 +113,14 @@ public class AzureBlobFileUploader implements FileUploader {
       throw new FileTransferException(e);
     }
     return true;
+  }
+
+  @VisibleForTesting
+  InputStream readStream(Path path) {
+    try{
+      return new FileInputStream(path.toString());
+    } catch (IOException e) {
+      throw new FileTransferException(e);
+    }
   }
 }
