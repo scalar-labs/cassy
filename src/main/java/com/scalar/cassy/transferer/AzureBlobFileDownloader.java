@@ -3,12 +3,11 @@ package com.scalar.cassy.transferer;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.ListBlobsOptions;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.exception.FileTransferException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,7 +54,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
         executorService
           .submit(() -> {
             try {
-              try (OutputStream outputStream = new FileOutputStream(destFile.toString())) {
+              try (OutputStream outputStream = writeStream(destFile)) {
                 blobContainerClient
                   .getBlobClient(blob.getName())
                   .download(outputStream);
@@ -69,7 +68,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
 
     downloadFuture.forEach(d->{
       try{
-        // Start downloading files asynchronously and wait for them to complete
+        // Start download files asynchronously and wait for them to complete
         d.get();
       }catch (InterruptedException | ExecutionException e){
         throw new FileTransferException(e);
@@ -79,4 +78,13 @@ public class AzureBlobFileDownloader implements FileDownloader {
 
   @Override
   public void close() {}
+
+  @VisibleForTesting
+  OutputStream writeStream(Path path) {
+    try{
+      return new FileOutputStream(path.toString());
+    } catch (IOException e) {
+      throw new FileTransferException(e);
+    }
+  }
 }
