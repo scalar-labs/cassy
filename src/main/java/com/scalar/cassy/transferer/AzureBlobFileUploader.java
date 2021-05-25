@@ -39,19 +39,20 @@ public class AzureBlobFileUploader implements FileUploader {
 
     logger.info("Uploading " + file);
     return executorService
-      .submit(() -> {
-        try {
-          try (InputStream inputStream = new FileInputStream(file.toString())) {
-            blobContainerClient
-              .getBlobClient(key)
-              .upload(inputStream, new File(file.toString()).length(), true);
+        .submit(() -> {
+          try {
+            try (InputStream inputStream = new FileInputStream(file.toString())) {
+              blobContainerClient
+                  .getBlobClient(key)
+                  .upload(inputStream, new File(file.toString()).length(), true);
+            }
+          } catch (IOException e) {
+            throw new FileTransferException(e);
           }
-        } catch (IOException e) {
-          throw new FileTransferException(e);
-        }
-        logger.info("Upload file succeeded : " + file.toString());
-        return null;
-      });
+
+          logger.info("Upload file succeeded : " + file.toString());
+          return null;
+        });
   }
 
   @Override
@@ -65,18 +66,18 @@ public class AzureBlobFileUploader implements FileUploader {
         logger.info("Uploading " + filePath);
         uploads.add(
             executorService
-              .submit(() -> {
-                try {
-                  try (InputStream inputStream = readStream(filePath)) {
-                    blobContainerClient
-                      .getBlobClient(key)
-                      .upload(inputStream, new File(filePath.toString()).length(),true);
+                .submit(() -> {
+                  try {
+                    try (InputStream inputStream = readStream(filePath)) {
+                      blobContainerClient
+                          .getBlobClient(key)
+                          .upload(inputStream, new File(filePath.toString()).length(),true);
+                    }
+                  } catch (IOException e) {
+                    throw new FileTransferException(e);
                   }
-                } catch (IOException e) {
-                  throw new FileTransferException(e);
-                }
-                logger.info("Upload file succeeded : " + filePath.toString());
-             }));
+                  logger.info("Upload file succeeded : " + filePath.toString());
+                }));
       } else {
         logger.info(filePath + " has been already uploaded.");
       }
