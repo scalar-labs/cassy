@@ -113,15 +113,15 @@ public class AzureBlobFileDownloaderTest {
 
   private Iterator<BlobItem> getBlobItems(File... files) {
     return Arrays.stream(files)
-      .map(
-        f -> {
-          BlobItem blob = new BlobItem();
-          blob.setName(f.getName());
-          BlobItemProperties properties = new BlobItemProperties();
-          properties.setContentLength(f.length());
-          blob.setProperties(properties);
-          return blob;
-        })
-        .iterator();
+        .map(
+            f -> {
+              BlobItem blob = new BlobItem();
+              blob.setName(f.getName());
+              BlobItemProperties properties = new BlobItemProperties();
+              properties.setContentLength(f.length());
+              blob.setProperties(properties);
+              return blob;
+            })
+            .iterator();
   }
 }

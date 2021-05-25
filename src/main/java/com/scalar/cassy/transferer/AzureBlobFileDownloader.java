@@ -43,27 +43,25 @@ public class AzureBlobFileDownloader implements FileDownloader {
     while (keyspaceBlobs.hasNext()) {
       BlobItem blob = keyspaceBlobs.next();
       Path destFile = Paths.get(config.getDataDir(), blob.getName());
-
       try {
         Files.createDirectories(destFile.getParent());
       } catch (IOException e) {
         throw new FileTransferException(e);
       }
-
       downloadFuture.add(
-        executorService
-          .submit(() -> {
-            try {
-              try (OutputStream outputStream = writeStream(destFile)) {
-                blobContainerClient
-                  .getBlobClient(blob.getName())
-                  .download(outputStream);
-              }
-            } catch (IOException e) {
-              throw new FileTransferException(e);
-            }
-            logger.info("Download file succeeded : " + destFile.toString());
-          }));
+          executorService
+              .submit(() -> {
+                try {
+                  try (OutputStream outputStream = writeStream(destFile)) {
+                    blobContainerClient
+                        .getBlobClient(blob.getName())
+                        .download(outputStream);
+                  }
+                } catch (IOException e) {
+                  throw new FileTransferException(e);
+                }
+                logger.info("Download file succeeded : " + destFile.toString());
+              }));
     }
 
     downloadFuture.forEach(d->{
