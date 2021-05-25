@@ -122,6 +122,6 @@ public class AzureBlobFileDownloaderTest {
               blob.setProperties(properties);
               return blob;
             })
-            .iterator();
+        .iterator();
   }
 }
