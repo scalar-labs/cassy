@@ -1,8 +1,17 @@
 package com.scalar.cassy.transferer;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.google.common.base.Joiner;
@@ -22,7 +31,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 public class AzureBlobFileUploaderTest {
   private static final String DATA_DIR = "/tmp/" + UUID.randomUUID();
@@ -38,7 +50,8 @@ public class AzureBlobFileUploaderTest {
   private static final String ANY_STOREBASE_URI = "container_name";
   private static final Joiner joiner = Joiner.on("/").skipNulls();
   private static final FileSystem fs = FileSystems.getDefault();
-  @Mock private BlobContainerClient containerClient;
+  @Mock
+  private BlobContainerClient containerClient;
   @Mock private BlobClient blobClient;
   @Mock private Future future;
   @Mock private InputStream inputStream;
