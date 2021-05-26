@@ -46,7 +46,7 @@ public class AzureUtil {
   private static void validateUrl(String storageBaseUri, String accountUrl) {
     if (!storageBaseUri.startsWith(accountUrl)) {
       throw new IllegalArgumentException(
-              "The given credential can not be used for the specified container.");
+          "The given credential can not be used for the specified container.");
     }
   }
 }

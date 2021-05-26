@@ -71,7 +71,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
           try {
             // Start download files asynchronously and wait for them to complete
             d.get();
-          } catch (InterruptedException | ExecutionException e){
+          } catch (InterruptedException | ExecutionException e) {
             throw new FileTransferException(e);
           }
         });
