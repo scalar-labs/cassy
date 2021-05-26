@@ -14,10 +14,7 @@ public class AzureUtil {
     BlobServiceClientBuilder builder = getBlobServiceClientBuilder(storageBaseUri);
     BlobServiceAsyncClient asyncClient = builder.buildAsyncClient();
 
-    if (!storageBaseUri.startsWith(asyncClient.getAccountUrl())) {
-      throw new IllegalArgumentException(
-              "The given credential can not be used for the specified container.");
-    }
+    validateUrl(storageBaseUri, asyncClient.getAccountUrl());
     String containerName = storageBaseUri.replace(asyncClient.getAccountUrl() + "/", "");
     return asyncClient.getBlobContainerAsyncClient(containerName);
   }
@@ -26,10 +23,7 @@ public class AzureUtil {
     BlobServiceClientBuilder builder = getBlobServiceClientBuilder(storageBaseUri);
     BlobServiceClient client = builder.buildClient();
 
-    if (!storageBaseUri.startsWith(client.getAccountUrl())) {
-      throw new IllegalArgumentException(
-              "The given credential can not be used for the specified container.");
-    }
+    validateUrl(storageBaseUri, client.getAccountUrl());
     String containerName = storageBaseUri.replace(client.getAccountUrl() + "/", "");
     return client.getBlobContainerClient(containerName);
   }
@@ -47,5 +41,12 @@ public class AzureUtil {
       builder.connectionString(connectionString);
     }
     return builder;
+  }
+
+  private static void validateUrl(String storageBaseUri, String accountUrl) {
+    if (!storageBaseUri.startsWith(accountUrl)) {
+      throw new IllegalArgumentException(
+              "The given credential can not be used for the specified container.");
+    }
   }
 }

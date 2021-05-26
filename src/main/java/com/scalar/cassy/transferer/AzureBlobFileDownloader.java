@@ -66,14 +66,15 @@ public class AzureBlobFileDownloader implements FileDownloader {
               }));
     }
 
-    downloadFuture.forEach(d->{
-      try{
-        // Start download files asynchronously and wait for them to complete
-        d.get();
-      }catch (InterruptedException | ExecutionException e){
-        throw new FileTransferException(e);
-      }
-    });
+    downloadFuture.forEach(
+        d -> {
+          try {
+            // Start download files asynchronously and wait for them to complete
+            d.get();
+          } catch (InterruptedException | ExecutionException e){
+            throw new FileTransferException(e);
+          }
+        });
   }
 
   @Override
@@ -81,7 +82,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
 
   @VisibleForTesting
   OutputStream writeStream(Path path) {
-    try{
+    try {
       return new FileOutputStream(path.toString());
     } catch (IOException e) {
       throw new FileTransferException(e);
