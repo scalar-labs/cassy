@@ -90,14 +90,15 @@ public class AzureBlobFileUploader implements FileUploader {
       }
     }
 
-    uploads.forEach(u -> {
-      try{
-        // Start upload files asynchronously and wait for them to complete
-        u.get();
-      } catch (InterruptedException | ExecutionException e){
-        throw new FileTransferException(e);
-      }
-    });
+    uploads.forEach(
+        u -> {
+          try {
+            // Start upload files asynchronously and wait for them to complete
+            u.get();
+          } catch (InterruptedException | ExecutionException e) {
+            throw new FileTransferException(e);
+          }
+        });
   }
 
   @Override
@@ -125,7 +126,7 @@ public class AzureBlobFileUploader implements FileUploader {
 
   @VisibleForTesting
   InputStream readStream(Path path) {
-    try{
+    try {
       return new FileInputStream(path.toString());
     } catch (IOException e) {
       throw new FileTransferException(e);
