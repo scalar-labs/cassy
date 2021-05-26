@@ -50,8 +50,7 @@ public class AzureBlobFileUploaderTest {
   private static final String ANY_STOREBASE_URI = "container_name";
   private static final Joiner joiner = Joiner.on("/").skipNulls();
   private static final FileSystem fs = FileSystems.getDefault();
-  @Mock
-  private BlobContainerClient containerClient;
+  @Mock private BlobContainerClient containerClient;
   @Mock private BlobClient blobClient;
   @Mock private Future future;
   @Mock private InputStream inputStream;
