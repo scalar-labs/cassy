@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 public class AzureBlobFileUploader implements FileUploader {
   private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileUploader.class);
   private static final int NUM_THREADS = 3;
+  private static final int ASYNC_FILE_UPLOAD_LIMIT = 20;
   private final ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
   private final BlobContainerClient blobContainerClient;
 
@@ -88,17 +89,32 @@ public class AzureBlobFileUploader implements FileUploader {
       } else {
         logger.info(filePath + " has been already uploaded.");
       }
+
+      if (uploads.size() >= ASYNC_FILE_UPLOAD_LIMIT) {
+        uploads.forEach(
+            u -> {
+              try {
+                // Start upload files asynchronously and wait for them to complete
+                u.get();
+              } catch (InterruptedException | ExecutionException e) {
+                throw new FileTransferException(e);
+              }
+            });
+        uploads.clear();
+      }
     }
 
-    uploads.forEach(
-        u -> {
-          try {
-            // Start upload files asynchronously and wait for them to complete
-            u.get();
-          } catch (InterruptedException | ExecutionException e) {
-            throw new FileTransferException(e);
-          }
-        });
+    if (uploads.size() > 0) {
+      uploads.forEach(
+          u -> {
+            try {
+              // Start upload files asynchronously and wait for them to complete
+              u.get();
+            } catch (InterruptedException | ExecutionException e) {
+              throw new FileTransferException(e);
+            }
+          });
+    }
   }
 
   @Override
