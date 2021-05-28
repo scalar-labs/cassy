@@ -27,6 +27,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
   private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileDownloader.class);
   private BlobContainerClient blobContainerClient;
   private static final int NUM_THREADS = 3;
+  private static final int ASYNC_FILE_DOWNLOAD_LIMIT = 20;
   private final ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
 
   @Inject
@@ -64,17 +65,32 @@ public class AzureBlobFileDownloader implements FileDownloader {
                 }
                 logger.info("Download file succeeded : " + destFile.toString());
               }));
+
+      if (downloadFuture.size() >= ASYNC_FILE_DOWNLOAD_LIMIT) {
+        downloadFuture.forEach(
+            d -> {
+              try {
+                // Start download files asynchronously and wait for them to complete
+                d.get();
+              } catch (InterruptedException | ExecutionException e) {
+                throw new FileTransferException(e);
+              }
+            });
+        downloadFuture.clear();
+      }
     }
 
-    downloadFuture.forEach(
-        d -> {
-          try {
-            // Start download files asynchronously and wait for them to complete
-            d.get();
-          } catch (InterruptedException | ExecutionException e) {
-            throw new FileTransferException(e);
-          }
-        });
+    if (downloadFuture.size() > 0) {
+      downloadFuture.forEach(
+          d -> {
+            try {
+              // Start download files asynchronously and wait for them to complete
+              d.get();
+            } catch (InterruptedException | ExecutionException e) {
+              throw new FileTransferException(e);
+            }
+          });
+    }
   }
 
   @Override
