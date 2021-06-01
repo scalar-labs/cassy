@@ -46,8 +46,8 @@ public class AzureBlobFileUploader implements FileUploader {
     }
 
     logger.info("Uploading " + file);
-    return executorService
-        .submit(() -> {
+    return executorService.submit(
+        () -> {
           try {
             try (InputStream inputStream = new FileInputStream(file.toString())) {
               blobContainerClient
@@ -73,13 +73,13 @@ public class AzureBlobFileUploader implements FileUploader {
       if (requiresUpload(key, filePath)) {
         logger.info("Uploading " + filePath);
         uploads.add(
-            executorService
-                .submit(() -> {
+            executorService.submit(
+                () -> {
                   try {
                     try (InputStream inputStream = readStream(filePath)) {
                       blobContainerClient
                           .getBlobClient(key)
-                          .upload(inputStream, new File(filePath.toString()).length(),true);
+                          .upload(inputStream, new File(filePath.toString()).length(), true);
                     }
                   } catch (IOException e) {
                     throw new FileTransferException(e);
@@ -91,30 +91,26 @@ public class AzureBlobFileUploader implements FileUploader {
       }
 
       if (uploads.size() >= ASYNC_FILE_UPLOAD_LIMIT) {
-        uploads.forEach(
-            u -> {
-              try {
-                // Start upload files asynchronously and wait for them to complete
-                u.get();
-              } catch (InterruptedException | ExecutionException e) {
-                throw new FileTransferException(e);
-              }
-            });
+        waitForAsyncFileUpload(uploads);
         uploads.clear();
       }
     }
 
     if (uploads.size() > 0) {
-      uploads.forEach(
-          u -> {
-            try {
-              // Start upload files asynchronously and wait for them to complete
-              u.get();
-            } catch (InterruptedException | ExecutionException e) {
-              throw new FileTransferException(e);
-            }
-          });
+      waitForAsyncFileUpload(uploads);
     }
+  }
+
+  private void waitForAsyncFileUpload(List<Future> uploads) {
+    uploads.forEach(
+        u -> {
+          try {
+            // Start upload files asynchronously and wait for them to complete
+            u.get();
+          } catch (InterruptedException | ExecutionException e) {
+            throw new FileTransferException(e);
+          }
+        });
   }
 
   @Override
