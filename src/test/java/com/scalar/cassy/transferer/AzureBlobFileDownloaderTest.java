@@ -77,7 +77,8 @@ public class AzureBlobFileDownloaderTest {
   }
 
   @Test
-  public void download_ExecutionExceptionThrown_ShouldThrowFileTransferException() throws Exception {
+  public void download_ExecutionExceptionThrown_ShouldThrowFileTransferException()
+      throws Exception {
     // Arrange
     RestoreConfig config =
         new RestoreConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_TMP_DATA_DIR));

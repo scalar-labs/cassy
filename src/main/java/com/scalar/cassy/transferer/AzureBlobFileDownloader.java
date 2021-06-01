@@ -42,7 +42,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
 
     logger.info("Downloading " + blobContainerClient.getBlobContainerName() + "/" + key);
     Iterator<BlobItem> keyspaceBlobs =
-            blobContainerClient.listBlobs(new ListBlobsOptions().setPrefix(key + "/"), null).iterator();
+        blobContainerClient.listBlobs(new ListBlobsOptions().setPrefix(key + "/"), null).iterator();
     while (keyspaceBlobs.hasNext()) {
       BlobItem blob = keyspaceBlobs.next();
       Path destFile = Paths.get(config.getDataDir(), blob.getName());
@@ -52,13 +52,11 @@ public class AzureBlobFileDownloader implements FileDownloader {
         throw new FileTransferException(e);
       }
       downloadFuture.add(
-          executorService
-              .submit(() -> {
+          executorService.submit(
+              () -> {
                 try {
                   try (OutputStream outputStream = writeStream(destFile)) {
-                    blobContainerClient
-                        .getBlobClient(blob.getName())
-                        .download(outputStream);
+                    blobContainerClient.getBlobClient(blob.getName()).download(outputStream);
                   }
                 } catch (IOException e) {
                   throw new FileTransferException(e);
@@ -67,30 +65,26 @@ public class AzureBlobFileDownloader implements FileDownloader {
               }));
 
       if (downloadFuture.size() >= ASYNC_FILE_DOWNLOAD_LIMIT) {
-        downloadFuture.forEach(
-            d -> {
-              try {
-                // Start download files asynchronously and wait for them to complete
-                d.get();
-              } catch (InterruptedException | ExecutionException e) {
-                throw new FileTransferException(e);
-              }
-            });
+        waitForAsyncFileDownload(downloadFuture);
         downloadFuture.clear();
       }
     }
 
     if (downloadFuture.size() > 0) {
-      downloadFuture.forEach(
-          d -> {
-            try {
-              // Start download files asynchronously and wait for them to complete
-              d.get();
-            } catch (InterruptedException | ExecutionException e) {
-              throw new FileTransferException(e);
-            }
-          });
+      waitForAsyncFileDownload(downloadFuture);
     }
+  }
+
+  private void waitForAsyncFileDownload(List<Future> downloadFuture) {
+    downloadFuture.forEach(
+        d -> {
+          try {
+            // Start download files asynchronously and wait for them to complete
+            d.get();
+          } catch (InterruptedException | ExecutionException e) {
+            throw new FileTransferException(e);
+          }
+        });
   }
 
   @Override
