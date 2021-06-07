@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -41,10 +40,8 @@ public class AzureBlobFileDownloader implements FileDownloader {
     String key = BackupPath.create(config, config.getKeyspace());
 
     logger.info("Downloading " + blobContainerClient.getBlobContainerName() + "/" + key);
-    Iterator<BlobItem> keyspaceBlobs =
-        blobContainerClient.listBlobs(new ListBlobsOptions().setPrefix(key + "/"), null).iterator();
-    while (keyspaceBlobs.hasNext()) {
-      BlobItem blob = keyspaceBlobs.next();
+    Iterable<BlobItem> keyspaceBlobs = listBlobs(key);
+    for (BlobItem blob : keyspaceBlobs) {
       Path destFile = Paths.get(config.getDataDir(), blob.getName());
       try {
         Files.createDirectories(destFile.getParent());
@@ -97,5 +94,10 @@ public class AzureBlobFileDownloader implements FileDownloader {
     } catch (IOException e) {
       throw new FileTransferException(e);
     }
+  }
+
+  @VisibleForTesting
+  Iterable<BlobItem> listBlobs(String key) {
+    return blobContainerClient.listBlobs(new ListBlobsOptions().setPrefix(key + "/"), null);
   }
 }

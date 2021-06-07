@@ -10,12 +10,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.azure.core.http.rest.PagedIterable;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobItemProperties;
-import com.azure.storage.blob.models.ListBlobsOptions;
 import com.scalar.cassy.config.BackupType;
 import com.scalar.cassy.config.RestoreConfig;
 import com.scalar.cassy.exception.FileTransferException;
@@ -26,9 +24,9 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +45,6 @@ public class AzureBlobFileDownloaderTest {
   @Mock private BlobContainerClient containerClient;
   @Mock private BlobClient blobClient;
   @Mock private OutputStream outputStream;
-  @Mock private PagedIterable<BlobItem> pagedFlux;
   @Spy @InjectMocks private AzureBlobFileDownloader downloader;
 
   @Before
@@ -60,11 +57,10 @@ public class AzureBlobFileDownloaderTest {
     // Arrange
     RestoreConfig config =
         new RestoreConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_TMP_DATA_DIR));
-    when(containerClient.listBlobs(any(), any())).thenReturn(pagedFlux);
     File file1 = createTempFile("file_1", "Lorem");
     File file2 = createTempFile("file_2", "Lorem ipsum");
     Assertions.assertThat(file2.delete()).isTrue();
-    when(pagedFlux.iterator()).thenReturn(getBlobItems(file1, file2));
+    doReturn(getBlobItems(file1, file2)).when(downloader).listBlobs(any());
     when(containerClient.getBlobClient(anyString())).thenReturn(blobClient);
     doReturn(outputStream).when(downloader).writeStream(any(Path.class));
     doNothing().when(blobClient).download(any(OutputStream.class));
@@ -83,10 +79,9 @@ public class AzureBlobFileDownloaderTest {
     RestoreConfig config =
         new RestoreConfig(getProperties(BackupType.NODE_SNAPSHOT, ANY_TMP_DATA_DIR));
     ExecutionException toThrow = new ExecutionException(new RuntimeException("foo message"));
-    when(containerClient.listBlobs(any(ListBlobsOptions.class), any())).thenReturn(pagedFlux);
     File file1 = createTempFile("file_1", "Lorem");
     File file2 = createTempFile("file_2", "Lorem ipsum");
-    when(pagedFlux.iterator()).thenReturn(getBlobItems(file1, file2));
+    doReturn(getBlobItems(file1, file2)).when(downloader).listBlobs(any());
     when(containerClient.getBlobClient(anyString())).thenReturn(blobClient);
     doReturn(outputStream).when(downloader).writeStream(any(Path.class));
     doThrow(toThrow.getCause()).when(blobClient).download(any(OutputStream.class));
@@ -121,7 +116,7 @@ public class AzureBlobFileDownloaderTest {
     return file;
   }
 
-  private Iterator<BlobItem> getBlobItems(File... files) {
+  private Iterable<BlobItem> getBlobItems(File... files) {
     return Arrays.stream(files)
         .map(
             f -> {
@@ -132,6 +127,6 @@ public class AzureBlobFileDownloaderTest {
               blob.setProperties(properties);
               return blob;
             })
-        .iterator();
+        .collect(Collectors.toList());
   }
 }
