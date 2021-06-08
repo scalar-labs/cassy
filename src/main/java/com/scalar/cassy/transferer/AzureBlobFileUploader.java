@@ -68,7 +68,6 @@ public class AzureBlobFileUploader implements FileUploader {
     for (Path filePath : files) {
       Path relative = dataDir.relativize(filePath);
       String key = BackupPath.create(config, relative.toString());
-      logger.info("Uploading " + filePath);
       uploads.add(upload(filePath, key));
 
       if (uploads.size() >= ASYNC_FILE_UPLOAD_LIMIT) {
