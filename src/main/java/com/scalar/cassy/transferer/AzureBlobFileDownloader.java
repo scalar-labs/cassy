@@ -36,7 +36,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
 
   @Override
   public void download(RestoreConfig config) {
-    List<Future> downloadFuture = new ArrayList<>();
+    List<Future<Void>> downloadFuture = new ArrayList<>();
     String key = BackupPath.create(config, config.getKeyspace());
 
     logger.info("Downloading " + blobContainerClient.getBlobContainerName() + "/" + key);
@@ -50,14 +50,14 @@ public class AzureBlobFileDownloader implements FileDownloader {
       downloadFuture.add(
           executorService.submit(
               () -> {
-                try {
-                  try (OutputStream outputStream = writeStream(destFile)) {
-                    blobContainerClient.getBlobClient(blob.getName()).download(outputStream);
-                  }
+                try (OutputStream outputStream = writeStream(destFile)) {
+                  blobContainerClient.getBlobClient(blob.getName()).download(outputStream);
+
                 } catch (IOException e) {
                   throw new FileTransferException(e);
                 }
                 logger.info("Download file succeeded : " + destFile.toString());
+                return null;
               }));
 
       if (downloadFuture.size() >= ASYNC_FILE_DOWNLOAD_LIMIT) {
@@ -71,7 +71,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
     }
   }
 
-  private void waitForAsyncFileDownload(List<Future> downloadFuture) {
+  private void waitForAsyncFileDownload(List<Future<Void>> downloadFuture) {
     downloadFuture.forEach(
         d -> {
           try {
