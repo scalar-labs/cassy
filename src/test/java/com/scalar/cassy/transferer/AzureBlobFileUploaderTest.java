@@ -52,7 +52,6 @@ public class AzureBlobFileUploaderTest {
   private static final FileSystem fs = FileSystems.getDefault();
   @Mock private BlobContainerClient containerClient;
   @Mock private BlobClient blobClient;
-  @Mock private Future future;
   @Mock private InputStream inputStream;
   @Spy @InjectMocks private AzureBlobFileUploader uploader;
 

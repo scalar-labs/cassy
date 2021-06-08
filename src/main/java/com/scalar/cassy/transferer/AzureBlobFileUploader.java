@@ -48,17 +48,15 @@ public class AzureBlobFileUploader implements FileUploader {
     logger.info("Uploading " + file);
     return executorService.submit(
         () -> {
-          try {
-            try (InputStream inputStream = new FileInputStream(file.toString())) {
-              blobContainerClient
-                  .getBlobClient(key)
-                  .upload(inputStream, new File(file.toString()).length(), true);
-            }
+          try (InputStream inputStream = readStream(file)) {
+            blobContainerClient
+                .getBlobClient(key)
+                .upload(inputStream, new File(file.toString()).length(), true);
           } catch (IOException e) {
             throw new FileTransferException(e);
           }
 
-          logger.info("Upload file succeeded : " + file.toString());
+          logger.info("Upload file succeeded : " + file);
           return null;
         });
   }
@@ -66,29 +64,12 @@ public class AzureBlobFileUploader implements FileUploader {
   @Override
   public void upload(List<Path> files, BackupConfig config) {
     Path dataDir = Paths.get(config.getDataDir());
-    List<Future> uploads = new ArrayList<>();
+    List<Future<Void>> uploads = new ArrayList<>();
     for (Path filePath : files) {
       Path relative = dataDir.relativize(filePath);
       String key = BackupPath.create(config, relative.toString());
-      if (requiresUpload(key, filePath)) {
-        logger.info("Uploading " + filePath);
-        uploads.add(
-            executorService.submit(
-                () -> {
-                  try {
-                    try (InputStream inputStream = readStream(filePath)) {
-                      blobContainerClient
-                          .getBlobClient(key)
-                          .upload(inputStream, new File(filePath.toString()).length(), true);
-                    }
-                  } catch (IOException e) {
-                    throw new FileTransferException(e);
-                  }
-                  logger.info("Upload file succeeded : " + filePath.toString());
-                }));
-      } else {
-        logger.info(filePath + " has been already uploaded.");
-      }
+      logger.info("Uploading " + filePath);
+      uploads.add(upload(filePath, key));
 
       if (uploads.size() >= ASYNC_FILE_UPLOAD_LIMIT) {
         waitForAsyncFileUpload(uploads);
@@ -101,7 +82,7 @@ public class AzureBlobFileUploader implements FileUploader {
     }
   }
 
-  private void waitForAsyncFileUpload(List<Future> uploads) {
+  private void waitForAsyncFileUpload(List<Future<Void>> uploads) {
     uploads.forEach(
         u -> {
           try {
