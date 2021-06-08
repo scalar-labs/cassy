@@ -40,8 +40,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
     String key = BackupPath.create(config, config.getKeyspace());
 
     logger.info("Downloading " + blobContainerClient.getBlobContainerName() + "/" + key);
-    Iterable<BlobItem> keyspaceBlobs = listBlobs(key);
-    for (BlobItem blob : keyspaceBlobs) {
+    for (BlobItem blob : listBlobs(key)) {
       Path destFile = Paths.get(config.getDataDir(), blob.getName());
       try {
         Files.createDirectories(destFile.getParent());
