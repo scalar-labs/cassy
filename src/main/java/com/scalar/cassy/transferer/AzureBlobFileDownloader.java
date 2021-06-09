@@ -24,10 +24,10 @@ import org.slf4j.LoggerFactory;
 
 public class AzureBlobFileDownloader implements FileDownloader {
   private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileDownloader.class);
-  private BlobContainerClient blobContainerClient;
   private static final int NUM_THREADS = 3;
   private static final int ASYNC_FILE_DOWNLOAD_LIMIT = 20;
   private final ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
+  private final BlobContainerClient blobContainerClient;
 
   @Inject
   public AzureBlobFileDownloader(BlobContainerClient blobContainerClient) {
@@ -56,7 +56,7 @@ public class AzureBlobFileDownloader implements FileDownloader {
                 } catch (IOException e) {
                   throw new FileTransferException(e);
                 }
-                logger.info("Download file succeeded : " + destFile.toString());
+                logger.info("Download file succeeded : " + destFile);
                 return null;
               }));
 
