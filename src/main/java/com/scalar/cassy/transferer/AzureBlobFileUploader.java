@@ -1,7 +1,7 @@
 package com.scalar.cassy.transferer;
 
-import com.azure.storage.blob.BlobAsyncClient;
-import com.azure.storage.blob.BlobContainerAsyncClient;
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.BlobStorageException;
 import com.google.common.annotations.VisibleForTesting;
@@ -9,26 +9,32 @@ import com.google.inject.Inject;
 import com.scalar.cassy.config.BackupConfig;
 import com.scalar.cassy.exception.FileIOException;
 import com.scalar.cassy.exception.FileTransferException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
 
 public class AzureBlobFileUploader implements FileUploader {
   private static final Logger logger = LoggerFactory.getLogger(AzureBlobFileUploader.class);
+  private static final int NUM_THREADS = 3;
   private static final int ASYNC_FILE_UPLOAD_LIMIT = 20;
-  private final BlobContainerAsyncClient blobContainerClient;
+  private final ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
+  private final BlobContainerClient blobContainerClient;
 
   @Inject
-  public AzureBlobFileUploader(BlobContainerAsyncClient blobContainerClient) {
+  public AzureBlobFileUploader(BlobContainerClient blobContainerClient) {
     this.blobContainerClient = blobContainerClient;
   }
 
@@ -40,45 +46,51 @@ public class AzureBlobFileUploader implements FileUploader {
     }
 
     logger.info("Uploading " + file);
-    return blobContainerClient
-        .getBlobAsyncClient(key)
-        .uploadFromFile(file.toString(), true)
-        .toFuture();
+    return executorService.submit(
+        () -> {
+          try (InputStream inputStream = readStream(file)) {
+            blobContainerClient
+                .getBlobClient(key)
+                .upload(inputStream, new File(file.toString()).length(), true);
+          } catch (IOException e) {
+            throw new FileTransferException(e);
+          }
+
+          logger.info("Upload file succeeded : " + file);
+          return null;
+        });
   }
 
   @Override
   public void upload(List<Path> files, BackupConfig config) {
     Path dataDir = Paths.get(config.getDataDir());
-    List<Mono<Void>> toBeUploaded = new ArrayList<>();
+    List<Future<Void>> uploads = new ArrayList<>();
     for (Path filePath : files) {
       Path relative = dataDir.relativize(filePath);
       String key = BackupPath.create(config, relative.toString());
-      if (requiresUpload(key, filePath)) {
-        logger.info("Uploading " + filePath);
-        toBeUploaded.add(
-            blobContainerClient
-                .getBlobAsyncClient(key)
-                .uploadFromFile(filePath.toString(), true)
-                .doOnSuccess(blobProperties -> logger.info("Upload succeeded : " + filePath))
-                .doOnError(
-                    error -> {
-                      throw new FileTransferException("Upload failed : " + filePath, error);
-                    }));
-      } else {
-        logger.info(filePath + " has been already uploaded.");
-      }
+      uploads.add(upload(filePath, key));
 
-      if (toBeUploaded.size() >= ASYNC_FILE_UPLOAD_LIMIT) {
-        // Start uploading files asynchronously and wait for them to complete
-        Mono.when(toBeUploaded).block();
-        toBeUploaded.clear();
+      if (uploads.size() >= ASYNC_FILE_UPLOAD_LIMIT) {
+        waitForAsyncFileUpload(uploads);
+        uploads.clear();
       }
     }
 
-    if (toBeUploaded.size() > 0) {
-      // Start uploading files asynchronously and wait for them to complete
-      Mono.when(toBeUploaded).block();
+    if (uploads.size() > 0) {
+      waitForAsyncFileUpload(uploads);
     }
+  }
+
+  private void waitForAsyncFileUpload(List<Future<Void>> uploads) {
+    uploads.forEach(
+        u -> {
+          try {
+            // Start upload files asynchronously and wait for them to complete
+            u.get();
+          } catch (InterruptedException | ExecutionException e) {
+            throw new FileTransferException(e);
+          }
+        });
   }
 
   @Override
@@ -87,10 +99,10 @@ public class AzureBlobFileUploader implements FileUploader {
   @VisibleForTesting
   boolean requiresUpload(String key, Path file) {
     try {
-      BlobAsyncClient client = blobContainerClient.getBlobAsyncClient(key);
-      Optional<BlobProperties> blobProperties = client.getProperties().blockOptional();
+      BlobClient client = blobContainerClient.getBlobClient(key);
+      BlobProperties blobProperties = client.getProperties();
 
-      if (blobProperties.isPresent() && blobProperties.get().getBlobSize() == Files.size(file)) {
+      if (blobProperties.getBlobSize() == Files.size(file)) {
         return false;
       }
     } catch (IOException e) {
@@ -102,5 +114,14 @@ public class AzureBlobFileUploader implements FileUploader {
       throw new FileTransferException(e);
     }
     return true;
+  }
+
+  @VisibleForTesting
+  InputStream readStream(Path path) {
+    try {
+      return new FileInputStream(path.toString());
+    } catch (IOException e) {
+      throw new FileTransferException(e);
+    }
   }
 }
