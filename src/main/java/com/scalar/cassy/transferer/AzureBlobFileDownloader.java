@@ -52,7 +52,6 @@ public class AzureBlobFileDownloader implements FileDownloader {
               () -> {
                 try (OutputStream outputStream = writeStream(destFile)) {
                   blobContainerClient.getBlobClient(blob.getName()).download(outputStream);
-
                 } catch (IOException e) {
                   throw new FileTransferException(e);
                 }
